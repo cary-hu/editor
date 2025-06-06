@@ -87,9 +87,20 @@ export function tableContextMenu(eventEmitter: Emitter) {
           if (tableCell) {
             ev.preventDefault();
 
-            const { clientX, clientY } = ev as MouseEvent;
+            let { clientX, clientY } = ev as MouseEvent;
             const { left, top } = (view.dom.parentNode as HTMLElement).getBoundingClientRect();
             const inTableHead = tableCell.nodeName === 'TH';
+
+            const contextMenuHeight = 330;
+            const contextMenuWidth = 90;
+
+            if (clientX + contextMenuWidth > window.innerWidth) {
+              clientX -= contextMenuWidth;
+            }
+
+            if (clientY + contextMenuHeight > window.innerHeight) {
+              clientY -= contextMenuHeight;
+            }
 
             eventEmitter.emit('contextmenu', {
               pos: { left: `${clientX - left + 10}px`, top: `${clientY - top + 30}px` },
