@@ -68,20 +68,16 @@
     "webpack-merge": "^5.7.3"
   },
   "scripts": {
-    "lint:all": "lerna run --stream lint",
-    "test:all": "jest",
-    "test:types:all": "lerna run --stream test:types",
-    "build:all": "lerna run --stream build",
     "lint": "node ./scripts/pkg-script.js --script lint",
+    "lint:all": "lerna run --stream lint",
     "test": "node ./scripts/pkg-script.js --script test",
     "test:ci": "node ./scripts/pkg-script.js --script test:ci",
+    "test:all": "jest",
     "test:types": "node ./scripts/pkg-script.js --script test:types",
+    "test:types:all": "lerna run --stream test:types",
     "serve": "node ./scripts/pkg-script.js --script serve",
-    "serve:ie": "node ./scripts/pkg-script.js --script serve:ie",
     "build": "node ./scripts/pkg-script.js --script build",
-    "doc:dev": "node ./scripts/pkg-script.js --script doc:dev",
-    "doc": "node ./scripts/pkg-script.js --script doc",
-    "publish:cdn": "node ./scripts/publish-cdn.js"
+    "build:all": "lerna run --stream build"
   },
   "workspaces": [
     "app",
