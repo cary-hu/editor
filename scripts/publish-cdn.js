@@ -2,7 +2,7 @@
 const path = require('path');
 const fs = require('fs');
 const fetch = require('node-fetch');
-const pkg = require('../apps/editor/package.json');
+const pkg = require('../app/editor/package.json');
 
 const LOCAL_DIST_PATH = path.join(__dirname, '../apps/editor/dist/cdn');
 const STORAGE_API_URL = 'https://api-storage.cloud.toast.com/v1';
