@@ -84,7 +84,7 @@
     "publish:cdn": "node ./scripts/publish-cdn.js"
   },
   "workspaces": [
-    "apps/*",
+    "app",
     "libs/*",
     "plugins/*"
   ]
