@@ -52,7 +52,7 @@ export class Link extends Mark {
       toDOM: ({ attrs }: ProsemirrorMark): DOMOutputSpec => [
         attrs.rawHTML || 'a',
         {
-          href: escapeXml(attrs.linkUrl),
+          href: attrs.linkUrl,
           ...this.linkAttributes,
           ...getCustomAttrs(attrs),
         },
