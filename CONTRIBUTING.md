@@ -49,7 +49,7 @@ Unsure where to begin contributing to TOAST UI? You can start by looking through
 - Prepare your machine node and it's packages installed.
 - Checkout our repository
 - Install dependencies by `npm install`
-- Build toastmark by `npm run build toastmark`
+- Build toastmark by `type=toastmark npm run build`
 - Start snowpack-dev-server by `npm run serve`
 
 ### Make changes

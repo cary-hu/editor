@@ -8,7 +8,7 @@
     <div id="editor"></div>
     <!-- Editor -->
     <script type="module">
-      import { Editor } from '/dist/index.js';
+      import Editor from '@/index.ts';
 
       const content = [
         '![image](https://uicdn.toast.com/toastui/img/tui-editor-bi.png)',
@@ -61,7 +61,7 @@
         initialValue: content,
       });
 
-      window.editor = editor;
+      // window.editor = editor;
     </script>
   </body>
 </html>

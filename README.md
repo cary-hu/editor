@@ -131,8 +131,8 @@ Fork `main` branch into your personal repository. Clone it to local computer. In
 ```sh
 $ git clone https://github.com/{your-personal-repo}/tui.editor.git
 $ npm install
-$ npm run build toastmark
-$ npm run test editor
+$ type=toastmark npm run build
+$ type=editor npm run test
 ```
 
 > TOAST UI Editor uses [npm workspace](https://docs.npmjs.com/cli/v7/using-npm/workspaces/), so you need to set the environment based on [npm7](https://github.blog/2021-02-02-npm-7-is-now-generally-available/). If subversion is used, dependencies must be installed by moving direct paths per package.
@@ -145,20 +145,20 @@ You can see your code reflected as soon as you save the code by running a server
 [snowpack](https://www.snowpack.dev/) allows you to run a development server without bundling.
 
 ``` sh
-$ npm run serve editor
+$ type=editor npm run serve
 ```
 
 #### Run webpack-dev-server
 If testing of legacy browsers is required, the development server can still be run using a [webpack](https://webpack.js.org/).
 
 ``` sh
-$ npm run serve:ie editor
+$ type=editor npm run serve:ie
 ```
 
 #### Run test
 
 ``` sh
-$ npm test editor
+$ type=editor npm test
 ```
 
 ### Pull Request

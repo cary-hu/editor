@@ -3,7 +3,6 @@ const { spawn } = require('child_process');
 const { exit } = require('process');
 const commandLineArgs = require('command-line-args');
 const optionDefinitions = [
-  { name: 'type', alias: 't', type: String },
   { name: 'script', alias: 's', type: String, defaultOption: true },
 ];
 const options = commandLineArgs(optionDefinitions);
@@ -33,8 +32,8 @@ const pathMap = {
 };
 
 let script;
-let pkg;
-let path;
+let pkg = pkgMap[process.env.type];
+let path = pathMap[process.env.type];
 
 Object.keys(options).forEach((key) => {
   const value = options[key];
@@ -42,17 +41,17 @@ Object.keys(options).forEach((key) => {
   if (key === 'script') {
     script = value;
   }
-
-  if (key === 'type') {
-    pkg = pkgMap[value];
-    path = pathMap[value];
-  }
 });
 
 if (!script) {
   throw new Error(
     `You should choose "lint", "test", "test:types", "serve", "serve:ie", "build" as the type of script`
   );
+}
+
+if (script === 'doc' || script === 'doc:dev') {
+  pkg = pkgMap['editor'];
+  path = pathMap['editor'];
 }
 
 if (!pkg) {
@@ -72,6 +71,8 @@ if (script === 'test') {
 } else {
   spawn('lerna', ['run', '--stream', '--scope', pkg, script], {
     stdio: 'inherit',
+    // use user's default shell (bash) instead of cmd on Windows
+    shell: process.env.SHELL || 'bash.exe',
   }).on('exit', (code) => {
     exit(code);
   });
