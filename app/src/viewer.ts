@@ -116,7 +116,6 @@ class ToastUIEditorViewer {
       disallowedHtmlBlockTags: ['br', 'img'],
       extendedAutolinks,
       referenceDefinition,
-      disallowDeepHeading: true,
       frontMatter,
       customParser: markdownParsers,
     });
