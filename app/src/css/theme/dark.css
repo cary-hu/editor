@@ -370,7 +370,7 @@
 .toastui-editor-dark .toastui-editor-contents .image-link:hover::before {
   border-color: #393b42;
   background-color: #232428;
-  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj4KICAgIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj4KICAgICAgICA8ZyBzdHJva2U9IiNFRUUiIHN0cm9rZS13aWR0aD0iMS41Ij4KICAgICAgICAgICAgPGc+CiAgICAgICAgICAgICAgICA8Zz4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNNy42NjUgMTUuMDdsLTEuODE5LS4wMDJjLTEuNDg2IDAtMi42OTItMS4yMjgtMi42OTItMi43NDR2LS4xOTJjMC0xLjUxNSAxLjIwNi0yLjc0NCAyLjY5Mi0yLjc0NGgzLjg0NmMxLjQ4NyAwIDIuNjkyIDEuMjI5IDIuNjkyIDIuNzQ0di4xOTIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0xMDQ1IC0xNzQzKSB0cmFuc2xhdGUoMTA0MCAxNzM4KSB0cmFuc2xhdGUoNSA1KSBzY2FsZSgxIC0xKSByb3RhdGUoNDUgMzcuMjkzIDApIi8+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTEyLjMyNiA0LjkzNGwxLjgyMi4wMDJjMS40ODcgMCAyLjY5MyAxLjIyOCAyLjY5MyAyLjc0NHYuMTkyYzAgMS41MTUtMS4yMDYgMi43NDQtMi42OTMgMi43NDRoLTMuODQ1Yy0xLjQ4NyAwLTIuNjkyLTEuMjI5LTIuNjkyLTIuNzQ0VjcuNjgiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0xMDQ1IC0xNzQzKSB0cmFuc2xhdGUoMTA0MCAxNzM4KSB0cmFuc2xhdGUoNSA1KSBzY2FsZSgxIC0xKSByb3RhdGUoNDUgMzAuOTk2IDApIi8+CiAgICAgICAgICAgICAgICA8L2c+CiAgICAgICAgICAgIDwvZz4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPgo=');
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj4KICAgIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj4KICAgICAgICA8ZyBzdHJva2U9IiNFRUUiIHN0cm9rZS13aWR0aD0iMS41Ij4KICAgICAgICAgICAgPGc+CiAgICAgICAgICAgICAgICA8Zz4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNNy42NjUgMTUuMDdsLTEuODE5LS4wMDJjLTEuNDg2IDAtMi42OTItMS4yMjgtMi42OTItMi43NDR2LS4xOTJjMC0xLjUxNSAxLjIwNi0yLjc0NCAyLjY5Mi0yLjc0NGgzLjg0NmMxLjQ4NyAwIDIuNjkyIDEuMjI5IDIuNjkyIDIuNzQ0di4xOTIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0xMDQ1IC0xNzQzKSB0cmFuc2xhdGUoMTA0MCAxNzM4KSB0cmFuc2xhdGUoNSA1KSBzY2FsZSgxIC0xKSByb3RhdGUoNDUgMzcuMjkzIDApIi8+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTEyLjMyNiA0LjkzNGwxLjgyMi4wMDJjMS40ODcgMCAyLjY5MyAxLjIyOCAyLjY5MyAyLjc0NHYuMTkyYzAgMS41MTUtMS4yMDYgMi43NDQtMi42OTMgMi43NDRoLTMuODQ1Yy0xLjQ4NyAwLTIuNjkyLTEuMjI5LTIuNjkyLTIuNzQ0VjcuNjgiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0xMDQ1IC0xNzQzKSB0cmFuc2xhdGUoMTA0MCAxNzM4KSB0cmFuc2xhdGUoNSA1KSBzY2FsZSgxIC0xKSByb3RhdGUoNDUgMzAuOTk2IDApIi8+CiAgICAgICAgICAgICAgICA8L2c+CgkJCTwvZz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==');
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
 }
 
@@ -452,23 +452,89 @@
 }
 
 .toastui-editor-dark .toastui-editor-contents .toastui-editor-md-preview-highlight::after {
-  background-color: rgba(255, 250, 193, 0.5);
-}
-
-.toastui-editor-dark .toastui-editor-contents th.toastui-editor-md-preview-highlight,
-.toastui-editor-dark .toastui-editor-contents td.toastui-editor-md-preview-highlight {
-  background-color: rgba(255, 250, 193, 0.5);
-}
-
-.toastui-editor-dark .toastui-editor-contents th.toastui-editor-md-preview-highlight {
-  color: #fff;
-}
-
-.toastui-editor-dark .toastui-editor-contents th.toastui-editor-md-preview-highlight,
-.toastui-editor-dark .toastui-editor-contents td.toastui-editor-md-preview-highlight {
   background-color: rgba(255, 250, 193, 0.25);
 }
 
-.toastui-editor-dark .toastui-editor-contents .toastui-editor-md-preview-highlight::after {
-  background-color: rgba(255, 250, 193, 0.25);
+/* Dark Theme Block Quote Feature Styles */
+.toastui-editor-dark .toastui-editor-ww-block-quote:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.toastui-editor-dark .toastui-editor-ww-block-quote:hover::after {
+  background: rgba(45, 45, 48, 0.9);
+  border-color: #464649;
+  color: #cccccc;
+}
+
+.toastui-editor-dark .toastui-editor-ww-block-quote-type {
+  background: #2d2d30;
+  border-color: #464649;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.toastui-editor-dark .toastui-editor-ww-block-quote-type button {
+  color: #cccccc;
+}
+
+.toastui-editor-dark .toastui-editor-ww-block-quote-type button:hover {
+  background-color: #37373d;
+}
+
+.toastui-editor-dark .toastui-editor-ww-block-quote-type button.active {
+  background-color: #264f78;
+  color: #9cdcfe;
+}
+
+/* Dark Theme Block Quote Type Variants */
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="default"] {
+  background-color: #2d2d30;
+  border-left-color: #464649;
+}
+
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="info"] {
+  border-left-color: #3794ff;
+  background-color: rgba(55, 148, 255, 0.15);
+  color: #9cdcfe;
+}
+
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="info"] p,
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="info"] ul,
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="info"] ol {
+  color: #9cdcfe;
+}
+
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="warning"] {
+  border-left-color: #ffcc02;
+  background-color: rgba(255, 204, 2, 0.15);
+  color: #dcdcaa;
+}
+
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="warning"] p,
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="warning"] ul,
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="warning"] ol {
+  color: #dcdcaa;
+}
+
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="danger"] {
+  border-left-color: #f85149;
+  background-color: rgba(248, 81, 73, 0.15);
+  color: #f85149;
+}
+
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="danger"] p,
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="danger"] ul,
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="danger"] ol {
+  color: #f85149;
+}
+
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="success"] {
+  border-left-color: #56d364;
+  background-color: rgba(86, 211, 100, 0.15);
+  color: #56d364;
+}
+
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="success"] p,
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="success"] ul,
+.toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="success"] ol {
+  color: #56d364;
 }

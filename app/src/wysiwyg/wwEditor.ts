@@ -17,6 +17,7 @@ import { toolbarStateHighlight } from './plugins/toolbarState';
 import { CustomBlockView } from './nodeview/customBlockView';
 import { ImageView } from './nodeview/imageView';
 import { CodeBlockView } from './nodeview/codeBlockView';
+import { BlockQuoteView } from './nodeview/blockQuoteView';
 
 import { changePastedHTML, changePastedSlice } from './clipboard/paste';
 import { pasteToTable } from './clipboard/pasteToTable';
@@ -140,13 +141,16 @@ export default class WysiwygEditor extends EditorBase {
       },
       nodeViews: {
         customBlock(node, view, getPos) {
-          return new CustomBlockView(node, view, getPos, toDOMAdaptor);
+          return new CustomBlockView(node, view, getPos as (() => number) | boolean, toDOMAdaptor);
         },
         image(node, view, getPos) {
-          return new ImageView(node, view, getPos, eventEmitter);
+          return new ImageView(node, view, getPos as (() => number) | boolean, eventEmitter);
         },
         codeBlock(node, view, getPos) {
-          return new CodeBlockView(node, view, getPos, eventEmitter);
+          return new CodeBlockView(node, view, getPos as (() => number) | boolean, eventEmitter);
+        },
+        blockQuote(node, view, getPos) {
+          return new BlockQuoteView(node, view, getPos as (() => number) | boolean, eventEmitter);
         },
         widget: widgetNodeView,
         ...this.createPluginNodeViews(),

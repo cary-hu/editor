@@ -24,11 +24,22 @@ export class BlockQuote extends NodeSchema {
       },
       content: 'block+',
       group: 'block',
-      parseDOM: [createDOMInfoParsedRawHTML('blockquote')],
+      parseDOM: [
+        {
+          tag: 'blockquote',
+          getAttrs(dom: HTMLElement) {
+            const bqType = dom.getAttribute('data-block-quote-type') || 'default';
+
+            return { bqType };
+          },
+        },
+        createDOMInfoParsedRawHTML('blockquote'),
+      ],
       toDOM({ attrs }: ProsemirrorNode): DOMOutputSpec {
         const customAttrs = getCustomAttrs(attrs);
         const domAttrs = {
           ...customAttrs,
+
           'data-block-quote-type': attrs.bqType || 'default',
         };
 
