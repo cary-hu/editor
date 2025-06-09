@@ -808,12 +808,16 @@
   box-sizing: border-box;
   background-color: rgba(66, 133, 244, 0.1);
   pointer-events: none;
+  display: block;
+  visibility: visible;
 }
 
 .toastui-editor-table-edit-overlay {
   position: absolute;
   border: 2px solid #4285f4;
   border-radius: 4px;
+  width: 100%;
+  height: 100%;
 }
 
 .toastui-editor-table-row-divider,
@@ -825,27 +829,29 @@
 .toastui-editor-add-row-btn,
 .toastui-editor-add-col-btn {
   position: absolute;
-  width: 20px;
-  height: 20px;
-  background-color: #4285f4;
-  border: 2px solid #fff;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  cursor: pointer;
-  pointer-events: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  color: #fff;
+  background-color: #007acc;
+  color: white;
+  font-size: 14px;
   font-weight: bold;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  border: none;
+  display: none;
+  z-index: 1;
+  line-height: 1;
+  justify-content: center;
+  align-items: center;
 }
 
 .toastui-editor-add-row-btn:hover,
 .toastui-editor-add-col-btn:hover {
   background-color: #3367d6;
-  transform: scale(1.1);
+  transform: translate(-50%, -50%) scale(1.1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -1111,4 +1117,56 @@
 .toastui-editor-contents blockquote[data-block-quote-type="success"] ul,
 .toastui-editor-contents blockquote[data-block-quote-type="success"] ol {
   color: #155724;
+}
+
+/* table edit panel hover containers */
+.toastui-editor-row-divider-container,
+.toastui-editor-col-divider-container {
+  position: absolute;
+  cursor: default;
+  z-index: 26;
+  background-color: transparent;
+  pointer-events: auto;
+}
+
+.toastui-editor-row-divider-container {
+  left: 0;
+  width: 100%;
+  height: 10px;
+}
+
+.toastui-editor-col-divider-container {
+  top: 0;
+  width: 10px;
+  height: 100%;
+}
+
+/* Redesigned add row/column buttons */
+.toastui-editor-add-row-btn,
+.toastui-editor-add-col-btn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #007acc;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  display: none;
+  z-index: 1;
+  line-height: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+.toastui-editor-add-row-btn:hover,
+.toastui-editor-add-col-btn:hover {
+  background-color: #3367d6;
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }

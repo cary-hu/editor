@@ -21,6 +21,8 @@ class TableEditPanelView {
 
   private lastShowTime = 0;
 
+  private updateTimer: number | null = null;
+
   constructor(view: EditorView, eventEmitter: Emitter) {
     this.view = view;
     this.eventEmitter = eventEmitter;
@@ -45,6 +47,10 @@ class TableEditPanelView {
     // Listen for scroll events to update panel position
     window.addEventListener('scroll', this.updatePanelPosition.bind(this), true);
     window.addEventListener('resize', this.updatePanelPosition.bind(this));
+
+    // Listen for input events to update panel when content changes
+    this.view.dom.addEventListener('input', this.handleInput.bind(this));
+    this.view.dom.addEventListener('keyup', this.handleInput.bind(this));
   }
 
   private handleDocumentClick(event: MouseEvent) {
@@ -133,16 +139,10 @@ class TableEditPanelView {
     const viewportOffset = { left: 0, top: 0 };
 
     // Use fixed positioning to avoid ProseMirror DOMObserver issues
-    panel.style.position = 'fixed';
     panel.style.left = `${tableRect.left + viewportOffset.left}px`;
     panel.style.top = `${tableRect.top + viewportOffset.top}px`;
     panel.style.width = `${tableRect.width}px`;
     panel.style.height = `${tableRect.height}px`;
-    panel.style.zIndex = '25';
-
-    // Ensure panel is visible
-    panel.style.display = 'block';
-    panel.style.visibility = 'visible';
 
     // Add to document body instead of editor DOM to avoid ProseMirror DOMObserver
     document.body.appendChild(panel);
@@ -155,10 +155,6 @@ class TableEditPanelView {
     const overlay = document.createElement('div');
 
     overlay.className = 'toastui-editor-table-edit-overlay';
-
-    // Set overlay to cover the entire table
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
 
     this.state.panel.appendChild(overlay);
     this.state.overlay = overlay;
@@ -181,36 +177,13 @@ class TableEditPanelView {
       const hoverContainer = document.createElement('div');
 
       hoverContainer.className = 'toastui-editor-row-divider-container';
-      hoverContainer.style.position = 'absolute';
-      hoverContainer.style.left = '0';
       hoverContainer.style.top = `${dividerY - 7}px`; // Expanded hover area
-      hoverContainer.style.width = '100%';
-      hoverContainer.style.height = '10px'; // 30px hover zone
-      hoverContainer.style.cursor = 'pointer';
-      hoverContainer.style.zIndex = '26';
-      hoverContainer.style.backgroundColor = 'transparent'; // Remove debug background
-      hoverContainer.style.pointerEvents = 'auto';
 
       // Create add row button (initially hidden)
       const addRowBtn = document.createElement('div');
 
       addRowBtn.className = 'toastui-editor-add-row-btn';
       addRowBtn.innerHTML = '+';
-      addRowBtn.style.position = 'absolute';
-      addRowBtn.style.left = '50%';
-      addRowBtn.style.top = '50%';
-      addRowBtn.style.transform = 'translate(-50%, -50%)';
-      addRowBtn.style.width = '18px';
-      addRowBtn.style.height = '18px';
-      addRowBtn.style.borderRadius = '50%';
-      addRowBtn.style.backgroundColor = '#007acc';
-      addRowBtn.style.color = 'white';
-      addRowBtn.style.fontSize = '14px';
-      addRowBtn.style.fontWeight = 'bold';
-      addRowBtn.style.cursor = 'pointer';
-      addRowBtn.style.border = 'none';
-      addRowBtn.style.display = 'none'; // Initially hidden
-      addRowBtn.style.zIndex = '1'; // Relative to container
       addRowBtn.title = index === 0 ? 'Add row after header' : 'Add row below';
 
       // Append button to container
@@ -219,14 +192,20 @@ class TableEditPanelView {
       // Hover events for the container (includes both zone and button)
       hoverContainer.addEventListener('mouseenter', () => {
         addRowBtn.style.display = 'flex';
-        addRowBtn.style.alignItems = 'center';
-        addRowBtn.style.justifyContent = 'center';
-        addRowBtn.style.lineHeight = '1';
         addRowBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
       });
 
       hoverContainer.addEventListener('mouseleave', () => {
         addRowBtn.style.display = 'none';
+      });
+
+      // Prevent hover container from interfering with cell selection
+      hoverContainer.addEventListener('click', (event) => {
+        // Only allow clicks on the button, block all other clicks
+        if (event.target !== addRowBtn) {
+          event.stopPropagation();
+          event.preventDefault();
+        }
       });
 
       // Click event for the button
@@ -261,37 +240,13 @@ class TableEditPanelView {
       const hoverContainer = document.createElement('div');
 
       hoverContainer.className = 'toastui-editor-col-divider-container';
-      hoverContainer.style.position = 'absolute';
       hoverContainer.style.left = `${dividerX - 7}px`; // Expanded hover area
-      hoverContainer.style.top = '0';
-      hoverContainer.style.width = '10px'; // 30px hover zone
-      hoverContainer.style.height = '100%';
-      hoverContainer.style.cursor = 'pointer';
-      hoverContainer.style.zIndex = '26';
-      hoverContainer.style.backgroundColor = 'transparent'; // Remove debug background
-      hoverContainer.style.pointerEvents = 'auto';
 
       // Create add column button (initially hidden)
       const addColBtn = document.createElement('div');
 
       addColBtn.className = 'toastui-editor-add-col-btn';
       addColBtn.innerHTML = '+';
-      addColBtn.style.position = 'absolute';
-      addColBtn.style.left = '50%';
-      addColBtn.style.top = '50%';
-      addColBtn.style.transform = 'translate(-50%, -50%)';
-      addColBtn.style.display = 'none'; // Initially hidden
-      addColBtn.style.width = '18px';
-      addColBtn.style.height = '18px';
-      addColBtn.style.borderRadius = '50%';
-      addColBtn.style.backgroundColor = '#007acc';
-      addColBtn.style.color = 'white';
-      addColBtn.style.fontSize = '14px';
-      addColBtn.style.fontWeight = 'bold';
-      addColBtn.style.cursor = 'pointer';
-      addColBtn.style.border = 'none';
-      addColBtn.style.display = 'none'; // Initially hidden
-      addColBtn.style.zIndex = '1'; // Relative to container
       addColBtn.title = 'Add column left';
 
       // Append button to container
@@ -300,14 +255,20 @@ class TableEditPanelView {
       // Hover events for the container
       hoverContainer.addEventListener('mouseenter', () => {
         addColBtn.style.display = 'flex';
-        addColBtn.style.alignItems = 'center';
-        addColBtn.style.justifyContent = 'center';
-        addColBtn.style.lineHeight = '1';
         addColBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
       });
 
       hoverContainer.addEventListener('mouseleave', () => {
         addColBtn.style.display = 'none';
+      });
+
+      // Prevent hover container from interfering with cell selection
+      hoverContainer.addEventListener('click', (event) => {
+        // Only allow clicks on the button, block all other clicks
+        if (event.target !== addColBtn) {
+          event.stopPropagation();
+          event.preventDefault();
+        }
       });
 
       // Click event for the button
@@ -330,37 +291,13 @@ class TableEditPanelView {
       const hoverContainer = document.createElement('div');
 
       hoverContainer.className = 'toastui-editor-col-divider-container';
-      hoverContainer.style.position = 'absolute';
       hoverContainer.style.left = `${dividerX - 7}px`; // Expanded hover area
-      hoverContainer.style.top = '0';
-      hoverContainer.style.width = '10px'; // 30px hover zone
-      hoverContainer.style.height = '100%';
-      hoverContainer.style.cursor = 'pointer';
-      hoverContainer.style.zIndex = '26';
-      hoverContainer.style.backgroundColor = 'transparent'; // Remove debug background
-      hoverContainer.style.pointerEvents = 'auto';
 
       // Create add column button (initially hidden)
       const addColBtn = document.createElement('div');
 
       addColBtn.className = 'toastui-editor-add-col-btn';
       addColBtn.innerHTML = '+';
-      addColBtn.style.position = 'absolute';
-      addColBtn.style.left = '50%';
-      addColBtn.style.top = '50%';
-      addColBtn.style.transform = 'translate(-50%, -50%)';
-      addColBtn.style.display = 'none'; // Initially hidden
-      addColBtn.style.width = '18px';
-      addColBtn.style.height = '18px';
-      addColBtn.style.borderRadius = '50%';
-      addColBtn.style.backgroundColor = '#007acc';
-      addColBtn.style.color = 'white';
-      addColBtn.style.fontSize = '14px';
-      addColBtn.style.fontWeight = 'bold';
-      addColBtn.style.cursor = 'pointer';
-      addColBtn.style.border = 'none';
-      addColBtn.style.display = 'none'; // Initially hidden
-      addColBtn.style.zIndex = '1'; // Relative to container
       addColBtn.title = 'Add column right';
 
       // Append button to container
@@ -369,14 +306,20 @@ class TableEditPanelView {
       // Hover events for the container
       hoverContainer.addEventListener('mouseenter', () => {
         addColBtn.style.display = 'flex';
-        addColBtn.style.alignItems = 'center';
-        addColBtn.style.justifyContent = 'center';
-        addColBtn.style.lineHeight = '1';
         addColBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
       });
 
       hoverContainer.addEventListener('mouseleave', () => {
         addColBtn.style.display = 'none';
+      });
+
+      // Prevent hover container from interfering with cell selection
+      hoverContainer.addEventListener('click', (event) => {
+        // Only allow clicks on the button, block all other clicks
+        if (event.target !== addColBtn) {
+          event.stopPropagation();
+          event.preventDefault();
+        }
       });
 
       // Click event for the button
@@ -632,9 +575,86 @@ class TableEditPanelView {
     }
   }
 
+  private handleInput() {
+    // Clear existing timer
+    if (this.updateTimer) {
+      clearTimeout(this.updateTimer);
+    }
+
+    // Debounce updates to avoid excessive recalculation
+    this.updateTimer = window.setTimeout(() => {
+      if (this.state.isVisible && this.state.tableElement) {
+        this.updatePanelPosition();
+        this.recreateDividers();
+      }
+      this.updateTimer = null;
+    }, 50); // 50ms debounce
+  }
+
+  private recreateDividers() {
+    if (!this.state.panel || !this.state.tableElement) return;
+
+    // Check if table structure actually changed
+    const currentRows = this.state.tableElement.querySelectorAll('tr').length;
+    const currentCols =
+      this.state.tableElement.querySelector('tr')?.querySelectorAll('th, td').length || 0;
+
+    const existingRowDividers = this.state.panel.querySelectorAll(
+      '.toastui-editor-row-divider-container'
+    ).length;
+    const existingColDividers = this.state.panel.querySelectorAll(
+      '.toastui-editor-col-divider-container'
+    ).length;
+
+    // Only recreate if the structure actually changed
+    const rowsChanged = currentRows !== existingRowDividers;
+    const colsChanged = currentCols + 1 !== existingColDividers; // +1 because we have one extra divider before first column
+
+    if (rowsChanged || colsChanged) {
+      // Remove existing dividers
+      const existingDividers = this.state.panel.querySelectorAll(
+        '.toastui-editor-row-divider-container, .toastui-editor-col-divider-container'
+      );
+
+      existingDividers.forEach((divider) => divider.remove());
+
+      // Recreate dividers with updated table structure
+      this.createRowDividers();
+      this.createColumnDividers();
+    }
+  }
+
+  isVisible(): boolean {
+    return this.state.isVisible;
+  }
+
+  handleDocumentChange() {
+    // Clear existing timer
+    if (this.updateTimer) {
+      clearTimeout(this.updateTimer);
+    }
+
+    // Debounce updates to avoid excessive recalculation during rapid changes
+    this.updateTimer = window.setTimeout(() => {
+      if (this.state.isVisible && this.state.tableElement) {
+        this.updatePanelPosition();
+        this.recreateDividers();
+      }
+      this.updateTimer = null;
+    }, 50); // 50ms debounce
+  }
+
   destroy() {
+    // Clear any pending updates
+    if (this.updateTimer) {
+      clearTimeout(this.updateTimer);
+      this.updateTimer = null;
+    }
+
     document.removeEventListener('click', this.handleDocumentClick);
     this.view.dom.removeEventListener('click', this.handleTableClick);
+    this.view.dom.removeEventListener('input', this.handleInput.bind(this));
+    this.view.dom.removeEventListener('keyup', this.handleInput.bind(this));
     window.removeEventListener('scroll', this.updatePanelPosition.bind(this), true);
     window.removeEventListener('resize', this.updatePanelPosition.bind(this));
     this.hidePanel();
@@ -642,9 +662,29 @@ class TableEditPanelView {
 }
 
 export function tableEditPanel(eventEmitter: Emitter) {
+  let tableEditPanelView: TableEditPanelView | null = null;
+
   return new Plugin({
     view(editorView) {
-      return new TableEditPanelView(editorView, eventEmitter);
+      tableEditPanelView = new TableEditPanelView(editorView, eventEmitter);
+      return tableEditPanelView;
+    },
+    state: {
+      init() {
+        return null;
+      },
+      apply(tr, oldState) {
+        // When the document changes, update the panel if it's visible
+        if (tableEditPanelView && tableEditPanelView.isVisible() && tr.docChanged) {
+          // Use requestAnimationFrame to ensure DOM has updated
+          requestAnimationFrame(() => {
+            if (tableEditPanelView) {
+              tableEditPanelView.handleDocumentChange();
+            }
+          });
+        }
+        return oldState;
+      },
     },
   });
 }
