@@ -33,7 +33,8 @@ class TableEditPanelView {
       panel: null,
     };
     this.handleDocumentClick = this.handleDocumentClick.bind(this);
-    this.handleTableClick = this.handleTableClick.bind(this);
+    this.handleTableHover = this.handleTableHover.bind(this);
+    this.handleTableLeave = this.handleTableLeave.bind(this);
     this.init();
   }
 
@@ -41,8 +42,9 @@ class TableEditPanelView {
     // Listen for clicks on the document
     document.addEventListener('click', this.handleDocumentClick);
 
-    // Listen for table clicks
-    this.view.dom.addEventListener('click', this.handleTableClick);
+    // Listen for table hover events
+    this.view.dom.addEventListener('mouseenter', this.handleTableHover, true);
+    this.view.dom.addEventListener('mouseleave', this.handleTableLeave, true);
 
     // Listen for scroll events to update panel position
     window.addEventListener('scroll', this.updatePanelPosition.bind(this), true);
@@ -68,14 +70,35 @@ class TableEditPanelView {
     }
   }
 
-  private handleTableClick(event: MouseEvent) {
+  private handleTableHover(event: MouseEvent) {
     const target = event.target as HTMLElement;
     const tableElement = target.closest('table');
 
-    if (tableElement) {
-      event.stopPropagation();
-      event.preventDefault();
+    if (tableElement && !this.state.isVisible) {
       this.showPanel(tableElement);
+    }
+  }
+
+  private handleTableLeave(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const relatedTarget = event.relatedTarget as HTMLElement;
+
+    // Don't hide if moving to panel or its elements
+    if (relatedTarget && this.isTableOrPanelElement(relatedTarget)) {
+      return;
+    }
+
+    // Check if we're actually leaving the table area
+    const tableElement = target.closest('table');
+
+    if (tableElement && this.state.tableElement === tableElement) {
+      // Add a small delay to prevent flickering when moving between table cells
+      // Double check we're still not hovering over table or panel
+      const hoveredElement = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement;
+
+      if (hoveredElement && !this.isTableOrPanelElement(hoveredElement)) {
+        this.hidePanel();
+      }
     }
   }
 
@@ -144,6 +167,20 @@ class TableEditPanelView {
     panel.style.top = `${tableRect.top + viewportOffset.top}px`;
     panel.style.width = `${tableRect.width}px`;
     panel.style.height = `${tableRect.height}px`;
+
+    // Add hover event listeners to keep panel visible when hovering over it
+    panel.addEventListener('mouseenter', () => {
+      // Cancel any pending hide operation
+    });
+
+    panel.addEventListener('mouseleave', (event) => {
+      const relatedTarget = event.relatedTarget as HTMLElement;
+
+      // Hide panel if not moving to the table or other panel elements
+      if (!relatedTarget || !this.isTableOrPanelElement(relatedTarget)) {
+        this.hidePanel();
+      }
+    });
 
     // Add to document body instead of editor DOM to avoid ProseMirror DOMObserver
     document.body.appendChild(panel);
@@ -684,7 +721,8 @@ class TableEditPanelView {
     }
 
     document.removeEventListener('click', this.handleDocumentClick);
-    this.view.dom.removeEventListener('click', this.handleTableClick);
+    this.view.dom.removeEventListener('mouseenter', this.handleTableHover, true);
+    this.view.dom.removeEventListener('mouseleave', this.handleTableLeave, true);
     this.view.dom.removeEventListener('input', this.handleInput.bind(this));
     this.view.dom.removeEventListener('keyup', this.handleInput.bind(this));
     window.removeEventListener('scroll', this.updatePanelPosition.bind(this), true);

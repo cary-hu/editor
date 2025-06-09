@@ -804,9 +804,7 @@
 .toastui-editor-table-edit-panel {
   position: fixed;
   z-index: 25;
-  border: 2px solid #4285f4;
   box-sizing: border-box;
-  background-color: rgba(66, 133, 244, 0.1);
   pointer-events: none;
   display: block;
   visibility: visible;
@@ -830,7 +828,7 @@
   justify-content: center;
   align-items: center;
   pointer-events: auto;
-  z-index: 2;
+  z-index: 27;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
   line-height: 1;
