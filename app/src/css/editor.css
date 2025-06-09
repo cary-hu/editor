@@ -800,6 +800,61 @@
   color: #c9ccd5;
 }
 
+/* table edit panel */
+.toastui-editor-table-edit-panel {
+  position: fixed;
+  z-index: 25;
+  border: 2px solid #4285f4;
+  box-sizing: border-box;
+  background-color: rgba(66, 133, 244, 0.1);
+  pointer-events: none;
+}
+
+.toastui-editor-table-edit-overlay {
+  position: absolute;
+  border: 2px solid #4285f4;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.toastui-editor-table-row-divider,
+.toastui-editor-table-col-divider {
+  position: absolute;
+  pointer-events: auto;
+}
+
+.toastui-editor-add-row-btn,
+.toastui-editor-add-col-btn {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #4285f4;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #fff;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toastui-editor-add-row-btn:hover,
+.toastui-editor-add-col-btn:hover {
+  background-color: #3367d6;
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.toastui-editor-add-row-btn::before,
+.toastui-editor-add-col-btn::before {
+  content: '+';
+}
+
 .toastui-editor-tooltip {
   position: absolute;
   background-color: #444;
