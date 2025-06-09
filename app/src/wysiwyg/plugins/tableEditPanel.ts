@@ -86,7 +86,8 @@ class TableEditPanelView {
       element.classList.contains('toastui-editor-add-row-btn') ||
       element.classList.contains('toastui-editor-add-col-btn') ||
       element.classList.contains('toastui-editor-row-divider-container') ||
-      element.classList.contains('toastui-editor-col-divider-container')
+      element.classList.contains('toastui-editor-col-divider-container') ||
+      element.classList.contains('toastui-editor-delete-table-btn')
     );
   }
 
@@ -147,6 +148,9 @@ class TableEditPanelView {
     // Add to document body instead of editor DOM to avoid ProseMirror DOMObserver
     document.body.appendChild(panel);
     this.state.panel = panel;
+
+    // Create delete table button
+    this.createDeleteButton();
   }
 
   private createOverlay() {
@@ -158,6 +162,34 @@ class TableEditPanelView {
 
     this.state.panel.appendChild(overlay);
     this.state.overlay = overlay;
+  }
+
+  private createDeleteButton() {
+    if (!this.state.panel) return;
+
+    const deleteBtn = document.createElement('div');
+
+    deleteBtn.className = 'toastui-editor-delete-table-btn';
+    deleteBtn.innerHTML = '×';
+    deleteBtn.title = 'Delete table';
+
+    // Click event for the delete button
+    deleteBtn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      this.deleteTable();
+    });
+
+    this.state.panel.appendChild(deleteBtn);
+  }
+
+  private deleteTable() {
+    if (!this.state.tableElement) return;
+
+    // Hide the panel first
+    this.hidePanel();
+
+    // Use event emitter to execute the removeTable command
+    this.eventEmitter.emit('command', 'removeTable');
   }
 
   private createRowDividers() {
