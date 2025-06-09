@@ -60,6 +60,51 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
     outdent: { active: false, disabled: true },
   } as ToolbarStateMap;
 
+  // Check if we're inside a blockquote
+  const blockQuoteNode = schema.nodes.blockQuote;
+  let insideBlockQuote = false;
+
+  if (blockQuoteNode) {
+    for (let d = $from.depth; d >= 0; d -= 1) {
+      if ($from.node(d).type === blockQuoteNode) {
+        insideBlockQuote = true;
+        break;
+      }
+    }
+  }
+
+  // Check if we're in a code block, table, or have inline code mark - if so, disable blockquote
+  let blockQuoteDisabled = false;
+
+  // Check for code blocks and tables: look for nodes with code: true in schema, codeBlock type, or table-related types
+  for (let d = $from.depth; d >= 0; d -= 1) {
+    const node = $from.node(d);
+
+    // Disable blockquote in code blocks
+    if (
+      node.type.spec.code === true ||
+      node.type.name === 'codeBlock' ||
+      node.type.name === 'table' ||
+      node.type.name === 'tableHead' ||
+      node.type.name === 'tableBody' ||
+      node.type.name === 'tableRow' ||
+      node.type.name === 'tableHeadCell' ||
+      node.type.name === 'tableBodyCell'
+    ) {
+      blockQuoteDisabled = true;
+      break;
+    }
+  }
+
+  // Check for inline code mark
+  if (!blockQuoteDisabled) {
+    const codeMarkType = schema.marks.code;
+
+    if (codeMarkType && codeMarkType.isInSet($from.marks())) {
+      blockQuoteDisabled = true;
+    }
+  }
+
   doc.nodesBetween(from, to, (node, _, parentNode) => {
     const type = getToolbarStateType(node, parentNode!);
 
@@ -78,6 +123,15 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
       toolbarState[type as ToolbarStateKeys] = { active: true };
     }
   });
+
+  // Set blockquote state based on whether we're inside one and code context
+  if (blockQuoteNode) {
+    toolbarState.blockQuote = {
+      active: insideBlockQuote,
+      disabled: blockQuoteDisabled,
+    };
+  }
+
   return toolbarState;
 }
 

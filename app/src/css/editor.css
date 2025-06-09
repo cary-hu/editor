@@ -650,6 +650,51 @@
   font-size: 14px;
 }
 
+/* blockquote popup */
+.toastui-editor-popup-add-blockquote {
+  width: auto;
+}
+
+.toastui-editor-popup-add-blockquote .toastui-editor-popup-body {
+  padding: 0;
+}
+
+.toastui-editor-popup-add-blockquote ul {
+  padding: 5px 0;
+  list-style: none;
+  margin: 0;
+}
+
+.toastui-editor-popup-add-blockquote ul li {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+}
+
+.toastui-editor-popup-add-blockquote ul li:hover {
+  background-color: #dff4ff;
+}
+
+.toastui-editor-popup-add-blockquote ul li[data-type="default"] {
+  border-left-color: #555;
+}
+
+.toastui-editor-popup-add-blockquote ul li[data-type="danger"] {
+  border-left-color: #dc3545;
+}
+
+.toastui-editor-popup-add-blockquote ul li[data-type="info"] {
+  border-left-color: #0ea5e9;
+}
+
+.toastui-editor-popup-add-blockquote ul li[data-type="warning"] {
+  border-left-color: #f59e0b;
+}
+
+.toastui-editor-popup-add-blockquote ul li[data-type="success"] {
+  border-left-color: #10b981;
+}
+
 /* table context menu */
 .toastui-editor-context-menu {
   position: absolute;

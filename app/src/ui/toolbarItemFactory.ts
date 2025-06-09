@@ -22,6 +22,7 @@ import { ImagePopupBody } from './components/toolbar/imagePopupBody';
 import { LinkPopupBody } from './components/toolbar/linkPopupBody';
 import { TablePopupBody } from './components/toolbar/tablePopupBody';
 import { CustomPopupBody } from './components/toolbar/customPopupBody';
+import { BlockQuotePopupBody } from './components/toolbar/blockQuotePopupBody';
 
 export function createToolbarItemInfo(type: string | ToolbarItemOptions): ToolbarItemInfo {
   return isString(type) ? createDefaultToolbarItemInfo(type) : type;
@@ -111,7 +112,6 @@ function createDefaultToolbarItemInfo(type: string) {
       info = {
         name: 'quote',
         className: 'quote',
-        command: 'blockQuote',
         tooltip: i18n.get('Blockquote'),
         state: 'blockQuote',
       };
@@ -239,6 +239,13 @@ export function createPopupInfo(type: string, payload: Payload): PopupInfo | nul
       return {
         render: (props) => html`<${HeadingPopupBody} ...${props} />`,
         className: cls('popup-add-heading'),
+        fromEl: el,
+        pos,
+      };
+    case 'quote':
+      return {
+        render: (props) => html`<${BlockQuotePopupBody} ...${props} />`,
+        className: cls('popup-add-blockquote'),
         fromEl: el,
         pos,
       };
