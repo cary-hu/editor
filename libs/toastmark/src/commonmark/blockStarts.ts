@@ -1,5 +1,13 @@
-import { ListData } from '@t/node';
-import { ListNode, HtmlBlockNode, HeadingNode, CodeBlockNode, createNode, BlockNode } from './node';
+import { BlockQuoteType, ListData } from '@t/node';
+import {
+  ListNode,
+  HtmlBlockNode,
+  HeadingNode,
+  CodeBlockNode,
+  createNode,
+  BlockNode,
+  BlockQuoteNode,
+} from './node';
 import { OPENTAG, CLOSETAG } from './rawHtml';
 import {
   peek,
@@ -131,8 +139,20 @@ function isDisallowedDeepHeading(parser: Parser, node: BlockNode) {
   return parser.options.disallowDeepHeading && (node.type === 'blockQuote' || node.type === 'item');
 }
 
-const blockQuote: BlockStart = (parser) => {
+const blockQuote: BlockStart = (parser, container: BlockNode) => {
   if (!parser.indented && peek(parser.currentLine, parser.nextNonspace) === C_GREATERTHAN) {
+    let bqType: BlockQuoteType = 'default';
+    let isTypeDefinition = false;
+
+    // Check if this line defines a blockquote type (>type=danger)
+    // We need to check from the nextNonspace position, not from the beginning of the line
+    const lineFromNonspace = parser.currentLine.slice(parser.nextNonspace);
+    const typeMatch = lineFromNonspace.match(/^>\s*type\s*=\s*(\w+)\s*$/);
+    if (typeMatch) {
+      bqType = typeMatch[1] as BlockQuoteType;
+      isTypeDefinition = true;
+    }
+
     parser.advanceNextNonspace();
     parser.advanceOffset(1, false);
     // optional following space
@@ -140,7 +160,19 @@ const blockQuote: BlockStart = (parser) => {
       parser.advanceOffset(1, true);
     }
     parser.closeUnmatchedBlocks();
-    parser.addChild('blockQuote', parser.nextNonspace);
+    const blockQuote = parser.addChild('blockQuote', parser.nextNonspace) as BlockQuoteNode;
+
+    // Set the blockquote type
+    if (isTypeDefinition) {
+      blockQuote.bqType = bqType;
+      // For type definition lines, we should consume the entire line
+      parser.advanceOffset(parser.currentLine.length - parser.offset, false);
+    } else {
+      // If this is a continuation of an existing blockquote, inherit the type
+      blockQuote.bqType =
+        (container.type === 'blockQuote' && (container as BlockQuoteNode).bqType) || 'default';
+    }
+
     return Matched.Container;
   }
   return Matched.None;

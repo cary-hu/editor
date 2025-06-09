@@ -98,6 +98,16 @@ const blockQuote: BlockHandler = {
   continue(parser) {
     const ln = parser.currentLine;
     if (!parser.indented && peek(ln, parser.nextNonspace) === C_GREATERTHAN) {
+      // Check if this line defines a blockquote type (>type=danger)
+      // We need to check from the nextNonspace position, not from the beginning of the line
+      const lineFromNonspace = ln.slice(parser.nextNonspace);
+      const typeMatch = lineFromNonspace.match(/^>\s*type\s*=\s*(\w+)\s*$/);
+      if (typeMatch) {
+        // This is a type definition line, consume the entire line
+        parser.advanceOffset(ln.length - parser.offset, false);
+        return Process.Go;
+      }
+
       parser.advanceNextNonspace();
       parser.advanceOffset(1, false);
       if (isSpaceOrTab(peek(ln, parser.offset))) {

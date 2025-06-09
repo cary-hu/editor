@@ -90,6 +90,12 @@ export interface ListData {
   checked: boolean;
 }
 
+export type BlockQuoteType = 'default' | 'danger' | 'info' | 'warning' | 'success';
+
+export interface BlockQuoteMdNode extends BlockMdNode {
+  bqType: BlockQuoteType;
+}
+
 export interface ListMdNode extends BlockMdNode {
   listData: ListData | null;
 }

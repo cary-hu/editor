@@ -6,6 +6,7 @@ import {
   ListNode,
   LinkNode,
   CustomBlockNode,
+  BlockQuoteNode,
 } from '../commonmark/node';
 import { escapeXml } from '../commonmark/common';
 import { filterDisallowedTags } from './tagFilter';
@@ -80,9 +81,20 @@ export const baseConvertors: HTMLConvertorMap = {
     };
   },
 
-  blockQuote(_, { entering }) {
+  blockQuote(node, context) {
+    if (context.entering) {
+      return {
+        type: 'openTag',
+        attributes: {
+          'data-block-quote-type': (node as BlockQuoteNode).bqType,
+        },
+        tagName: 'blockquote',
+        outerNewLine: true,
+        innerNewLine: true,
+      };
+    }
     return {
-      type: entering ? 'openTag' : 'closeTag',
+      type: 'closeTag',
       tagName: 'blockquote',
       outerNewLine: true,
       innerNewLine: true,

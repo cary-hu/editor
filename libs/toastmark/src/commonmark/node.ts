@@ -1,6 +1,7 @@
 import {
   BlockMdNode,
   BlockNodeType,
+  BlockQuoteMdNode,
   CodeBlockMdNode,
   CodeMdNode,
   CustomBlockMdNode,
@@ -190,6 +191,10 @@ export class BlockNode extends Node implements BlockMdNode {
   }
 }
 
+export class BlockQuoteNode extends BlockNode implements BlockQuoteMdNode {
+  bqType: 'default' | 'danger' | 'info' | 'warning' | 'success' = 'default';
+}
+
 export class ListNode extends BlockNode implements ListMdNode {
   listData: ListData | null = null;
 }
@@ -281,9 +286,10 @@ export function createNode(type: MdNodeType, sourcepos?: Sourcepos) {
       return new TableNode(type, sourcepos);
     case 'tableCell':
       return new TableCellNode(type, sourcepos);
+    case 'blockQuote':
+      return new BlockQuoteNode(type, sourcepos);
     case 'document':
     case 'paragraph':
-    case 'blockQuote':
     case 'thematicBreak':
     case 'tableRow':
     case 'tableBody':
