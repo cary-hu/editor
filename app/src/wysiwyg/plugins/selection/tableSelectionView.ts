@@ -23,6 +23,10 @@ export default class TableSelection {
 
   private startCellPos: ResolvedPos | null;
 
+  private isSelecting: boolean;
+
+  private startMousePos: { x: number; y: number } | null;
+
   constructor(view: EditorView) {
     this.view = view;
 
@@ -33,12 +37,16 @@ export default class TableSelection {
     };
 
     this.startCellPos = null;
+    this.isSelecting = false;
+    this.startMousePos = null;
 
     this.init();
   }
 
   init() {
     this.view.dom.addEventListener('mousedown', this.handlers.mousedown);
+    this.view.dom.addEventListener('mousemove', this.handlers.mousemove);
+    this.view.dom.addEventListener('mouseup', this.handlers.mouseup);
   }
 
   handleMousedown(ev: Event) {
@@ -54,15 +62,58 @@ export default class TableSelection {
 
       if (startCellPos) {
         this.startCellPos = startCellPos;
+        this.startMousePos = {
+          x: (ev as MouseEvent).clientX,
+          y: (ev as MouseEvent).clientY,
+        };
+        this.isSelecting = false;
       }
-
-      this.bindEvent();
+    } else {
+      // 如果不在单元格内，重置状态
+      this.startCellPos = null;
+      this.startMousePos = null;
+      this.isSelecting = false;
     }
   }
 
   handleMousemove(ev: Event) {
+    // 如果没有起始单元格位置，不处理
+    if (!this.startCellPos || !this.startMousePos) {
+      return;
+    }
+
+    const mouseEvent = ev as MouseEvent;
+    const currentMousePos = { x: mouseEvent.clientX, y: mouseEvent.clientY };
+
+    // 检查是否已经开始选择模式
+    if (!this.isSelecting) {
+      // 计算鼠标移动距离
+      const deltaX = Math.abs(currentMousePos.x - this.startMousePos.x);
+      const deltaY = Math.abs(currentMousePos.y - this.startMousePos.y);
+      const moveThreshold = 5; // 5像素的移动阈值
+
+      // 检查是否移动到了不同的单元格
+      const currentCellPos = this.getCellPos(mouseEvent);
+      const movedToDifferentCell = currentCellPos && currentCellPos.pos !== this.startCellPos.pos;
+
+      // 只有当移动距离超过阈值或移动到不同单元格时，才开始单元格选择
+      if ((deltaX > moveThreshold || deltaY > moveThreshold) && movedToDifferentCell) {
+        this.isSelecting = true;
+        // 阻止默认的文本选择行为
+        ev.preventDefault();
+      } else {
+        // 还没有达到开始单元格选择的条件，允许正常的文本选择
+        return;
+      }
+    }
+
+    // 如果已经在选择模式，阻止默认行为
+    if (this.isSelecting) {
+      ev.preventDefault();
+    }
+
     const prevEndCellOffset = pluginKey.getState(this.view.state);
-    const endCellPos = this.getCellPos(ev as MouseEvent);
+    const endCellPos = this.getCellPos(mouseEvent);
     const { startCellPos } = this;
 
     let prevEndCellPos;
@@ -80,26 +131,12 @@ export default class TableSelection {
 
   handleMouseup() {
     this.startCellPos = null;
-
-    this.unbindEvent();
+    this.startMousePos = null;
+    this.isSelecting = false;
 
     if (pluginKey.getState(this.view.state) !== null) {
       this.view.dispatch(this.view.state.tr.setMeta(pluginKey, -1));
     }
-  }
-
-  bindEvent() {
-    const { dom } = this.view;
-
-    dom.addEventListener('mousemove', this.handlers.mousemove);
-    dom.addEventListener('mouseup', this.handlers.mouseup);
-  }
-
-  unbindEvent() {
-    const { dom } = this.view;
-
-    dom.removeEventListener('mousemove', this.handlers.mousemove);
-    dom.removeEventListener('mouseup', this.handlers.mouseup);
   }
 
   getCellPos({ clientX, clientY }: MouseEvent) {
@@ -138,5 +175,7 @@ export default class TableSelection {
 
   destroy() {
     this.view.dom.removeEventListener('mousedown', this.handlers.mousedown);
+    this.view.dom.removeEventListener('mousemove', this.handlers.mousemove);
+    this.view.dom.removeEventListener('mouseup', this.handlers.mouseup);
   }
 }
