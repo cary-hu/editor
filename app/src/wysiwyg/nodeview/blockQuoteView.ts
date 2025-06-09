@@ -4,7 +4,7 @@ import { ProsemirrorNode } from 'prosemirror-model';
 import isFunction from 'tui-code-snippet/type/isFunction';
 import css from 'tui-code-snippet/domUtil/css';
 
-import { removeNode, setAttributes } from '@/utils/dom';
+import { setAttributes } from '@/utils/dom';
 import { getCustomAttrs } from '@/wysiwyg/helper/node';
 
 import { Emitter } from '@t/event';
@@ -76,6 +76,7 @@ export class BlockQuoteView implements NodeView {
   }
 
   private createTypeEditor({ top, right }: InputPos) {
+    console.log(top, right);
     const wrapper = document.createElement('div');
 
     wrapper.className = BLOCK_QUOTE_TYPE_CLASS_NAME;
@@ -103,8 +104,9 @@ export class BlockQuoteView implements NodeView {
     const wrapperWidth = wrapper.clientWidth;
 
     css(wrapper, {
-      top: `${top + 10}px`,
-      left: `${right - wrapperWidth - 10}px`,
+      top: `${top - 40}px`,
+      left: `${right - wrapperWidth - 5}px`,
+      right: 'unset',
     });
 
     this.select = wrapper;
@@ -168,8 +170,6 @@ export class BlockQuoteView implements NodeView {
         const { tr } = this.view.state;
         const node = this.view.state.doc.nodeAt(pos);
 
-        console.log(node);
-
         if (node && node.type.name === 'blockQuote') {
           // Use setNodeAttribute to preserve content and only change the attribute
           tr.setNodeMarkup(pos, null, { bqType: type });
@@ -181,15 +181,7 @@ export class BlockQuoteView implements NodeView {
 
   private reset() {
     this.select?.remove();
-    // if (this.select?.parentElement) {
-    //   const parent = this.select.parentElement;
-
-    //   this.select = null;
-    //   removeNode(parent);
-    // } else if (this.select) {
-    //   removeNode(this.select);
-    //   this.select = null;
-    // }
+    this.select = null;
 
     document.removeEventListener('click', this.handleOutsideClick);
   }
