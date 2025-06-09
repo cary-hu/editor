@@ -1,6 +1,6 @@
 import { ResolvedPos } from 'prosemirror-model';
 import { EditorView } from 'prosemirror-view';
-import { PluginKey } from 'prosemirror-state';
+import { PluginKey, TextSelection } from 'prosemirror-state';
 
 import { findCell, findCellElement } from '@/wysiwyg/helper/table';
 
@@ -10,6 +10,7 @@ interface EventHandlers {
   mousedown: (ev: Event) => void;
   mousemove: (ev: Event) => void;
   mouseup: () => void;
+  dblclick: (ev: Event) => void;
 }
 
 export const pluginKey = new PluginKey('cellSelection');
@@ -34,6 +35,7 @@ export default class TableSelection {
       mousedown: this.handleMousedown.bind(this),
       mousemove: this.handleMousemove.bind(this),
       mouseup: this.handleMouseup.bind(this),
+      dblclick: this.handleDblclick.bind(this),
     };
 
     this.startCellPos = null;
@@ -47,6 +49,7 @@ export default class TableSelection {
     this.view.dom.addEventListener('mousedown', this.handlers.mousedown);
     this.view.dom.addEventListener('mousemove', this.handlers.mousemove);
     this.view.dom.addEventListener('mouseup', this.handlers.mouseup);
+    this.view.dom.addEventListener('dblclick', this.handlers.dblclick);
   }
 
   handleMousedown(ev: Event) {
@@ -139,6 +142,34 @@ export default class TableSelection {
     }
   }
 
+  handleDblclick(ev: Event) {
+    const foundCell = findCellElement(ev.target as HTMLElement, this.view.dom);
+
+    if (foundCell) {
+      const cellPos = this.getCellPos(ev as MouseEvent);
+
+      if (cellPos) {
+        // 获取单元格的内容范围
+        const cell = this.view.state.doc.nodeAt(cellPos.pos);
+
+        if (cell) {
+          // 计算单元格内容的开始和结束位置
+          const startPos = cellPos.pos + 1; // 单元格内容开始位置
+          const endPos = cellPos.pos + cell.nodeSize - 1; // 单元格内容结束位置
+
+          // 创建文本选择
+          const selection = TextSelection.create(this.view.state.doc, startPos, endPos);
+
+          // 应用选择
+          this.view.dispatch(this.view.state.tr.setSelection(selection));
+
+          // 阻止默认行为
+          ev.preventDefault();
+        }
+      }
+    }
+  }
+
   getCellPos({ clientX, clientY }: MouseEvent) {
     const mousePos = this.view.posAtCoords({ left: clientX, top: clientY });
 
@@ -177,5 +208,6 @@ export default class TableSelection {
     this.view.dom.removeEventListener('mousedown', this.handlers.mousedown);
     this.view.dom.removeEventListener('mousemove', this.handlers.mousemove);
     this.view.dom.removeEventListener('mouseup', this.handlers.mouseup);
+    this.view.dom.removeEventListener('dblclick', this.handlers.dblclick);
   }
 }
