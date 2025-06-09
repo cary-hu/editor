@@ -130,12 +130,14 @@ export const nodeTypeWriters: ToMdNodeTypeWriterMap = {
     state.closeBlock(node);
   },
 
-  blockQuote(state, { node, parent }, { delim }) {
+  blockQuote(state, { node, parent }, { delim, firstDelim }) {
     if (parent?.type.name === node.type.name) {
       state.flushClose(1);
     }
 
-    state.wrapBlock(delim as string, null, node, () => state.convertNode(node));
+    state.wrapBlock(delim as string, firstDelim as string | null, node, () =>
+      state.convertNode(node)
+    );
   },
 
   bulletList(state, { node }, { delim }) {

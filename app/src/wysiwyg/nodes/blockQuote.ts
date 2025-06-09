@@ -18,6 +18,7 @@ export class BlockQuote extends NodeSchema {
   get schema() {
     return {
       attrs: {
+        bqType: { default: 'default' },
         rawHTML: { default: null },
         ...getDefaultCustomAttrs(),
       },
@@ -25,7 +26,13 @@ export class BlockQuote extends NodeSchema {
       group: 'block',
       parseDOM: [createDOMInfoParsedRawHTML('blockquote')],
       toDOM({ attrs }: ProsemirrorNode): DOMOutputSpec {
-        return ['blockquote', getCustomAttrs(attrs), 0];
+        const customAttrs = getCustomAttrs(attrs);
+        const domAttrs = {
+          ...customAttrs,
+          'data-block-quote-type': attrs.bqType || 'default',
+        };
+
+        return ['blockquote', domAttrs, 0];
       },
     };
   }

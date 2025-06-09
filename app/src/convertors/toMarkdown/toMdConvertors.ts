@@ -82,8 +82,11 @@ export const toMdConvertors: ToMdConvertorMap = {
   },
 
   blockQuote({ node }) {
+    const { bqType } = node.attrs;
+
     return {
       delim: '> ',
+      firstDelim: bqType && bqType !== 'default' ? `>type=${bqType}\n> ` : '> ',
       rawHTML: getPairRawHTML(node.attrs.rawHTML),
     };
   },
