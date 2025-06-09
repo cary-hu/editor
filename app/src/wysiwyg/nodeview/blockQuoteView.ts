@@ -76,7 +76,6 @@ export class BlockQuoteView implements NodeView {
   }
 
   private createTypeEditor({ top, right }: InputPos) {
-    console.log(top, right);
     const wrapper = document.createElement('div');
 
     wrapper.className = BLOCK_QUOTE_TYPE_CLASS_NAME;
@@ -104,7 +103,7 @@ export class BlockQuoteView implements NodeView {
     const wrapperWidth = wrapper.clientWidth;
 
     css(wrapper, {
-      top: `${top - 40}px`,
+      top: `${top - 10}px`,
       left: `${right - wrapperWidth - 5}px`,
       right: 'unset',
     });
