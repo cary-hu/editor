@@ -6,7 +6,18 @@ const queryMap: Record<string, QueryFn> = {
   getPopupInitialValues(editor, payload) {
     const { popupName } = payload!;
 
-    return popupName === 'link' ? { linkText: editor.getSelectedText() } : {};
+    if (popupName === 'link') {
+      return { linkText: editor.getSelectedText() };
+    }
+
+    if (popupName === 'quote') {
+      // Get current blockquote type from toolbar state
+      const toolbarState = editor.getCurrentToolbarState();
+
+      return { currentBqType: toolbarState?.blockQuote?.bqType || '' };
+    }
+
+    return {};
   },
 };
 

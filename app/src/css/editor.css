@@ -695,6 +695,11 @@
   border-left-color: #10b981;
 }
 
+.toastui-editor-popup-add-blockquote ul li.active {
+  background-color: #e7f3ff;
+  color: #0066cc;
+}
+
 /* table context menu */
 .toastui-editor-context-menu {
   position: absolute;

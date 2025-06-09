@@ -113,6 +113,7 @@ export interface TabInfo {
 interface ToolbarItemState {
   active: boolean;
   disabled?: boolean;
+  bqType?: string; // Current blockquote type for blockquote items
 }
 
 interface ToolbarStateMap {

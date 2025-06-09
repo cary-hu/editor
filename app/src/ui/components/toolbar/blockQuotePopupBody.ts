@@ -1,5 +1,5 @@
 import { Emitter } from '@t/event';
-import { ExecCommand } from '@t/ui';
+import { ExecCommand, PopupInitialValues } from '@t/ui';
 import { closest } from '@/utils/dom';
 import i18n from '@/i18n/i18n';
 import html from '@/ui/vdom/template';
@@ -8,6 +8,7 @@ import { Component } from '@/ui/vdom/component';
 interface Props {
   eventEmitter: Emitter;
   execCommand: ExecCommand;
+  initialValues?: PopupInitialValues;
 }
 
 const BLOCK_QUOTE_TYPES = [
@@ -29,6 +30,8 @@ export class BlockQuotePopupBody extends Component<Props> {
   }
 
   render() {
+    const currentBqType = this.props.initialValues?.currentBqType;
+
     return html`
       <ul
         onClick=${(ev: MouseEvent) => this.execCommand(ev)}
@@ -38,7 +41,11 @@ export class BlockQuotePopupBody extends Component<Props> {
         ${BLOCK_QUOTE_TYPES.map(
           ({ type, label }) =>
             html`
-              <li data-type="${type}" aria-role="menuitem">
+              <li
+                data-type="${type}"
+                aria-role="menuitem"
+                class="${currentBqType && type === currentBqType ? 'active' : ''}"
+              >
                 <div class="block-quote-type-${type}">${i18n.get(label)}</div>
               </li>
             `

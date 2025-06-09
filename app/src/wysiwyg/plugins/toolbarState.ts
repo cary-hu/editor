@@ -60,14 +60,16 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
     outdent: { active: false, disabled: true },
   } as ToolbarStateMap;
 
-  // Check if we're inside a blockquote
+  // Check if we're inside a blockquote and get the current type
   const blockQuoteNode = schema.nodes.blockQuote;
   let insideBlockQuote = false;
+  let currentBqType = '';
 
   if (blockQuoteNode) {
     for (let d = $from.depth; d >= 0; d -= 1) {
       if ($from.node(d).type === blockQuoteNode) {
         insideBlockQuote = true;
+        currentBqType = $from.node(d).attrs.bqType || '';
         break;
       }
     }
@@ -129,6 +131,7 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
     toolbarState.blockQuote = {
       active: insideBlockQuote,
       disabled: blockQuoteDisabled,
+      bqType: currentBqType,
     };
   }
 
@@ -150,3 +153,5 @@ export function toolbarStateHighlight(eventEmitter: Emitter) {
     },
   });
 }
+
+export { getToolbarState };

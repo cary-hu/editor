@@ -248,6 +248,7 @@ export function createPopupInfo(type: string, payload: Payload): PopupInfo | nul
         className: cls('popup-add-blockquote'),
         fromEl: el,
         pos,
+        initialValues,
       };
     case 'link':
       return {

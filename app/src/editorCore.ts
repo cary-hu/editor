@@ -45,6 +45,8 @@ import { getHTMLRenderConvertors } from './markdown/htmlRenderConvertors';
 import { buildQuery } from './queries/queryManager';
 import { getEditorToMdPos, getMdToEditorPos } from './markdown/helper/pos';
 import { Pos } from '@t/toastmark';
+import { getToolbarState } from './wysiwyg/plugins/toolbarState';
+import { ToolbarStateMap } from '@t/ui';
 
 /**
  * ToastUIEditorCore
@@ -848,6 +850,17 @@ class ToastUIEditorCore {
     }
 
     return [convertedFrom, convertedTo];
+  }
+
+  /**
+   * Get current toolbar state
+   * @returns {ToolbarStateMap} Current toolbar state map
+   */
+  getCurrentToolbarState(): ToolbarStateMap {
+    const editor = this.getCurrentModeEditor();
+    const { selection, doc, schema } = editor.view.state;
+
+    return getToolbarState(selection, doc, schema);
   }
 }
 

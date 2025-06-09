@@ -254,6 +254,8 @@ export class EditorCore {
 
   getHeight(): string;
 
+  getCurrentToolbarState(): ToolbarStateMap;
+
   setMinHeight(minHeight: string): void;
 
   getMinHeight(): string;
