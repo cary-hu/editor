@@ -69,7 +69,7 @@ export class Layout extends Component<Props, State> {
 
     return html`
       <div
-        class="${themeClassName}${cls('defaultUI')}${displayClassName}"
+        class="${themeClassName}${cls('defaultUI')}${displayClassName} toastui-editor-container"
         ref=${(el: HTMLElement) => (this.refs.el = el)}
       >
         <${Toolbar}
@@ -99,6 +99,7 @@ export class Layout extends Component<Props, State> {
         ${!hideModeSwitch &&
         html`<${Switch} eventEmitter=${eventEmitter} editorType=${editorType} />`}
         <${ContextMenu} eventEmitter=${eventEmitter} />
+        <div class="toastui-edit-panel-container"></div>
       </div>
     `;
   }

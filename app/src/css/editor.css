@@ -1198,3 +1198,291 @@
   transform: translate(-50%, -50%) scale(1.1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
+
+/* image edit dialog */
+.toastui-editor-image-edit-dialog {
+  position: fixed;
+  z-index: 25;
+  background: white;
+  border: 1px solid #dadde6;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  min-width: 280px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+  pointer-events: auto;
+}
+
+.toastui-editor-image-edit-dialog .dialog-section {
+  margin-bottom: 16px;
+}
+
+.toastui-editor-image-edit-dialog .dialog-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.toastui-editor-image-edit-dialog .size-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.toastui-editor-image-edit-dialog .preset-sizes {
+  display: flex;
+  gap: 4px;
+}
+
+.toastui-editor-image-edit-dialog .preset-btn {
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  background: #f8f9fa;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.toastui-editor-image-edit-dialog .preset-btn:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.toastui-editor-image-edit-dialog .apply-btn {
+  padding: 4px 12px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.toastui-editor-image-edit-dialog .apply-btn:hover {
+  background: #0056b3;
+}
+
+.toastui-editor-image-edit-dialog .clear-btn {
+  padding: 4px 12px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.toastui-editor-image-edit-dialog .clear-btn:hover {
+  background: #545b62;
+}
+
+.toastui-editor-image-edit-dialog .caption-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Input controls */
+.toastui-editor-image-edit-dialog .size-input {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.toastui-editor-image-edit-dialog .size-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.toastui-editor-image-edit-dialog .size-unit {
+  font-size: 12px;
+  color: #6c757d;
+  margin-left: -4px;
+}
+
+.toastui-editor-image-edit-dialog .caption-input {
+  width: 100%;
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.toastui-editor-image-edit-dialog .caption-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Danger zone */
+.toastui-editor-image-edit-dialog .danger-zone {
+  border-top: 1px solid #dee2e6;
+  padding-top: 12px;
+  margin-top: 16px;
+  text-align: center;
+}
+
+.toastui-editor-image-edit-dialog .delete-btn {
+  padding: 6px 12px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.toastui-editor-image-edit-dialog .delete-btn:hover {
+  background: #c82333;
+}
+
+/* Container styles */
+.toastui-editor-container {
+  position: relative;
+}
+
+.toastui-edit-panel-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 24;
+}
+
+.toastui-edit-panel-container .toastui-editor-image-edit-dialog {
+  pointer-events: auto;
+}
+
+/* Image edit panel */
+.toastui-editor-image-edit-panel {
+  position: fixed;
+  z-index: 25;
+  box-sizing: border-box;
+  pointer-events: none;
+  display: block;
+  visibility: visible;
+}
+
+/* Edit image button */
+.toastui-editor-edit-image-btn {
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #28a745;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border: 2px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+  z-index: 27;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.toastui-editor-edit-image-btn:hover {
+  background-color: #218838;
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Delete image button */
+.toastui-editor-delete-image-btn {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #dc3545;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border: 2px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+  z-index: 27;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.toastui-editor-delete-image-btn:hover {
+  background-color: #c82333;
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Resize handles */
+.toastui-editor-resize-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #4285f4;
+  border: 1px solid white;
+  border-radius: 50%;
+  pointer-events: auto;
+  z-index: 28;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.toastui-editor-resize-handle:hover {
+  background-color: #3367d6;
+  transform: scale(1.3);
+}
+
+.toastui-editor-resize-nw {
+  top: -4px;
+  left: -4px;
+  cursor: nw-resize;
+}
+
+.toastui-editor-resize-ne {
+  top: -4px;
+  right: -4px;
+  cursor: ne-resize;
+}
+
+.toastui-editor-resize-sw {
+  bottom: -4px;
+  left: -4px;
+  cursor: sw-resize;
+}
+
+.toastui-editor-resize-se {
+  bottom: -4px;
+  right: -4px;
+  cursor: se-resize;
+}
+
+/* Image edit overlay */
+.toastui-editor-image-edit-overlay {
+  position: absolute;
+  border: 2px solid #4285f4;
+  border-radius: 4px;
+  width: 100%;
+  height: 100%;
+}
