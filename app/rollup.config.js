@@ -3,7 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import fs from 'fs';
 import banner from 'rollup-plugin-banner';
-import { version, author, license } from './package.json';
+const { version, author, license } = JSON.parse(fs.readFileSync('./package.json', 'utf-8'));
 
 function i18nEditorImportPath() {
   return {
@@ -17,7 +17,7 @@ function i18nEditorImportPath() {
 const fileNames = fs.readdirSync('./src/i18n');
 
 function createBannerPlugin(type) {
-  return banner(
+  return banner.default(
     [
       `@toast-ui/editor${type ? ` : ${type}` : ''}`,
       `@version ${version} | ${new Date().toDateString()}`,
