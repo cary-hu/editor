@@ -1,8 +1,8 @@
-import codemirror from 'codemirror';
+import { basicSetup, EditorView } from 'codemirror';
+import { Decoration, DecorationSet, ViewPlugin, ViewUpdate } from '@codemirror/view';
+import { StateField, StateEffect } from '@codemirror/state';
 import { ToastMark } from '../toastmark';
 import { Renderer } from '../html/renderer';
-import { last } from '../helper';
-import 'codemirror/lib/codemirror.css';
 import './index.css';
 
 document.body.innerHTML = `
@@ -17,8 +17,7 @@ const editorEl = document.querySelector('.editor') as HTMLElement;
 const htmlEl = document.querySelector('.html') as HTMLElement;
 const previewEl = document.querySelector('.preview') as HTMLElement;
 
-const cm = codemirror(editorEl, { lineNumbers: true });
-const doc = new ToastMark();
+const toastMarkDoc = new ToastMark();
 const renderer = new Renderer({ gfm: true, nodeId: true });
 
 const tokenTypes = {
@@ -33,75 +32,113 @@ const tokenTypes = {
 
 type TokenTypes = typeof tokenTypes;
 
-cm.on('change', (editor, changeObj) => {
-  const { from, to, text } = changeObj;
-  const changed = doc.editMarkdown(
-    [from.line + 1, from.ch + 1],
-    [to.line + 1, to.ch + 1],
-    text.join('\n')
-  );
+const updateDecorations = StateEffect.define<DecorationSet>();
 
-  changed.forEach((result) => {
-    const { nodes, removedNodeRange } = result;
-    const html = renderer.render(doc.getRootNode());
-    htmlEl.innerText = html;
-
-    if (!removedNodeRange) {
-      previewEl.innerHTML = html;
-    } else {
-      const [startNodeId, endNodeId] = removedNodeRange.id;
-      const startEl = previewEl.querySelector(`[data-nodeid="${startNodeId}"]`);
-      const endEl = previewEl.querySelector(`[data-nodeid="${endNodeId}"]`);
-      const newHtml = nodes.map((node) => renderer.render(node)).join('');
-
-      if (startEl) {
-        startEl.insertAdjacentHTML('beforebegin', newHtml);
-        let el: Element = startEl;
-        while (el !== endEl) {
-          const nextEl: Element | null = el.nextElementSibling;
-          el.remove();
-          el = nextEl!;
-        }
-        el.remove();
+const markdownDecorations = StateField.define<DecorationSet>({
+  create() {
+    return Decoration.none;
+  },
+  update(decorations, tr) {
+    decorations = decorations.map(tr.changes);
+    for (let effect of tr.effects) {
+      if (effect.is(updateDecorations)) {
+        decorations = effect.value;
       }
     }
-
-    if (!nodes.length) {
-      return;
-    }
-
-    const editFromPos = nodes[0].sourcepos![0];
-    const editToPos = last(nodes).sourcepos![1];
-    const editFrom = { line: editFromPos[0] - 1, ch: editFromPos[1] - 1 };
-    const editTo = { line: editToPos[0] - 1, ch: editToPos[1] };
-    const marks = cm.findMarks(editFrom, editTo);
-
-    for (const mark of marks) {
-      mark.clear();
-    }
-
-    for (const parent of nodes) {
-      const walker = parent.walker();
-      let event;
-      while ((event = walker.next())) {
-        const { node, entering } = event;
-        if (entering) {
-          const [startLine, startCh] = node.sourcepos![0];
-          const [endLine, endCh] = node.sourcepos![1];
-          const start = { line: startLine - 1, ch: startCh - 1 };
-          const end = { line: endLine - 1, ch: endCh };
-          const token = tokenTypes[node.type as keyof TokenTypes];
-
-          if (token) {
-            cm.markText(start, end, { className: `cm-${token}` });
-          }
-        }
-      }
-    }
-  });
+    return decorations;
+  },
+  provide: f => EditorView.decorations.from(f)
 });
 
-cm.setValue(`# Image Test
-![测试图片](556-500x500.jpg?width=400&caption=123123&verticalAlign=middle)
+const markdownHighlightPlugin = ViewPlugin.fromClass(class {
+  private isInitialized = false;
 
-![](556-500x500.jpg)`);
+  constructor(public view: EditorView) {
+    this.syncToastMark();
+    // 不在构造函数中直接更新视图，而是标记需要初始化
+  }
+
+  update(update: ViewUpdate) {
+    // 首次更新时处理初始内容
+    if (!this.isInitialized) {
+      this.isInitialized = true;
+      this.handleInitialContent();
+    }
+    
+    if (update.docChanged) {
+      this.handleDocumentChange(update);
+    }
+  }
+
+  private syncToastMark() {
+    try {
+      const content = this.view.state.doc.toString();
+      toastMarkDoc.editMarkdown([1, 1], [1, 1], content);
+    } catch (error) {
+    }
+  }
+
+  private handleInitialContent() {
+    try {
+      const content = this.view.state.doc.toString();
+      if (content.trim()) {
+        // 渲染初始内容
+        const html = renderer.render(toastMarkDoc.getRootNode());
+        htmlEl.innerText = html;
+        previewEl.innerHTML = html;
+      }
+    } catch (error) {
+      console.error('处理初始内容时出错:', error);
+    }
+  }
+
+  private handleDocumentChange(update: ViewUpdate) {
+    try {
+      const fullContent = update.state.doc.toString();
+
+
+      const lines = toastMarkDoc.getLineTexts();
+      const oldContent = lines.join('\n');
+
+      if (oldContent !== fullContent) {
+        const oldLines = oldContent.split('\n');
+        const newLines = fullContent.split('\n');
+
+        const startLine = 1;
+        const startCh = 1;
+        const endLine = Math.max(1, oldLines.length);
+        const endCh = Math.max(1, (oldLines[oldLines.length - 1] || '').length + 1);
+
+        const changed = toastMarkDoc.editMarkdown(
+          [startLine, startCh],
+          [endLine, endCh],
+          fullContent
+        );
+
+        if (changed && Array.isArray(changed)) {
+          const html = renderer.render(toastMarkDoc.getRootNode());
+          htmlEl.innerText = html;
+          previewEl.innerHTML = html;
+        }
+      }
+    } catch (error) {
+      try {
+        const html = renderer.render(toastMarkDoc.getRootNode());
+        previewEl.innerHTML = html;
+      } catch (renderError) {
+        console.error('Rerender failed:', renderError);
+      }
+    }
+  }
+});
+
+const cm = new EditorView({
+  doc: `>type=danger
+>123`,
+  extensions: [
+    basicSetup,
+    markdownDecorations,
+    markdownHighlightPlugin
+  ],
+  parent: editorEl,
+});

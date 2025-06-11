@@ -204,7 +204,7 @@ export function deepMergedCopy<T1 extends Record<string, any>, T2 extends Record
     Object.keys(obj).forEach((prop: keyof T2) => {
       if (isObject(resultObj[prop])) {
         if (Array.isArray(obj[prop])) {
-          resultObj[prop as keyof T1 & T2] = deepCopyArray(obj[prop]);
+          resultObj[prop as keyof T1 & T2] = deepCopyArray(obj[prop]) as any;
         } else if (resultObj.hasOwnProperty(prop)) {
           resultObj[prop] = deepMergedCopy(resultObj[prop], obj[prop]);
         } else {

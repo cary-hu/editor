@@ -1,4 +1,4 @@
-import encode from 'mdurl/encode';
+import { encode } from 'mdurl'
 import { decodeHTML } from 'entities';
 
 export const ENTITY = '&(?:#x[a-f0-9]{1,6}|#[0-9]{1,7}|[a-z][a-z0-9]{1,31});';

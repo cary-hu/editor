@@ -2,6 +2,7 @@
 const path = require('path');
 const setupFile = path.resolve(__dirname, './jest-setup.js');
 const cssMockFile = path.resolve(__dirname, './__mocks__/cssMock.js');
+const esmFile = path.resolve(__dirname, './__mocks__/esm.js');
 
 module.exports = {
   preset: 'ts-jest',
@@ -9,7 +10,7 @@ module.exports = {
   setupFilesAfterEnv: [setupFile],
   transform: {
     '^.+\\.ts$': 'ts-jest',
-    '^.+\\.js$': 'jest-esm-transformer',
+    '^.+\\.js$': esmFile,
     '^.+\\.css$': cssMockFile,
   },
   transformIgnorePatterns: ['<rootDir>/node_modules/'],

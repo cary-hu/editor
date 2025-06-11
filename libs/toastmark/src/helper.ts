@@ -17,7 +17,7 @@ export function normalizeReference(str: string) {
     .toUpperCase();
 }
 
-export function iterateObject<T>(obj: T, iteratee: (key: keyof T, value: T[keyof T]) => void) {
+export function iterateObject<T extends object>(obj: T, iteratee: (key: keyof T, value: T[keyof T]) => void) {
   Object.keys(obj).forEach((key) => {
     iteratee(key as keyof T, obj[key as keyof T]);
   });
