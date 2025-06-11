@@ -192,6 +192,34 @@ describe('table', () => {
     expect(tableNode.columns).toEqual([{ align: 'left' }, { align: 'center' }, { align: 'right' }]);
   });
 
+  it('cell include inline code, code contains |', () => {
+    const input = source`
+      | a | b |
+      | - | - |
+      | \`|\` | d |
+    `;
+    const output = source`
+      <table>
+      <thead>
+      <tr>
+      <th>a</th>
+      <th>b</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+      <td><code>|</code></td>
+      <td>d</td>
+      </tr>
+      </tbody>
+      </table>
+    `;
+
+    const root = reader.parse(input);
+    const html = renderer.render(root);
+    expect(html).toBe(`${output}\n`);
+  })
+
   it('with empty cells', () => {
     const input = source`
       | a |  |  |
