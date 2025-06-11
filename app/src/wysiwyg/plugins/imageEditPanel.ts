@@ -172,7 +172,6 @@ class ImageEditPanelView {
     this.state.imageElement = imageElement;
     this.state.imageNode = imageNode;
     this.state.imagePos = imagePos;
-    // 重置临时更改状态
     this.state.tempChanges = {};
     this.lastShowTime = Date.now();
     this.createImageDialog();
@@ -189,7 +188,6 @@ class ImageEditPanelView {
     this.state.imageElement = null;
     this.state.imageNode = null;
     this.state.imagePos = null;
-    // 清空临时更改
     this.state.tempChanges = {};
   }
 
@@ -352,14 +350,12 @@ class ImageEditPanelView {
     if (!this.state.imageNode) return;
 
     const {
-      imageUrl = '',
       altText = '',
       width = '',
       verticalAlign = '',
       caption = '',
     } = this.state.imageNode.attrs;
 
-    // 获取当前值（临时更改优先）
     const currentWidth = this.state.tempChanges.width ?? width;
     const currentVerticalAlign = this.state.tempChanges.verticalAlign ?? verticalAlign;
     const currentAltText = this.state.tempChanges.altText ?? altText;
@@ -696,14 +692,12 @@ class ImageEditPanelView {
   private deleteImage() {
     if (this.state.imagePos === null) return;
 
-    // Hide the panel first
-    this.hidePanel();
-
     // Delete the image from the document
     const { tr } = this.view.state;
 
     tr.delete(this.state.imagePos, this.state.imagePos + 1);
     this.view.dispatch(tr);
+    this.hidePanel();
   }
 
   isVisible(): boolean {
