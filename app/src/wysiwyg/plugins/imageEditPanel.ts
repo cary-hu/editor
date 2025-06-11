@@ -1,6 +1,7 @@
 import { Plugin } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Emitter } from '@t/event';
+import i18n from '@/i18n/i18n';
 
 interface ImageEditPanelState {
   isVisible: boolean;
@@ -366,12 +367,18 @@ class ImageEditPanelView {
 
     dialog.innerHTML = `
       <div class="dialog-section">
-        <label class="dialog-label">图片大小</label>
-        <div class="current-value">当前值: ${currentWidth || '未设置'}</div>
+        <label class="dialog-label">${i18n.get('Image size')}</label>
+        <div class="current-value">${i18n.get('Current value')}: ${
+      currentWidth || i18n.get('Not set')
+    }</div>
         <div class="size-controls">
-          <input type="number" class="size-input" id="width-input" value="${currentWidth}" placeholder="输入宽度" min="1">
+          <input type="number" class="size-input" id="width-input" value="${currentWidth}" placeholder="${i18n.get(
+      'Enter width'
+    )}" min="1">
           <span class="size-unit">px</span>
-          <button type="button" class="clear-btn" id="clear-width" title="清空宽度">清空</button>
+          <button type="button" class="clear-btn" id="clear-width" title="${i18n.get(
+            'Clear width'
+          )}">${i18n.get('Clear')}</button>
         </div>
         <div class="preset-sizes">
           <button type="button" class="preset-btn" data-size="150">150px</button>
@@ -380,42 +387,54 @@ class ImageEditPanelView {
         </div>
       </div>
       <div class="dialog-section">
-        <label class="dialog-label">垂直对齐</label>
-        <div class="current-value">当前值: ${this.getVerticalAlignDisplayName(
-          currentVerticalAlign
-        )}</div>
+        <label class="dialog-label">${i18n.get('Vertical align')}</label>
+        <div class="current-value">${i18n.get('Current value')}: ${this.getVerticalAlignDisplayName(
+      currentVerticalAlign
+    )}</div>
         <div class="vertical-align-controls">
           <button type="button" class="align-btn ${
             currentVerticalAlign === 'top' ? 'active' : ''
-          }" data-align="top" title="顶部对齐">Top</button>
+          }" data-align="top" title="${i18n.get('Top align')}">Top</button>
           <button type="button" class="align-btn ${
             currentVerticalAlign === 'middle' ? 'active' : ''
-          }" data-align="middle" title="居中对齐">Middle</button>
+          }" data-align="middle" title="${i18n.get('Middle align')}">Middle</button>
           <button type="button" class="align-btn ${
             currentVerticalAlign === 'bottom' ? 'active' : ''
-          }" data-align="bottom" title="底部对齐">Bottom</button>
+          }" data-align="bottom" title="${i18n.get('Bottom align')}">Bottom</button>
           <button type="button" class="align-btn ${
             currentVerticalAlign === 'baseline' ? 'active' : ''
-          }" data-align="baseline" title="基线对齐">Baseline</button>
-          <button type="button" class="clear-btn" id="clear-align" title="清空对齐">清空</button>
+          }" data-align="baseline" title="${i18n.get('Baseline align')}">Baseline</button>
+          <button type="button" class="clear-btn" id="clear-align" title="${i18n.get(
+            'Clear align'
+          )}">${i18n.get('Clear')}</button>
         </div>
       </div>
       <div class="dialog-section">
-        <label class="dialog-label">Alt Text (替代文本)</label>
-        <div class="current-value">当前值: ${currentAltText || '未设置'}</div>
-        <input type="text" class="alt-input" id="alt-input" value="${currentAltText}" placeholder="描述这张图片...">
+        <label class="dialog-label">${i18n.get('Alt Text')}</label>
+        <div class="current-value">${i18n.get('Current value')}: ${
+      currentAltText || i18n.get('Not set')
+    }</div>
+        <input type="text" class="alt-input" id="alt-input" value="${currentAltText}" placeholder="${i18n.get(
+      'Describe this image'
+    )}...">
       </div>
 
       <div class="dialog-section">
-        <label class="dialog-label">Caption (图片说明)</label>
-        <div class="current-value">当前值: ${currentCaption || '未设置'}</div>
-        <input type="text" class="caption-input" id="caption-input" value="${currentCaption}" placeholder="图片说明文字...">
+        <label class="dialog-label">${i18n.get('Caption')}</label>
+        <div class="current-value">${i18n.get('Current value')}: ${
+      currentCaption || i18n.get('Not set')
+    }</div>
+        <input type="text" class="caption-input" id="caption-input" value="${currentCaption}" placeholder="${i18n.get(
+      'Image caption text'
+    )}...">
       </div>
 
       <div class="dialog-actions">
-        <button type="button" class="save-btn" id="save-changes">保存</button>
-        <button type="button" class="reset-btn" id="reset-changes">重置</button>
-        <button type="button" class="delete-btn" id="delete-image" title="删除图片">删除图片</button>
+        <button type="button" class="save-btn" id="save-changes">${i18n.get('Save')}</button>
+        <button type="button" class="reset-btn" id="reset-changes">${i18n.get('Reset')}</button>
+        <button type="button" class="delete-btn" id="delete-image" title="${i18n.get(
+          'Delete image'
+        )}">${i18n.get('Delete image')}</button>
       </div>
     `;
 
@@ -424,13 +443,13 @@ class ImageEditPanelView {
 
   private getVerticalAlignDisplayName(align: string): string {
     const alignNames: Record<string, string> = {
-      top: '顶部对齐',
-      middle: '居中对齐',
-      bottom: '底部对齐',
-      baseline: '基线对齐',
+      top: i18n.get('Top align'),
+      middle: i18n.get('Middle align'),
+      bottom: i18n.get('Bottom align'),
+      baseline: i18n.get('Baseline align'),
     };
 
-    return alignNames[align] || '未设置';
+    return alignNames[align] || i18n.get('Not set');
   }
 
   private bindDialogEvents(dialog: HTMLElement) {
