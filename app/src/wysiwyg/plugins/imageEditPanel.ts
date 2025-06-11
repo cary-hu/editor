@@ -357,8 +357,8 @@ class ImageEditPanelView {
 
     const currentWidth = this.state.tempChanges.width ?? width;
     const currentVerticalAlign = this.state.tempChanges.verticalAlign ?? verticalAlign;
-    const currentAltText = this.state.tempChanges.altText ?? altText;
-    const currentCaption = this.state.tempChanges.caption ?? caption;
+    const currentAltText = this.state.tempChanges.altText ?? altText ?? '';
+    const currentCaption = this.state.tempChanges.caption ?? caption ?? '';
 
     dialog.innerHTML = `
       <div class="dialog-section">
