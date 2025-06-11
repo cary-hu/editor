@@ -30,6 +30,7 @@ import { getChildrenHTML, getHTMLAttrsByHTMLString } from '@/wysiwyg/nodes/html'
 import { includes } from '@/utils/common';
 import { reBR, reHTMLTag, reHTMLComment } from '@/utils/constants';
 import { sanitizeHTML } from '@/sanitizer/htmlSanitizer';
+import { ImageMdNode } from '@toast-ui/toastmark/types/node';
 
 function isBRTag(node: MdNode) {
   return node.type === 'htmlInline' && reBR.test(node.literal!);
@@ -138,7 +139,7 @@ const toWwConvertors: ToWwConvertorMap = {
 
   image(state, node, { entering, skipChildren }, customAttrs) {
     const { image } = state.schema.nodes;
-    const { destination, firstChild } = node as LinkMdNode;
+    const { destination, firstChild, width, caption, verticalAlign } = node as ImageMdNode;
 
     if (entering && skipChildren) {
       skipChildren();
@@ -147,6 +148,9 @@ const toWwConvertors: ToWwConvertorMap = {
     state.addNode(image, {
       imageUrl: destination,
       ...(firstChild && { altText: firstChild.literal }),
+      ...(width && { width }),
+      ...(caption && { caption }),
+      ...(verticalAlign && { verticalAlign }),
       ...customAttrs,
     });
   },

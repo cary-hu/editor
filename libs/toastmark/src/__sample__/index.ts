@@ -100,3 +100,8 @@ cm.on('change', (editor, changeObj) => {
     }
   });
 });
+
+cm.setValue(`# Image Test
+![测试图片](556-500x500.jpg?width=400&caption=123123&verticalAlign=middle)
+
+![](556-500x500.jpg)`);

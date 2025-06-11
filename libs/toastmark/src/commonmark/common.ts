@@ -54,6 +54,19 @@ export function escapeXml(s: string) {
   return s;
 }
 
+export function decodeImageCaption(caption: string): string {
+  if (!caption) {
+    return '';
+  }
+  const decoded = decodeHTML(caption);
+  // Replace newlines with spaces and trim whitespace
+  return decoded
+    .replace(/\n/g, ' ')
+    .replace(/^\s+|\s+$/g, '')
+    .replace('%28', '(')
+    .replace('%29', ')');
+}
+
 export function repeat(str: string, count: number): string {
   const arr = [];
   for (let i = 0; i < count; i++) {

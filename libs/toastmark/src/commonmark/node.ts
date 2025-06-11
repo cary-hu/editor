@@ -248,6 +248,14 @@ export class LinkNode extends Node implements LinkMdNode {
   lastChild!: Node;
 }
 
+export type ImageVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';
+
+export class ImageNode extends LinkNode {
+  width: number | null = null;
+  caption: string | null = null;
+  verticalAlign: ImageVerticalAlign | null = null;
+}
+
 export class CodeNode extends Node implements CodeMdNode {
   tickCount = 0;
 }
@@ -260,7 +268,8 @@ export function createNode(type: 'heading', sourcepos?: Sourcepos): HeadingNode;
 export function createNode(type: 'list' | 'item', sourcepos?: Sourcepos): ListNode;
 export function createNode(type: 'codeBlock', sourcepos?: Sourcepos): CodeBlockNode;
 export function createNode(type: 'htmlBlock', sourcepos?: Sourcepos): HtmlBlockNode;
-export function createNode(type: 'link' | 'image', sourcepos?: Sourcepos): LinkNode;
+export function createNode(type: 'link', sourcepos?: Sourcepos): LinkNode;
+export function createNode(type: 'image', sourcepos?: Sourcepos): ImageNode;
 export function createNode(type: 'code', sourcepos?: Sourcepos): CodeNode;
 export function createNode(type: 'table', sourcepos?: Sourcepos): TableNode;
 export function createNode(type: 'tableCell', sourcepos?: Sourcepos): TableNode;
@@ -276,8 +285,9 @@ export function createNode(type: MdNodeType, sourcepos?: Sourcepos) {
     case 'item':
       return new ListNode(type, sourcepos);
     case 'link':
-    case 'image':
       return new LinkNode(type, sourcepos);
+    case 'image':
+      return new ImageNode(type, sourcepos);
     case 'codeBlock':
       return new CodeBlockNode(type, sourcepos);
     case 'htmlBlock':

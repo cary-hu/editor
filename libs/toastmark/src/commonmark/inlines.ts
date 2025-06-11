@@ -1,6 +1,16 @@
 import { InlineNodeType, Sourcepos, CustomBlockMdNode } from '@t/node';
 import { RefMap, RefLinkCandidateMap, RefDefCandidateMap, ParserOptions } from '@t/parser';
-import { Node, BlockNode, isHeading, LinkNode, createNode, text, CustomInlineNode } from './node';
+import {
+  Node,
+  BlockNode,
+  isHeading,
+  LinkNode,
+  createNode,
+  text,
+  CustomInlineNode,
+  ImageNode,
+  ImageVerticalAlign,
+} from './node';
 import { repeat, normalizeURI, unescapeString, ESCAPABLE, ENTITY } from './common';
 import { reHtmlTag } from './rawHtml';
 import fromCodePoint from './from-code-point';
@@ -751,7 +761,7 @@ export class InlineParser {
     }
 
     if (matched) {
-      const node = createNode(isImage ? 'image' : 'link');
+      const node = createNode(isImage ? 'image' : 'link') as LinkNode;
       node.destination = dest;
       node.title = title || '';
       node.sourcepos = [opener.startpos, this.sourcepos(this.pos)];
@@ -779,6 +789,28 @@ export class InlineParser {
             opener.active = false; // deactivate this opener
           }
           opener = opener.previous;
+        }
+      }
+
+      // Parse image queryparameter to define the image behavior.
+      if (isImage && dest && dest.includes('?')) {
+        const qs = dest
+          .split('?')[1]
+          .split('&')
+          .reduce((acc, pair) => {
+            const [key, value] = pair.split('=');
+            acc.set(key, decodeURIComponent(value || ''));
+            return acc;
+          }, new Map<string, string>());
+        const imageNode = node as ImageNode;
+        if (qs.has('width')) {
+          imageNode.width = parseInt(qs.get('width')!, 10);
+        }
+        if (qs.has('caption')) {
+          imageNode.caption = qs.get('caption') || '';
+        }
+        if (qs.has('verticalAlign')) {
+          imageNode.verticalAlign = (qs.get('verticalAlign') || null) as ImageVerticalAlign;
         }
       }
 

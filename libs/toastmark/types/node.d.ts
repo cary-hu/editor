@@ -162,6 +162,13 @@ export interface LinkMdNode extends MdNode {
   lastChild: MdNode;
 }
 
+export type ImageVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';
+export interface ImageMdNode extends LinkMdNode {
+  width: number | null = null;
+  caption: string | null = null;
+  verticalAlign: ImageVerticalAlign | null = null;
+}
+
 export interface CodeMdNode extends MdNode {
   tickCount: number;
 }

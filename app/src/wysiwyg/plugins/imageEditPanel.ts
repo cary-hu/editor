@@ -1,7 +1,6 @@
 import { Plugin, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Emitter } from '@t/event';
-import { createTextSelection } from '@/helper/manipulation';
 
 interface ImageEditPanelState {
   isVisible: boolean;
@@ -382,14 +381,26 @@ class ImageEditPanelView {
       </div>
       
       <div class="dialog-section">
-        <label class="dialog-label">图片说明</label>
+        <label class="dialog-label">Alt Text</label>
         <input type="text" class="caption-input" value="${altText}" placeholder="描述这张图片...">
         <div class="caption-actions">
           <button type="button" class="apply-btn" id="apply-caption">确认</button>
           <button type="button" class="clear-btn" id="clear-caption">清空</button>
         </div>
       </div>
-      
+
+       <div class="dialog-section">
+        <label class="dialog-label">Caption</label>
+        <input type="text" class="caption-input" value="${altText}" placeholder="描述这张图片...">
+        <div class="caption-actions">
+          <button type="button" class="apply-btn" id="apply-caption">确认</button>
+          <button type="button" class="clear-btn" id="clear-caption">清空</button>
+        </div>
+      </div>
+
+      <button>Save</button>
+      <button>Reset</button>
+      <button>Delete Image</button>
       <div class="dialog-section danger-zone">
         <button type="button" class="delete-btn" title="删除图片">🗑</button>
       </div>
@@ -491,209 +502,6 @@ class ImageEditPanelView {
     });
   }
 
-  private createControls() {
-    if (!this.state.dialog || !this.state.imageElement || !this.state.imageNode) return;
-
-    // Create overlay for visual feedback
-    this.createOverlay();
-
-    // Create edit button
-    this.createEditButton();
-
-    // Create delete button
-    this.createDeleteButton();
-
-    // Create resize handles
-    this.createResizeHandles();
-  }
-
-  private createOverlay() {
-    if (!this.state.dialog) return;
-
-    const overlay = document.createElement('div');
-
-    overlay.className = 'toastui-editor-image-edit-overlay';
-    this.state.dialog.appendChild(overlay);
-  }
-
-  private createEditButton() {
-    if (!this.state.dialog) return;
-
-    const editBtn = document.createElement('div');
-
-    editBtn.className = 'toastui-editor-edit-image-btn';
-    editBtn.innerHTML = '✏️';
-    editBtn.title = 'Edit image properties';
-
-    // Click event for the edit button
-    editBtn.addEventListener('click', (event) => {
-      event.stopPropagation();
-
-      // Capture current state before calling editImage to avoid race conditions
-      const currentImageNode = this.state.imageNode;
-      const currentImagePos = this.state.imagePos;
-
-      if (currentImageNode && currentImageNode.attrs && currentImagePos !== null) {
-        this.editImageWithData(currentImageNode, currentImagePos);
-      } else {
-        console.warn('ImageEditPanel: Cannot edit image, missing node data');
-      }
-    });
-
-    this.state.dialog.appendChild(editBtn);
-  }
-
-  private createDeleteButton() {
-    if (!this.state.dialog) return;
-
-    const deleteBtn = document.createElement('div');
-
-    deleteBtn.className = 'toastui-editor-delete-image-btn';
-    deleteBtn.innerHTML = '×';
-    deleteBtn.title = 'Delete image';
-
-    // Click event for the delete button
-    deleteBtn.addEventListener('click', (event) => {
-      event.stopPropagation();
-      this.deleteImage();
-    });
-
-    this.state.dialog.appendChild(deleteBtn);
-  }
-
-  private createResizeHandles() {
-    if (!this.state.dialog) return;
-
-    // Create corner resize handles
-    const positions = ['nw', 'ne', 'sw', 'se'];
-
-    positions.forEach((position) => {
-      const handle = document.createElement('div');
-
-      handle.className = `toastui-editor-resize-handle toastui-editor-resize-${position}`;
-      handle.title = 'Resize image';
-
-      let startX = 0;
-      let startY = 0;
-      let startWidth = 0;
-      let startHeight = 0;
-      let isResizing = false;
-
-      const startResize = (e: MouseEvent) => {
-        isResizing = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        startWidth = this.state.imageElement!.offsetWidth;
-        startHeight = this.state.imageElement!.offsetHeight;
-
-        document.addEventListener('mousemove', doResize);
-        document.addEventListener('mouseup', stopResize);
-        e.preventDefault();
-      };
-
-      const doResize = (e: MouseEvent) => {
-        if (!isResizing) return;
-
-        const deltaX = e.clientX - startX;
-        const deltaY = e.clientY - startY;
-
-        let newWidth = startWidth;
-        let newHeight = startHeight;
-
-        // Calculate new dimensions based on handle position
-        if (position.includes('e')) {
-          newWidth = startWidth + deltaX;
-        } else if (position.includes('w')) {
-          newWidth = startWidth - deltaX;
-        }
-
-        if (position.includes('s')) {
-          newHeight = startHeight + deltaY;
-        } else if (position.includes('n')) {
-          newHeight = startHeight - deltaY;
-        }
-
-        // Maintain aspect ratio
-        const aspectRatio = startWidth / startHeight;
-
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-          newHeight = newWidth / aspectRatio;
-        } else {
-          newWidth = newHeight * aspectRatio;
-        }
-
-        // Apply minimum size constraints
-        newWidth = Math.max(50, newWidth);
-        newHeight = Math.max(50, newHeight);
-
-        // Update image size
-        this.updateImageSize(newWidth, newHeight);
-      };
-
-      const stopResize = () => {
-        isResizing = false;
-        document.removeEventListener('mousemove', doResize);
-        document.removeEventListener('mouseup', stopResize);
-      };
-
-      handle.addEventListener('mousedown', startResize);
-      if (this.state.dialog) {
-        this.state.dialog.appendChild(handle);
-      }
-    });
-  }
-
-  private updateImageSize(width: number, height: number) {
-    if (!this.state.imageElement || this.state.imagePos === null) return;
-
-    // Update the DOM element immediately for visual feedback
-    this.state.imageElement.style.width = `${width}px`;
-    this.state.imageElement.style.height = `${height}px`;
-
-    // Update panel position
-    this.updatePanelPosition();
-
-    // Update the ProseMirror document
-    this.updateImageAttributes({ width: width.toString(), height: height.toString() });
-  }
-
-  private editImageWithData(imageNode: any, imagePos: number) {
-    // Hide the panel first
-    this.hidePanel();
-
-    // Get current image attributes safely
-    const { attrs } = imageNode;
-    const { imageUrl = '', altText = '' } = attrs;
-
-    // Set selection to the image
-    const { tr } = this.view.state;
-
-    tr.setSelection(createTextSelection(tr, imagePos, imagePos + 1));
-    this.view.dispatch(tr);
-
-    // Open image popup with current values
-    this.eventEmitter.emit('openPopup', 'image', {
-      imageUrl,
-      altText,
-    });
-  }
-
-  private editImage() {
-    // More strict null checks
-    if (
-      !this.state.imageElement ||
-      !this.state.imageNode ||
-      this.state.imagePos === null ||
-      !this.state.imageNode.attrs
-    ) {
-      console.warn('ImageEditPanel: Cannot edit image, missing required state');
-      return;
-    }
-
-    // Use the safer method with captured data
-    this.editImageWithData(this.state.imageNode, this.state.imagePos);
-  }
-
   private deleteImage() {
     if (this.state.imagePos === null) return;
 
@@ -709,43 +517,7 @@ class ImageEditPanelView {
 
   private updateImageSizeFromInput(widthValue: string) {
     const width = widthValue ? parseInt(widthValue, 10) : null;
-
-    if (width && !isNaN(width)) {
-      // 计算原始宽高比并设置等比例高度
-      if (this.state.imageElement) {
-        const img = this.state.imageElement as HTMLImageElement;
-        const aspectRatio = img.naturalWidth / img.naturalHeight;
-        const height = Math.round(width / aspectRatio);
-
-        // 更新 ProseMirror 文档
-        this.updateImageAttributes({
-          width: width.toString(),
-          height: height.toString(),
-        });
-
-        // 立即更新DOM元素以提供视觉反馈
-        img.style.width = `${width}px`;
-        img.style.height = `${height}px`;
-      }
-    }
-  }
-
-  private updateImageSizeFromInputs(widthValue: string, heightValue: string) {
-    const width = widthValue ? parseInt(widthValue, 10) : null;
-    const height = heightValue ? parseInt(heightValue, 10) : null;
-
-    const attrs: Record<string, any> = {};
-
-    if (width && !isNaN(width)) {
-      attrs.width = width.toString();
-    }
-
-    if (height && !isNaN(height)) {
-      attrs.height = height.toString();
-    }
-
-    // Update the ProseMirror document
-    this.updateImageAttributes(attrs);
+    // Get other attr and merge with width, then edit recreateImage with new attrs
   }
 
   private updateImageAttributes(attrs: Record<string, any>) {

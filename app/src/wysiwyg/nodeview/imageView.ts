@@ -55,7 +55,8 @@ export class ImageView implements NodeView {
 
   private createImageElement(node: ProsemirrorNode) {
     const image = document.createElement('img');
-    const { imageUrl, altText } = node.attrs;
+    const { imageUrl, altText, width, verticalAlign, caption } = node.attrs;
+
     const attrs = getCustomAttrs(node.attrs);
 
     image.src = imageUrl;
@@ -63,7 +64,36 @@ export class ImageView implements NodeView {
     if (altText) {
       image.alt = altText;
     }
+    if (width !== null) {
+      image.style.width = `${width}px`;
+    }
+    if (verticalAlign) {
+      image.style.verticalAlign = verticalAlign;
+    }
+
     setAttributes(attrs, image);
+
+    // If there's a caption, wrap image in a figure element
+    if (caption) {
+      const figure = document.createElement('figure');
+      const captionElement = document.createElement('figcaption');
+
+      // Set figure styles to prevent interference with image styles
+      figure.style.margin = '0';
+      figure.style.padding = '0';
+      figure.style.display = 'inline-block';
+
+      captionElement.textContent = caption;
+      captionElement.style.fontSize = '14px';
+      captionElement.style.color = '#666';
+      captionElement.style.textAlign = 'center';
+      captionElement.style.marginTop = '5px';
+
+      figure.appendChild(image);
+      figure.appendChild(captionElement);
+
+      return figure;
+    }
 
     return image;
   }

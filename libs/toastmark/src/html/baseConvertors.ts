@@ -7,8 +7,9 @@ import {
   LinkNode,
   CustomBlockNode,
   BlockQuoteNode,
+  ImageNode,
 } from '../commonmark/node';
-import { escapeXml } from '../commonmark/common';
+import { decodeImageCaption, escapeXml } from '../commonmark/common';
 import { filterDisallowedTags } from './tagFilter';
 
 const CUSTOM_SYNTAX_LENGTH = 4;
@@ -187,7 +188,7 @@ export const baseConvertors: HTMLConvertorMap = {
   },
 
   image(node: Node, { getChildrenText, skipChildren }) {
-    const { title, destination } = node as LinkNode;
+    const { title, destination, width, verticalAlign, caption } = node as ImageNode;
 
     skipChildren();
 
@@ -199,6 +200,10 @@ export const baseConvertors: HTMLConvertorMap = {
         src: escapeXml(destination!),
         alt: getChildrenText(node),
         ...(title && { title: escapeXml(title) }),
+        ...(width && { style: `width: ${width}px` }),
+        ...(caption && { 'data-caption': decodeImageCaption(caption) }),
+        ...(verticalAlign && { 'data-verticalAlign': verticalAlign }),
+        ...(verticalAlign && { style: `vertical-align: ${verticalAlign}` }),
       },
     };
   },
