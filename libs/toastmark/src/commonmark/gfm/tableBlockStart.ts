@@ -8,8 +8,35 @@ function parseRowContent(content: string): [number, string[]] {
   let startIdx = 0;
   let offset = 0;
   const cells = [];
+  let insideBackticks = false;
+  let backtickCount = 0;
+
   for (let i = 0; i < content.length; i += 1) {
-    if (content[i] === '|' && content[i - 1] !== '\\') {
+    const char = content[i];
+
+    // Track backticks to determine if we're inside inline code
+    if (char === '`') {
+      // Count consecutive backticks
+      let currentBacktickCount = 0;
+      let j = i;
+      while (j < content.length && content[j] === '`') {
+        currentBacktickCount++;
+        j++;
+      }
+
+      if (!insideBackticks) {
+        // Starting inline code
+        insideBackticks = true;
+        backtickCount = currentBacktickCount;
+      } else if (currentBacktickCount === backtickCount) {
+        // Ending inline code with matching backtick count
+        insideBackticks = false;
+        backtickCount = 0;
+      }
+
+      // Skip past all the backticks we just processed
+      i = j - 1;
+    } else if (char === '|' && !insideBackticks && content[i - 1] !== '\\') {
       const cell = content.substring(startIdx, i);
       if (startIdx === 0 && isEmpty(cell)) {
         offset = i + 1;

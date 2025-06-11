@@ -328,7 +328,7 @@ describe('GFM Exmaple', () => {
         </tr>
         </tbody>
         </table>
-        <blockquote>
+        <blockquote data-block-quote-type="default">
         <p>bar</p>
         </blockquote>
       `,
@@ -429,6 +429,30 @@ describe('GFM Exmaple', () => {
       const root = reader.parse(input);
       const html = renderer.render(root);
       expect(html).toBe(`${output}\n`);
+    });
+  });
+
+  describe('inline code with pipe characters', () => {
+    it('should handle pipe characters inside inline code', () => {
+      const input =
+        '| Column 1 | Column 2 |\n|----------|----------|\n| `|` | Normal text |\n| `a|b` | More text |';
+      const root = reader.parse(input);
+      const html = renderer.render(root);
+
+      expect(html).toContain('<td><code>|</code></td>');
+      expect(html).toContain('<td><code>a|b</code></td>');
+      expect(html).toContain('<td>Normal text</td>');
+      expect(html).toContain('<td>More text</td>');
+    });
+
+    it('should handle multiple backticks with pipe characters', () => {
+      const input =
+        '| Column 1 | Column 2 |\n|----------|----------|\n| ``pipe `|` inside`` | Normal text |';
+      const root = reader.parse(input);
+      const html = renderer.render(root);
+
+      expect(html).toContain('<td><code>pipe `|` inside</code></td>');
+      expect(html).toContain('<td>Normal text</td>');
     });
   });
 });
