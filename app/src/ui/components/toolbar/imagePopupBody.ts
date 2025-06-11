@@ -158,7 +158,7 @@ export class ImagePopupBody extends Component<Props, State> {
             ref=${(el: HTMLInputElement) => (this.refs.file = el)}
           />
         </div>
-        <label for="toastuiAltTextInput">${i18n.get('Description')}</label>
+        <label for="toastuiAltTextInput">${i18n.get('Alt Text')}</label>
         <input
           id="toastuiAltTextInput"
           type="text"
