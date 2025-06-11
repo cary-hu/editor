@@ -179,7 +179,6 @@ class ImageEditPanelView {
   }
 
   private hidePanel() {
-    console.trace('Hiding image edit panel');
     if (this.state.dialog) {
       this.state.dialog.remove();
       this.state.dialog = null;
@@ -460,18 +459,15 @@ class ImageEditPanelView {
     const resetBtn = dialog.querySelector('#reset-changes') as HTMLButtonElement;
     const deleteBtn = dialog.querySelector('#delete-image') as HTMLButtonElement;
 
-    // 宽度输入事件
     widthInput.addEventListener('input', () => {
       this.state.tempChanges.width = widthInput.value || null;
     });
 
-    // 清空宽度按钮
     clearWidthBtn.addEventListener('click', () => {
       widthInput.value = '';
       this.state.tempChanges.width = null;
     });
 
-    // 预设大小按钮事件
     presetBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
         const { size } = btn.dataset;
@@ -483,17 +479,14 @@ class ImageEditPanelView {
       });
     });
 
-    // Alt Text 输入事件
     altInput.addEventListener('input', () => {
       this.state.tempChanges.altText = altInput.value;
     });
 
-    // Caption 输入事件
     captionInput.addEventListener('input', () => {
       this.state.tempChanges.caption = captionInput.value;
     });
 
-    // 垂直对齐按钮事件
     alignBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
         alignBtns.forEach((b) => b.classList.remove('active'));
@@ -504,29 +497,24 @@ class ImageEditPanelView {
       });
     });
 
-    // 清空垂直对齐按钮事件
     clearAlignBtn.addEventListener('click', () => {
       alignBtns.forEach((btn) => btn.classList.remove('active'));
       this.state.tempChanges.verticalAlign = null;
     });
 
-    // 保存按钮事件
     saveBtn.addEventListener('click', () => {
       this.saveChanges();
     });
 
-    // 重置按钮事件
     resetBtn.addEventListener('click', () => {
       this.resetChanges();
       this.resetFormInputs(dialog);
     });
 
-    // 删除按钮事件
     deleteBtn.addEventListener('click', () => {
       this.deleteImage();
     });
 
-    // 回车键保存
     [widthInput, altInput, captionInput].forEach((input) => {
       input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -545,7 +533,6 @@ class ImageEditPanelView {
     if (node && node.type.name === 'image' && node.attrs) {
       const newAttrs = { ...node.attrs };
 
-      // 更新URL查询参数
       const currentImageUrl = newAttrs.imageUrl || '';
       const newImageUrl = this.updateImageUrlQueryParams(currentImageUrl);
 
@@ -553,7 +540,6 @@ class ImageEditPanelView {
         newAttrs.imageUrl = newImageUrl;
       }
 
-      // 同时更新节点属性（确保图片立即应用新样式）
       if ('width' in this.state.tempChanges) {
         newAttrs.width = this.state.tempChanges.width;
       }
@@ -570,27 +556,22 @@ class ImageEditPanelView {
       tr.setNodeMarkup(this.state.imagePos, null, newAttrs);
       this.view.dispatch(tr);
 
-      // 清空临时更改
       this.state.tempChanges = {};
 
-      // 更新节点引用
       const updatedNode = this.view.state.doc.nodeAt(this.state.imagePos);
 
       if (updatedNode) {
         this.state.imageNode = updatedNode;
       }
 
-      // 刷新对话框以显示保存后的状态
       this.refreshDialog();
     }
   }
 
   private updateImageUrlQueryParams(originalUrl: string): string {
     try {
-      // 分离基础URL和查询参数
       const [baseUrl, queryString] = originalUrl.split('?');
 
-      // 解析现有的查询参数
       const queryParams = new Map<string, string>();
 
       if (queryString) {
@@ -603,7 +584,6 @@ class ImageEditPanelView {
         });
       }
 
-      // 应用临时更改
       if ('width' in this.state.tempChanges) {
         if (this.state.tempChanges.width) {
           queryParams.set('width', this.state.tempChanges.width);
@@ -628,7 +608,6 @@ class ImageEditPanelView {
         }
       }
 
-      // 重建URL
       if (queryParams.size === 0) {
         return baseUrl;
       }
@@ -658,7 +637,6 @@ class ImageEditPanelView {
       caption = '',
     } = this.state.imageNode.attrs;
 
-    // 重置输入框的值为原始值
     const widthInput = dialog.querySelector('#width-input') as HTMLInputElement;
     const altInput = dialog.querySelector('#alt-input') as HTMLInputElement;
     const captionInput = dialog.querySelector('#caption-input') as HTMLInputElement;
@@ -674,7 +652,6 @@ class ImageEditPanelView {
       captionInput.value = caption;
     }
 
-    // 重置垂直对齐按钮状态
     alignBtns.forEach((btn) => {
       btn.classList.remove('active');
       if (btn.dataset.align === verticalAlign) {
