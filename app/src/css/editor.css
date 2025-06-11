@@ -1346,6 +1346,108 @@
   background: #c82333;
 }
 
+/* New styles for updated image edit dialog */
+.toastui-editor-image-edit-dialog .current-value {
+  font-size: 11px;
+  color: #6c757d;
+  margin-bottom: 4px;
+  font-style: italic;
+}
+
+.toastui-editor-image-edit-dialog .alt-input {
+  width: 100%;
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 12px;
+  box-sizing: border-box;
+  margin-top: 4px;
+}
+
+.toastui-editor-image-edit-dialog .alt-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.toastui-editor-image-edit-dialog .dialog-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #dee2e6;
+}
+
+.toastui-editor-image-edit-dialog .save-btn {
+  padding: 8px 16px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.toastui-editor-image-edit-dialog .save-btn:hover {
+  background: #218838;
+}
+
+.toastui-editor-image-edit-dialog .reset-btn {
+  padding: 8px 16px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.toastui-editor-image-edit-dialog .reset-btn:hover {
+  background: #545b62;
+}
+
+.toastui-editor-image-edit-dialog .align-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.toastui-editor-image-edit-dialog .align-btn {
+  transition: all 0.2s ease;
+}
+
+/* Vertical align controls */
+.toastui-editor-image-edit-dialog .vertical-align-controls {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.toastui-editor-image-edit-dialog .align-btn {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  background: #f8f9fa;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.toastui-editor-image-edit-dialog .align-btn:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.toastui-editor-image-edit-dialog .align-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
 /* Container styles */
 .toastui-editor-container {
   position: relative;

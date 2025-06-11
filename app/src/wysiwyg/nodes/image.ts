@@ -46,14 +46,45 @@ export class Image extends NodeSchema {
             const verticalAlignMatch = style.match(/vertical-align:\s*([^;]+)/);
             const verticalAlign = verticalAlignMatch ? verticalAlignMatch[1].trim() : null;
 
-            return {
+            // Parse query parameters from image URL for additional attributes
+            let queryWidth = null;
+            let queryVerticalAlign = null;
+            let queryCaption = null;
+
+            if (imageUrl && imageUrl.includes('?')) {
+              const [, queryString] = imageUrl.split('?');
+              const queryParams = new URLSearchParams(queryString);
+
+              if (queryParams.has('width')) {
+                queryWidth = queryParams.get('width');
+              }
+              if (queryParams.has('verticalAlign')) {
+                queryVerticalAlign = queryParams.get('verticalAlign');
+              }
+              if (queryParams.has('caption')) {
+                queryCaption = queryParams.get('caption');
+              }
+            }
+
+            const attrs: any = {
               imageUrl,
               altText,
-              ...(width && { width }),
-              ...(verticalAlign && { verticalAlign }),
-              ...(caption && { caption }),
-              ...(rawHTML && { rawHTML }),
             };
+
+            if (width || queryWidth) {
+              attrs.width = width || queryWidth;
+            }
+            if (verticalAlign || queryVerticalAlign) {
+              attrs.verticalAlign = verticalAlign || queryVerticalAlign;
+            }
+            if (caption || queryCaption) {
+              attrs.caption = caption || queryCaption;
+            }
+            if (rawHTML) {
+              attrs.rawHTML = rawHTML;
+            }
+
+            return attrs;
           },
         },
         {
@@ -78,25 +109,67 @@ export class Image extends NodeSchema {
             const verticalAlignMatch = style.match(/vertical-align:\s*([^;]+)/);
             const verticalAlign = verticalAlignMatch ? verticalAlignMatch[1].trim() : null;
 
-            return {
+            // Parse query parameters from image URL for additional attributes
+            let queryWidth = null;
+            let queryVerticalAlign = null;
+            let queryCaption = null;
+
+            if (imageUrl && imageUrl.includes('?')) {
+              const [, queryString] = imageUrl.split('?');
+              const queryParams = new URLSearchParams(queryString);
+
+              if (queryParams.has('width')) {
+                queryWidth = queryParams.get('width');
+              }
+              if (queryParams.has('verticalAlign')) {
+                queryVerticalAlign = queryParams.get('verticalAlign');
+              }
+              if (queryParams.has('caption')) {
+                queryCaption = queryParams.get('caption');
+              }
+            }
+
+            const attrs: any = {
               imageUrl,
               altText,
-              ...(width && { width }),
-              ...(verticalAlign && { verticalAlign }),
-              ...(caption && { caption }),
             };
+
+            if (width || queryWidth) {
+              attrs.width = width || queryWidth;
+            }
+            if (verticalAlign || queryVerticalAlign) {
+              attrs.verticalAlign = verticalAlign || queryVerticalAlign;
+            }
+            if (caption || queryCaption) {
+              attrs.caption = caption || queryCaption;
+            }
+
+            return attrs;
           },
         },
       ],
       toDOM({ attrs }: ProsemirrorNode): DOMOutputSpec {
         let imgStyle = '';
+        let figureStyle = 'margin: 0; padding: 0; display: inline-block;';
 
         if (attrs.width) {
-          imgStyle += `width: ${attrs.width}`;
+          // 确保宽度值包含正确的单位
+          const widthValue = attrs.width.toString();
+          const width = widthValue.includes('px') ? widthValue : `${widthValue}px`;
+
+          imgStyle += `width: ${width}`;
         }
+
+        // 当有caption时，vertical-align应该应用在figure上，否则应用在img上
         if (attrs.verticalAlign) {
-          if (imgStyle) imgStyle += '; ';
-          imgStyle += `vertical-align: ${attrs.verticalAlign}`;
+          if (attrs.caption) {
+            // 有caption时，vertical-align应用在figure元素上
+            figureStyle += `; vertical-align: ${attrs.verticalAlign}`;
+          } else {
+            // 没有caption时，vertical-align应用在img元素上
+            if (imgStyle) imgStyle += '; ';
+            imgStyle += `vertical-align: ${attrs.verticalAlign}`;
+          }
         }
 
         const imgAttrs: Record<string, any> = {
@@ -111,7 +184,7 @@ export class Image extends NodeSchema {
         if (attrs.caption) {
           return [
             'figure',
-            { style: 'margin: 0; padding: 0; display: inline-block;' },
+            { style: figureStyle },
             [attrs.rawHTML || 'img', imgAttrs],
             [
               'figcaption',

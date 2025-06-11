@@ -65,9 +65,15 @@ export class ImageView implements NodeView {
       image.alt = altText;
     }
     if (width !== null) {
-      image.style.width = `${width}px`;
+      // 确保宽度值包含正确的单位
+      const widthValue = width.toString();
+      const widthWithUnit = widthValue.includes('px') ? widthValue : `${widthValue}px`;
+
+      image.style.width = widthWithUnit;
     }
-    if (verticalAlign) {
+
+    // 当有caption时，vertical-align应该应用在figure上，否则应用在img上
+    if (verticalAlign && !caption) {
       image.style.verticalAlign = verticalAlign;
     }
 
@@ -82,6 +88,11 @@ export class ImageView implements NodeView {
       figure.style.margin = '0';
       figure.style.padding = '0';
       figure.style.display = 'inline-block';
+
+      // 有caption时，vertical-align应用在figure元素上
+      if (verticalAlign) {
+        figure.style.verticalAlign = verticalAlign;
+      }
 
       captionElement.textContent = caption;
       captionElement.style.fontSize = '14px';
@@ -137,5 +148,40 @@ export class ImageView implements NodeView {
     if (this.imageLink) {
       this.dom.removeEventListener('mousedown', this.handleMousedown);
     }
+  }
+
+  update(node: ProsemirrorNode) {
+    if (!node.sameMarkup(this.node)) {
+      return false;
+    }
+
+    // 检查是否是同一类型但属性有变化
+    if (
+      node.attrs.imageUrl !== this.node.attrs.imageUrl ||
+      node.attrs.width !== this.node.attrs.width ||
+      node.attrs.verticalAlign !== this.node.attrs.verticalAlign ||
+      node.attrs.caption !== this.node.attrs.caption ||
+      node.attrs.altText !== this.node.attrs.altText
+    ) {
+      // 更新节点引用
+      this.node = node;
+
+      // 重新创建DOM元素
+      const newElement = this.createElement();
+
+      // 替换现有的DOM元素
+      if (this.dom.parentNode) {
+        this.dom.parentNode.replaceChild(newElement, this.dom);
+        this.dom = newElement;
+
+        // 重新绑定事件
+        this.bindEvent();
+      }
+
+      return true;
+    }
+
+    this.node = node;
+    return true;
   }
 }

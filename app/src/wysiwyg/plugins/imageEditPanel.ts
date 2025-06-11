@@ -1,4 +1,4 @@
-import { Plugin, TextSelection } from 'prosemirror-state';
+import { Plugin } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Emitter } from '@t/event';
 
@@ -8,6 +8,12 @@ interface ImageEditPanelState {
   dialog: HTMLElement | null;
   imageNode: any | null;
   imagePos: number | null;
+  tempChanges: {
+    width?: string | null;
+    verticalAlign?: string | null;
+    altText?: string;
+    caption?: string;
+  };
 }
 
 class ImageEditPanelView {
@@ -32,6 +38,7 @@ class ImageEditPanelView {
       dialog: null,
       imageNode: null,
       imagePos: null,
+      tempChanges: {},
     };
     this.handleDocumentClick = this.handleDocumentClick.bind(this);
     this.handleImageHover = this.handleImageHover.bind(this);
@@ -56,10 +63,6 @@ class ImageEditPanelView {
     window.addEventListener('scroll', this.handleScroll.bind(this), true);
     this.view.dom.addEventListener('scroll', this.handleScroll.bind(this), true);
     window.addEventListener('resize', this.handleResize.bind(this));
-
-    // Listen for input events to update panel when content changes
-    this.view.dom.addEventListener('input', this.handleInput.bind(this));
-    this.view.dom.addEventListener('keyup', this.handleInput.bind(this));
   }
 
   private handleDocumentClick(event: MouseEvent) {
@@ -70,7 +73,6 @@ class ImageEditPanelView {
     if (now - this.lastShowTime < 100) {
       return;
     }
-
     // If clicking outside image or panel, hide the panel
     if (!this.isImageOrPanelElement(target)) {
       this.hidePanel();
@@ -169,12 +171,15 @@ class ImageEditPanelView {
     this.state.imageElement = imageElement;
     this.state.imageNode = imageNode;
     this.state.imagePos = imagePos;
+    // 重置临时更改状态
+    this.state.tempChanges = {};
     this.lastShowTime = Date.now();
     this.createImageDialog();
     this.state.isVisible = true;
   }
 
   private hidePanel() {
+    console.trace('Hiding image edit panel');
     if (this.state.dialog) {
       this.state.dialog.remove();
       this.state.dialog = null;
@@ -183,6 +188,8 @@ class ImageEditPanelView {
     this.state.imageElement = null;
     this.state.imageNode = null;
     this.state.imagePos = null;
+    // 清空临时更改
+    this.state.tempChanges = {};
   }
 
   private updatePanelPosition() {
@@ -312,14 +319,6 @@ class ImageEditPanelView {
       // Keep dialog visible when hovering over it
     });
 
-    dialog.addEventListener('mouseleave', (event) => {
-      const relatedTarget = event.relatedTarget as HTMLElement;
-
-      if (!relatedTarget || !this.isImageOrPanelElement(relatedTarget)) {
-        this.hidePanel();
-      }
-    });
-
     // Add to dedicated edit panel container
     const editorContainer = this.view.dom.closest('.toastui-editor-container') as HTMLElement;
     let panelContainer: HTMLElement | null = null;
@@ -351,16 +350,28 @@ class ImageEditPanelView {
   private createDialogContent(dialog: HTMLElement) {
     if (!this.state.imageNode) return;
 
-    const { imageUrl = '', altText = '', width = '' } = this.state.imageNode.attrs;
+    const {
+      imageUrl = '',
+      altText = '',
+      width = '',
+      verticalAlign = '',
+      caption = '',
+    } = this.state.imageNode.attrs;
+
+    // 获取当前值（临时更改优先）
+    const currentWidth = this.state.tempChanges.width ?? width;
+    const currentVerticalAlign = this.state.tempChanges.verticalAlign ?? verticalAlign;
+    const currentAltText = this.state.tempChanges.altText ?? altText;
+    const currentCaption = this.state.tempChanges.caption ?? caption;
 
     dialog.innerHTML = `
       <div class="dialog-section">
         <label class="dialog-label">图片大小</label>
+        <div class="current-value">当前值: ${currentWidth || '未设置'}</div>
         <div class="size-controls">
-          <input type="number" class="size-input" id="width-input" value="${width}" placeholder="原始大小" min="1">
+          <input type="number" class="size-input" id="width-input" value="${currentWidth}" placeholder="输入宽度" min="1">
           <span class="size-unit">px</span>
-          <button type="button" class="apply-btn" id="apply-size">确认</button>
-          <button type="button" class="clear-btn" id="clear-size">清空</button>
+          <button type="button" class="clear-btn" id="clear-width" title="清空宽度">清空</button>
         </div>
         <div class="preset-sizes">
           <button type="button" class="preset-btn" data-size="150">150px</button>
@@ -368,58 +379,82 @@ class ImageEditPanelView {
           <button type="button" class="preset-btn" data-size="400">400px</button>
         </div>
       </div>
-      
       <div class="dialog-section">
         <label class="dialog-label">垂直对齐</label>
+        <div class="current-value">当前值: ${this.getVerticalAlignDisplayName(
+          currentVerticalAlign
+        )}</div>
         <div class="vertical-align-controls">
-          <button type="button" class="align-btn" data-align="top" title="顶部对齐">Top</button>
-          <button type="button" class="align-btn" data-align="middle" title="居中对齐">Middle</button>
-          <button type="button" class="align-btn" data-align="bottom" title="底部对齐">Bottom</button>
-          <button type="button" class="align-btn" data-align="baseline" title="基线对齐">Baseline</button>
+          <button type="button" class="align-btn ${
+            currentVerticalAlign === 'top' ? 'active' : ''
+          }" data-align="top" title="顶部对齐">Top</button>
+          <button type="button" class="align-btn ${
+            currentVerticalAlign === 'middle' ? 'active' : ''
+          }" data-align="middle" title="居中对齐">Middle</button>
+          <button type="button" class="align-btn ${
+            currentVerticalAlign === 'bottom' ? 'active' : ''
+          }" data-align="bottom" title="底部对齐">Bottom</button>
+          <button type="button" class="align-btn ${
+            currentVerticalAlign === 'baseline' ? 'active' : ''
+          }" data-align="baseline" title="基线对齐">Baseline</button>
           <button type="button" class="clear-btn" id="clear-align" title="清空对齐">清空</button>
         </div>
       </div>
-      
       <div class="dialog-section">
-        <label class="dialog-label">Alt Text</label>
-        <input type="text" class="caption-input" value="${altText}" placeholder="描述这张图片...">
-        <div class="caption-actions">
-          <button type="button" class="apply-btn" id="apply-caption">确认</button>
-          <button type="button" class="clear-btn" id="clear-caption">清空</button>
-        </div>
+        <label class="dialog-label">Alt Text (替代文本)</label>
+        <div class="current-value">当前值: ${currentAltText || '未设置'}</div>
+        <input type="text" class="alt-input" id="alt-input" value="${currentAltText}" placeholder="描述这张图片...">
       </div>
 
-       <div class="dialog-section">
-        <label class="dialog-label">Caption</label>
-        <input type="text" class="caption-input" value="${altText}" placeholder="描述这张图片...">
-        <div class="caption-actions">
-          <button type="button" class="apply-btn" id="apply-caption">确认</button>
-          <button type="button" class="clear-btn" id="clear-caption">清空</button>
-        </div>
+      <div class="dialog-section">
+        <label class="dialog-label">Caption (图片说明)</label>
+        <div class="current-value">当前值: ${currentCaption || '未设置'}</div>
+        <input type="text" class="caption-input" id="caption-input" value="${currentCaption}" placeholder="图片说明文字...">
       </div>
 
-      <button>Save</button>
-      <button>Reset</button>
-      <button>Delete Image</button>
-      <div class="dialog-section danger-zone">
-        <button type="button" class="delete-btn" title="删除图片">🗑</button>
+      <div class="dialog-actions">
+        <button type="button" class="save-btn" id="save-changes">保存</button>
+        <button type="button" class="reset-btn" id="reset-changes">重置</button>
+        <button type="button" class="delete-btn" id="delete-image" title="删除图片">删除图片</button>
       </div>
     `;
 
     this.bindDialogEvents(dialog);
   }
 
+  private getVerticalAlignDisplayName(align: string): string {
+    const alignNames: Record<string, string> = {
+      top: '顶部对齐',
+      middle: '居中对齐',
+      bottom: '底部对齐',
+      baseline: '基线对齐',
+    };
+
+    return alignNames[align] || '未设置';
+  }
+
   private bindDialogEvents(dialog: HTMLElement) {
     const widthInput = dialog.querySelector('#width-input') as HTMLInputElement;
-    const applySizeBtn = dialog.querySelector('#apply-size') as HTMLButtonElement;
-    const clearSizeBtn = dialog.querySelector('#clear-size') as HTMLButtonElement;
+    const clearWidthBtn = dialog.querySelector('#clear-width') as HTMLButtonElement;
     const presetBtns = dialog.querySelectorAll('.preset-btn') as NodeListOf<HTMLButtonElement>;
-    const captionInput = dialog.querySelector('.caption-input') as HTMLInputElement;
-    const applyCaptionBtn = dialog.querySelector('#apply-caption') as HTMLButtonElement;
-    const clearCaptionBtn = dialog.querySelector('#clear-caption') as HTMLButtonElement;
-    const deleteBtn = dialog.querySelector('.delete-btn') as HTMLButtonElement;
+    const altInput = dialog.querySelector('#alt-input') as HTMLInputElement;
+    const captionInput = dialog.querySelector('#caption-input') as HTMLInputElement;
     const alignBtns = dialog.querySelectorAll('.align-btn') as NodeListOf<HTMLButtonElement>;
     const clearAlignBtn = dialog.querySelector('#clear-align') as HTMLButtonElement;
+    const saveBtn = dialog.querySelector('#save-changes') as HTMLButtonElement;
+    const resetBtn = dialog.querySelector('#reset-changes') as HTMLButtonElement;
+    const deleteBtn = dialog.querySelector('#delete-image') as HTMLButtonElement;
+
+    // 宽度输入事件
+    widthInput.addEventListener('input', () => {
+      this.state.tempChanges.width = widthInput.value || null;
+    });
+
+    // 清空宽度按钮
+    clearWidthBtn.addEventListener('click', () => {
+      widthInput.value = '';
+      this.state.tempChanges.width = null;
+    });
 
     // 预设大小按钮事件
     presetBtns.forEach((btn) => {
@@ -428,53 +463,19 @@ class ImageEditPanelView {
 
         if (size) {
           widthInput.value = size;
-          this.updateImageSizeFromInput(size);
+          this.state.tempChanges.width = size;
         }
       });
     });
 
-    // 确认大小按钮事件
-    applySizeBtn.addEventListener('click', () => {
-      const width = widthInput.value;
-
-      if (width) {
-        this.updateImageSizeFromInput(width);
-      }
+    // Alt Text 输入事件
+    altInput.addEventListener('input', () => {
+      this.state.tempChanges.altText = altInput.value;
     });
 
-    // 清空大小按钮事件
-    clearSizeBtn.addEventListener('click', () => {
-      widthInput.value = '';
-      this.updateImageAttributes({ width: null, height: null });
-    });
-
-    // 宽度输入框事件（回车确认）
-    widthInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        const width = widthInput.value;
-
-        if (width) {
-          this.updateImageSizeFromInput(width);
-        }
-      }
-    });
-
-    // 确认说明按钮事件
-    applyCaptionBtn.addEventListener('click', () => {
-      this.updateImageAttributes({ altText: captionInput.value });
-    });
-
-    // 清空说明按钮事件
-    clearCaptionBtn.addEventListener('click', () => {
-      captionInput.value = '';
-      this.updateImageAttributes({ altText: '' });
-    });
-
-    // 说明输入框事件（回车确认）
-    captionInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        this.updateImageAttributes({ altText: captionInput.value });
-      }
+    // Caption 输入事件
+    captionInput.addEventListener('input', () => {
+      this.state.tempChanges.caption = captionInput.value;
     });
 
     // 垂直对齐按钮事件
@@ -484,22 +485,193 @@ class ImageEditPanelView {
         btn.classList.add('active');
         const alignment = btn.dataset.align;
 
-        // TODO: 实现垂直对齐功能
-        console.log('垂直对齐设置为:', alignment);
+        this.state.tempChanges.verticalAlign = alignment || null;
       });
     });
 
     // 清空垂直对齐按钮事件
     clearAlignBtn.addEventListener('click', () => {
       alignBtns.forEach((btn) => btn.classList.remove('active'));
-      // TODO: 实现清空垂直对齐功能
-      console.log('垂直对齐已清空');
+      this.state.tempChanges.verticalAlign = null;
+    });
+
+    // 保存按钮事件
+    saveBtn.addEventListener('click', () => {
+      this.saveChanges();
+    });
+
+    // 重置按钮事件
+    resetBtn.addEventListener('click', () => {
+      this.resetChanges();
+      this.resetFormInputs(dialog);
     });
 
     // 删除按钮事件
     deleteBtn.addEventListener('click', () => {
       this.deleteImage();
     });
+
+    // 回车键保存
+    [widthInput, altInput, captionInput].forEach((input) => {
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          this.saveChanges();
+        }
+      });
+    });
+  }
+
+  private saveChanges() {
+    if (this.state.imagePos === null) return;
+
+    const { tr } = this.view.state;
+    const node = tr.doc.nodeAt(this.state.imagePos);
+
+    if (node && node.type.name === 'image' && node.attrs) {
+      const newAttrs = { ...node.attrs };
+
+      // 更新URL查询参数
+      const currentImageUrl = newAttrs.imageUrl || '';
+      const newImageUrl = this.updateImageUrlQueryParams(currentImageUrl);
+
+      if (newImageUrl !== currentImageUrl) {
+        newAttrs.imageUrl = newImageUrl;
+      }
+
+      // 同时更新节点属性（确保图片立即应用新样式）
+      if ('width' in this.state.tempChanges) {
+        newAttrs.width = this.state.tempChanges.width;
+      }
+      if ('verticalAlign' in this.state.tempChanges) {
+        newAttrs.verticalAlign = this.state.tempChanges.verticalAlign;
+      }
+      if ('caption' in this.state.tempChanges) {
+        newAttrs.caption = this.state.tempChanges.caption;
+      }
+      if ('altText' in this.state.tempChanges) {
+        newAttrs.altText = this.state.tempChanges.altText;
+      }
+
+      tr.setNodeMarkup(this.state.imagePos, null, newAttrs);
+      this.view.dispatch(tr);
+
+      // 清空临时更改
+      this.state.tempChanges = {};
+
+      // 更新节点引用
+      const updatedNode = this.view.state.doc.nodeAt(this.state.imagePos);
+
+      if (updatedNode) {
+        this.state.imageNode = updatedNode;
+      }
+
+      // 刷新对话框以显示保存后的状态
+      this.refreshDialog();
+    }
+  }
+
+  private updateImageUrlQueryParams(originalUrl: string): string {
+    try {
+      // 分离基础URL和查询参数
+      const [baseUrl, queryString] = originalUrl.split('?');
+
+      // 解析现有的查询参数
+      const queryParams = new Map<string, string>();
+
+      if (queryString) {
+        queryString.split('&').forEach((pair) => {
+          const [key, value] = pair.split('=');
+
+          if (key) {
+            queryParams.set(key, decodeURIComponent(value || ''));
+          }
+        });
+      }
+
+      // 应用临时更改
+      if ('width' in this.state.tempChanges) {
+        if (this.state.tempChanges.width) {
+          queryParams.set('width', this.state.tempChanges.width);
+        } else {
+          queryParams.delete('width');
+        }
+      }
+
+      if ('verticalAlign' in this.state.tempChanges) {
+        if (this.state.tempChanges.verticalAlign) {
+          queryParams.set('verticalAlign', this.state.tempChanges.verticalAlign);
+        } else {
+          queryParams.delete('verticalAlign');
+        }
+      }
+
+      if ('caption' in this.state.tempChanges) {
+        if (this.state.tempChanges.caption) {
+          queryParams.set('caption', this.state.tempChanges.caption);
+        } else {
+          queryParams.delete('caption');
+        }
+      }
+
+      // 重建URL
+      if (queryParams.size === 0) {
+        return baseUrl;
+      }
+
+      const newQueryString = Array.from(queryParams.entries())
+        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+        .join('&');
+
+      return `${baseUrl}?${newQueryString}`;
+    } catch (error) {
+      console.error('Error updating image URL query params:', error);
+      return originalUrl;
+    }
+  }
+
+  private resetChanges() {
+    this.state.tempChanges = {};
+  }
+
+  private resetFormInputs(dialog: HTMLElement) {
+    if (!this.state.imageNode) return;
+
+    const {
+      width = '',
+      verticalAlign = '',
+      altText = '',
+      caption = '',
+    } = this.state.imageNode.attrs;
+
+    // 重置输入框的值为原始值
+    const widthInput = dialog.querySelector('#width-input') as HTMLInputElement;
+    const altInput = dialog.querySelector('#alt-input') as HTMLInputElement;
+    const captionInput = dialog.querySelector('#caption-input') as HTMLInputElement;
+    const alignBtns = dialog.querySelectorAll('.align-btn') as NodeListOf<HTMLButtonElement>;
+
+    if (widthInput) {
+      widthInput.value = width;
+    }
+    if (altInput) {
+      altInput.value = altText;
+    }
+    if (captionInput) {
+      captionInput.value = caption;
+    }
+
+    // 重置垂直对齐按钮状态
+    alignBtns.forEach((btn) => {
+      btn.classList.remove('active');
+      if (btn.dataset.align === verticalAlign) {
+        btn.classList.add('active');
+      }
+    });
+  }
+
+  private refreshDialog() {
+    if (!this.state.dialog) return;
+
+    this.createDialogContent(this.state.dialog);
   }
 
   private deleteImage() {
@@ -513,40 +685,6 @@ class ImageEditPanelView {
 
     tr.delete(this.state.imagePos, this.state.imagePos + 1);
     this.view.dispatch(tr);
-  }
-
-  private updateImageSizeFromInput(widthValue: string) {
-    const width = widthValue ? parseInt(widthValue, 10) : null;
-    // Get other attr and merge with width, then edit recreateImage with new attrs
-  }
-
-  private updateImageAttributes(attrs: Record<string, any>) {
-    if (this.state.imagePos === null) return;
-
-    const { tr } = this.view.state;
-    const node = tr.doc.nodeAt(this.state.imagePos);
-
-    if (node && node.type.name === 'image' && node.attrs) {
-      const newAttrs = { ...node.attrs, ...attrs };
-
-      tr.setNodeMarkup(this.state.imagePos, null, newAttrs);
-      this.view.dispatch(tr);
-    }
-  }
-
-  private handleInput() {
-    // Clear existing timer
-    if (this.updateTimer) {
-      clearTimeout(this.updateTimer);
-    }
-
-    // Debounce updates to avoid excessive recalculation
-    this.updateTimer = window.setTimeout(() => {
-      if (this.state.isVisible && this.state.imageElement) {
-        this.updatePanelPosition();
-      }
-      this.updateTimer = null;
-    }, 50); // 50ms debounce
   }
 
   isVisible(): boolean {
@@ -578,8 +716,6 @@ class ImageEditPanelView {
     document.removeEventListener('click', this.handleDocumentClick);
     this.view.dom.removeEventListener('mouseenter', this.handleImageHover, true);
     this.view.dom.removeEventListener('mouseleave', this.handleImageLeave, true);
-    this.view.dom.removeEventListener('input', this.handleInput.bind(this));
-    this.view.dom.removeEventListener('keyup', this.handleInput.bind(this));
     this.view.dom.removeEventListener('scroll', this.handleScroll.bind(this), true);
     window.removeEventListener('scroll', this.handleScroll.bind(this), true);
     window.removeEventListener('resize', this.handleResize.bind(this));
