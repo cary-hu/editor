@@ -73,6 +73,9 @@ function getToolbarState(targetNode: MdNode) {
     }
   });
 
+
+  toolbarState.blockQuote = { active: false, disabled: true };
+
   return toolbarState;
 }
 

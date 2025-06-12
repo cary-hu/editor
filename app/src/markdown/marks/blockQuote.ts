@@ -1,12 +1,9 @@
 import { DOMOutputSpec } from 'prosemirror-model';
 import { Command } from 'prosemirror-commands';
-import { EditorCommand } from '@t/spec';
 import { clsWithMdPrefix } from '@/utils/dom';
 import Mark from '@/spec/mark';
 import {
   createTextNode,
-  createTextSelection,
-  replaceTextNode,
   splitAndExtendBlock,
 } from '@/helper/manipulation';
 import { getRangeInfo } from '../helper/pos';
@@ -56,30 +53,8 @@ export class BlockQuote extends Mark {
     };
   }
 
-  commands(): EditorCommand {
-    return () => (state, dispatch) => {
-      const { selection, doc } = state;
-      const { startFromOffset, endToOffset, startIndex, endIndex } = getRangeInfo(selection);
-      const isBlockQuote = reBlockQuote.test(getTextContent(doc, startIndex));
-      const tr = replaceTextNode({
-        state,
-        startIndex,
-        endIndex,
-        from: startFromOffset,
-        createText: (textContent) => this.createBlockQuoteText(textContent, isBlockQuote),
-      });
-
-      dispatch!(tr.setSelection(createTextSelection(tr, tr.mapping.map(endToOffset))));
-      return true;
-    };
-  }
-
   keymaps() {
-    const blockQuoteCommand = this.commands()();
-
     return {
-      'alt-q': blockQuoteCommand,
-      'alt-Q': blockQuoteCommand,
       Enter: this.extendBlockQuote(),
     };
   }
