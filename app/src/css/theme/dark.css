@@ -92,6 +92,16 @@
   background-color: #36383f;
 }
 
+/* blockquote popup dark theme styles */
+.toastui-editor-dark .toastui-editor-popup-add-blockquote ul li:hover {
+  background-color: #36383f;
+}
+
+.toastui-editor-dark .toastui-editor-popup-add-blockquote ul li.active {
+  background-color: #264f78;
+  color: #9cdcfe;
+}
+
 .toastui-editor-dark .toastui-editor-popup-body label {
   color: #9a9da3;
 }
