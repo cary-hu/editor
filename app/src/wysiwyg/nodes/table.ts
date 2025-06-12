@@ -264,14 +264,17 @@ export class Table extends NodeSchema {
         const selectedThead = startRowIdx === 0;
         const selectedAllTbodyRow = rowCount === totalRowCount - 1;
 
-        if (selectedAllTbodyRow || selectedThead) {
+        if (selectedAllTbodyRow) {
+          console.warn('Cannot remove all rows in the table. At least one row is required.')
+          return false;
+        }
+        if (selectedThead) {
+          console.warn('Cannot remove table header row.');
           return false;
         }
 
         for (let rowIdx = endRowIdx; rowIdx >= startRowIdx; rowIdx -= 1) {
           const { from, to } = getRowRanges(map, rowIdx, totalColumnCount);
-
-          // delete table row
           tr.delete(from - 1, to + 1);
         }
         dispatch!(tr);
