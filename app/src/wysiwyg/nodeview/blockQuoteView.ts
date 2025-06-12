@@ -98,13 +98,70 @@ export class BlockQuoteView implements NodeView {
       wrapper.appendChild(button);
     });
 
+    // Temporarily add to DOM to measure dimensions
+    wrapper.style.visibility = 'hidden';
+    wrapper.style.position = 'fixed';
+    wrapper.style.top = '-9999px';
     this.view.dom.parentElement!.appendChild(wrapper);
 
     const wrapperWidth = wrapper.clientWidth;
+    const wrapperHeight = wrapper.clientHeight;
+    
+    // Get viewport and container dimensions
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+    const containerRect = this.view.dom.parentElement!.getBoundingClientRect();
+    
+    // Calculate optimal position
+    let adjustedTop = top - 10;
+    let adjustedLeft = right - wrapperWidth - 5;
+    
+    // Check bottom boundary - if dropdown would go below viewport
+    const dropdownBottom = top + wrapperHeight;
+    if (dropdownBottom > viewportHeight) {
+      // Show above the element instead
+      adjustedTop = top - wrapperHeight - 10;
+    }
+    
+    // Check top boundary - ensure dropdown doesn't go above container
+    const minTop = containerRect.top + 10;
+    if (adjustedTop < minTop) {
+      // If showing above would go too high, find best position
+      const spaceAbove = top - containerRect.top;
+      const spaceBelow = viewportHeight - top;
+      
+      if (spaceBelow >= wrapperHeight + 20) {
+        // Use below if there's enough space
+        adjustedTop = top + 10;
+      } else if (spaceAbove >= wrapperHeight + 20) {
+        // Use above if there's enough space
+        adjustedTop = top - wrapperHeight - 10;
+      } else {
+        // Use the larger space and clip if necessary
+        if (spaceBelow > spaceAbove) {
+          adjustedTop = top + 10;
+        } else {
+          adjustedTop = Math.max(minTop, top - wrapperHeight - 10);
+        }
+      }
+    }
+    
+    // Check right boundary - ensure dropdown doesn't go off-screen to the left
+    if (adjustedLeft < 10) {
+      adjustedLeft = 10;
+    }
+    
+    // Check left boundary - ensure dropdown doesn't go off-screen to the right
+    if (adjustedLeft + wrapperWidth > viewportWidth - 10) {
+      adjustedLeft = viewportWidth - wrapperWidth - 10;
+    }
 
+    // Apply final positioning
     css(wrapper, {
-      top: `${top - 10}px`,
-      left: `${right - wrapperWidth - 5}px`,
+      visibility: 'visible',
+      position: 'fixed',
+      top: `${adjustedTop}px`,
+      left: `${adjustedLeft}px`,
       right: 'unset',
     });
 
