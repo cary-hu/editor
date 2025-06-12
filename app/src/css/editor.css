@@ -8,18 +8,35 @@
   position: relative;
 }
 
-:not(.auto-height) > .toastui-editor-defaultUI,
-:not(.auto-height) > .toastui-editor-defaultUI > .toastui-editor-main {
+:not(.auto-height)>.toastui-editor-defaultUI,
+:not(.auto-height)>.toastui-editor-defaultUI>.toastui-editor-main {
   display: -ms-flexbox;
   display: flex;
   -ms-flex-direction: column;
   flex-direction: column;
 }
 
-:not(.auto-height) > .toastui-editor-defaultUI > .toastui-editor-main {
+:not(.auto-height)>.toastui-editor-defaultUI>.toastui-editor-main {
   -ms-flex: 1;
   flex: 1;
 }
+
+/* 
+  z-index basis
+  2: Toolbar, mode switch
+  1: - preview, wysiwyg, editor
+*/
+.toastui-editor-context-menu,
+.toastui-editor-mode-switch,
+.toastui-editor-toolbar {
+  z-index: 2;
+}
+
+.toastui-editor-main,
+.toastui-edit-panel-container {
+  z-index: 1;
+}
+
 
 /* toastui editor */
 .toastui-editor-md-container::after,
@@ -62,7 +79,7 @@
   height: 100%;
 }
 
-.toastui-editor-md-container .toastui-editor-md-preview > p:first-child {
+.toastui-editor-md-container .toastui-editor-md-preview>p:first-child {
   margin-top: 0 !important;
 }
 
@@ -70,21 +87,21 @@
   padding-top: 8px;
 }
 
-.toastui-editor-main .toastui-editor-md-tab-style > .toastui-editor,
-.toastui-editor-main .toastui-editor-md-tab-style > .toastui-editor-md-preview {
+.toastui-editor-main .toastui-editor-md-tab-style>.toastui-editor,
+.toastui-editor-main .toastui-editor-md-tab-style>.toastui-editor-md-preview {
   width: 100%;
   display: none;
 }
 
-.toastui-editor-main .toastui-editor-md-tab-style > .active {
+.toastui-editor-main .toastui-editor-md-tab-style>.active {
   display: block;
 }
 
-.toastui-editor-main .toastui-editor-md-vertical-style > .toastui-editor-tabs {
+.toastui-editor-main .toastui-editor-md-vertical-style>.toastui-editor-tabs {
   display: none;
 }
 
-.toastui-editor-main .toastui-editor-md-tab-style > .toastui-editor-tabs {
+.toastui-editor-main .toastui-editor-md-tab-style>.toastui-editor-tabs {
   display: block;
 }
 
@@ -128,7 +145,7 @@
   height: inherit;
 }
 
-.toastui-editor-ww-container > .toastui-editor {
+.toastui-editor-ww-container>.toastui-editor {
   height: inherit;
   position: relative;
   width: 100%;
@@ -372,7 +389,7 @@
   border-radius: 50px;
 }
 
-.toastui-editor-defaultUI-toolbar input:checked + .switch {
+.toastui-editor-defaultUI-toolbar input:checked+.switch {
   background-color: #acddfa;
 }
 
@@ -389,7 +406,7 @@
   border-radius: 50%;
 }
 
-.toastui-editor-defaultUI-toolbar input:checked + .switch::before {
+.toastui-editor-defaultUI-toolbar input:checked+.switch::before {
   background-color: #00a9ff;
   -webkit-transform: translateX(12px);
   -moz-transform: translateX(12px);
@@ -891,11 +908,12 @@
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2),
-  only screen and (min--moz-device-pixel-ratio: 2),
-  only screen and (-o-min-device-pixel-ratio: 2/1),
-  only screen and (min-device-pixel-ratio: 2),
-  only screen and (min-resolution: 192dpi),
-  only screen and (min-resolution: 2dppx) {
+only screen and (min--moz-device-pixel-ratio: 2),
+only screen and (-o-min-device-pixel-ratio: 2/1),
+only screen and (min-device-pixel-ratio: 2),
+only screen and (min-resolution: 192dpi),
+only screen and (min-resolution: 2dppx) {
+
   .toastui-editor-toolbar-icons,
   .toastui-editor-context-menu span::before {
     background: url('../img/toastui-editor-2x.png') no-repeat;
@@ -1214,8 +1232,8 @@
 }
 
 /* Show overlay when hovering delete button */
-.toastui-editor-row-delete-container:hover + .toastui-editor-row-delete-overlay,
-.toastui-editor-col-delete-container:hover + .toastui-editor-col-delete-overlay {
+.toastui-editor-row-delete-container:hover+.toastui-editor-row-delete-overlay,
+.toastui-editor-col-delete-container:hover+.toastui-editor-col-delete-overlay {
   opacity: 1;
 }
 
@@ -1249,8 +1267,8 @@
 }
 
 /* Show highlight when hovering add button containers */
-.toastui-editor-row-divider-container:hover + .toastui-editor-row-add-highlight,
-.toastui-editor-col-divider-container:hover + .toastui-editor-col-add-highlight {
+.toastui-editor-row-divider-container:hover+.toastui-editor-row-add-highlight,
+.toastui-editor-col-divider-container:hover+.toastui-editor-col-add-highlight {
   opacity: 1;
 }
 
@@ -1590,7 +1608,6 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 24;
 }
 
 .toastui-edit-panel-container .toastui-editor-image-edit-dialog {
