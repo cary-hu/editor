@@ -569,3 +569,110 @@
 .toastui-editor-dark .toastui-editor-context-menu::-webkit-scrollbar-corner {
   background: #232428;
 }
+
+/* Dark theme styles for image edit dialog */
+.toastui-editor-dark .toastui-editor-image-edit-dialog {
+  background: #2d2d30;
+  border-color: #464649;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  color: #eee;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .dialog-label {
+  color: #eee;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .current-value {
+  color: #9a9da3;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .size-input,
+.toastui-editor-dark .toastui-editor-image-edit-dialog .alt-input,
+.toastui-editor-dark .toastui-editor-image-edit-dialog .caption-input {
+  background-color: #121212;
+  border-color: #464649;
+  color: #eee;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .size-input:focus,
+.toastui-editor-dark .toastui-editor-image-edit-dialog .alt-input:focus,
+.toastui-editor-dark .toastui-editor-image-edit-dialog .caption-input:focus {
+  border-color: #67ccff;
+  box-shadow: 0 0 0 2px rgba(103, 204, 255, 0.25);
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .size-unit {
+  color: #9a9da3;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .preset-btn {
+  background: #36383f;
+  border-color: #464649;
+  color: #eee;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .preset-btn:hover {
+  background: #464649;
+  border-color: #595c68;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .align-btn {
+  background: #36383f;
+  border-color: #464649;
+  color: #eee;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .align-btn:hover {
+  background: #464649;
+  border-color: #595c68;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .align-btn.active {
+  background: #67ccff;
+  color: #121212;
+  border-color: #67ccff;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .clear-btn {
+  background: #555762;
+  color: #eee;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .clear-btn:hover {
+  background: #666974;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .dialog-actions {
+  border-top-color: #464649;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .save-btn {
+  background: #56d364;
+  color: #121212;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .save-btn:hover {
+  background: #4ac959;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .reset-btn {
+  background: #555762;
+  color: #eee;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .reset-btn:hover {
+  background: #666974;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .delete-btn {
+  background: #f85149;
+  color: #fff;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .delete-btn:hover {
+  background: #f73e37;
+}
+
+.toastui-editor-dark .toastui-editor-image-edit-dialog .danger-zone {
+  border-top-color: #464649;
+}
