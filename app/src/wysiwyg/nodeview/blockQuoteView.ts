@@ -105,31 +105,37 @@ export class BlockQuoteView implements NodeView {
     this.view.dom.parentElement!.appendChild(wrapper);
 
     const wrapperWidth = wrapper.clientWidth;
-    const wrapperHeight = wrapper.clientHeight;
-    
-    // Get viewport and container dimensions
+    const wrapperHeight = wrapper.clientHeight;    // Get viewport and container dimensions
     const viewportHeight = window.innerHeight;
     const viewportWidth = window.innerWidth;
     const containerRect = this.view.dom.parentElement!.getBoundingClientRect();
-    
+
+    // Find mode switch element and get its height
+    const editorContainer = this.view.dom.closest('.toastui-editor-defaultUI');
+    const modeSwitch = editorContainer?.querySelector('.toastui-editor-mode-switch');
+    const modeSwitchHeight = modeSwitch ? modeSwitch.getBoundingClientRect().height : 28; // fallback to 28px
+
+    // Calculate available space considering mode switch
+    const effectiveViewportBottom = viewportHeight - modeSwitchHeight - 10; // 10px padding
+
     // Calculate optimal position
     let adjustedTop = top - 10;
     let adjustedLeft = right - wrapperWidth - 5;
-    
-    // Check bottom boundary - if dropdown would go below viewport
+
+    // Check bottom boundary - ensure dropdown doesn't overlap with mode switch
     const dropdownBottom = top + wrapperHeight;
-    if (dropdownBottom > viewportHeight) {
+    if (dropdownBottom > effectiveViewportBottom) {
       // Show above the element instead
       adjustedTop = top - wrapperHeight - 10;
     }
-    
+
     // Check top boundary - ensure dropdown doesn't go above container
     const minTop = containerRect.top + 10;
     if (adjustedTop < minTop) {
       // If showing above would go too high, find best position
       const spaceAbove = top - containerRect.top;
-      const spaceBelow = viewportHeight - top;
-      
+      const spaceBelow = effectiveViewportBottom - top;
+
       if (spaceBelow >= wrapperHeight + 20) {
         // Use below if there's enough space
         adjustedTop = top + 10;
@@ -145,12 +151,12 @@ export class BlockQuoteView implements NodeView {
         }
       }
     }
-    
+
     // Check right boundary - ensure dropdown doesn't go off-screen to the left
     if (adjustedLeft < 10) {
       adjustedLeft = 10;
     }
-    
+
     // Check left boundary - ensure dropdown doesn't go off-screen to the right
     if (adjustedLeft + wrapperWidth > viewportWidth - 10) {
       adjustedLeft = viewportWidth - wrapperWidth - 10;
