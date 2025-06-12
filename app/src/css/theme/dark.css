@@ -538,3 +538,34 @@
 .toastui-editor-dark .toastui-editor-contents blockquote[data-block-quote-type="success"] ol {
   color: #56d364;
 }
+.toastui-editor-dark .toastui-editor-md-preview::-webkit-scrollbar-track,
+.toastui-editor-dark .toastui-editor-ww-container .toastui-editor-contents::-webkit-scrollbar-track,
+.toastui-editor-dark .ProseMirror::-webkit-scrollbar-track,
+.toastui-editor-dark .toastui-editor-popup::-webkit-scrollbar-track,
+.toastui-editor-dark .toastui-editor-context-menu::-webkit-scrollbar-track {
+  background: #232428;
+}
+
+.toastui-editor-dark .toastui-editor-md-preview::-webkit-scrollbar-thumb,
+.toastui-editor-dark .toastui-editor-ww-container .toastui-editor-contents::-webkit-scrollbar-thumb,
+.toastui-editor-dark .ProseMirror::-webkit-scrollbar-thumb,
+.toastui-editor-dark .toastui-editor-popup::-webkit-scrollbar-thumb,
+.toastui-editor-dark .toastui-editor-context-menu::-webkit-scrollbar-thumb {
+  background: #555762;
+}
+
+.toastui-editor-dark .toastui-editor-md-preview::-webkit-scrollbar-thumb:hover,
+.toastui-editor-dark .toastui-editor-ww-container .toastui-editor-contents::-webkit-scrollbar-thumb:hover,
+.toastui-editor-dark .ProseMirror::-webkit-scrollbar-thumb:hover,
+.toastui-editor-dark .toastui-editor-popup::-webkit-scrollbar-thumb:hover,
+.toastui-editor-dark .toastui-editor-context-menu::-webkit-scrollbar-thumb:hover {
+  background: #6c7283;
+}
+
+.toastui-editor-dark .toastui-editor-md-preview::-webkit-scrollbar-corner,
+.toastui-editor-dark .toastui-editor-ww-container .toastui-editor-contents::-webkit-scrollbar-corner,
+.toastui-editor-dark .ProseMirror::-webkit-scrollbar-corner,
+.toastui-editor-dark .toastui-editor-popup::-webkit-scrollbar-corner,
+.toastui-editor-dark .toastui-editor-context-menu::-webkit-scrollbar-corner {
+  background: #232428;
+}
