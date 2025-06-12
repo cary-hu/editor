@@ -1,9 +1,11 @@
-import { Plugin, TextSelection } from 'prosemirror-state';
+import { Plugin } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Emitter } from '@t/event';
 
 import { TableOffsetMap } from '@/wysiwyg/helper/tableOffsetMap';
 import CellSelection from '@/wysiwyg/plugins/selection/cellSelection';
+import { EditPanel } from './editPanel';
+import { cls } from '@/utils/dom';
 
 interface TableEditPanelState {
   isVisible: boolean;
@@ -12,69 +14,38 @@ interface TableEditPanelState {
   panel: HTMLElement | null;
 }
 
-class TableEditPanelView {
-  private eventEmitter: Emitter;
-
-  private view: EditorView;
-
-  private state: TableEditPanelState;
-
-  private lastShowTime = 0;
-
-  private updateTimer: number | null = null;
+class TableEditPanelView extends EditPanel {
+  private state: TableEditPanelState = {
+    isVisible: false,
+    tableElement: null,
+    overlay: null,
+    panel: null,
+  };
 
   constructor(view: EditorView, eventEmitter: Emitter) {
-    this.view = view;
-    this.eventEmitter = eventEmitter;
-    this.state = {
-      isVisible: false,
-      tableElement: null,
-      overlay: null,
-      panel: null,
-    };
-    this.handleDocumentClick = this.handleDocumentClick.bind(this);
+    super(view, eventEmitter);
+
+  }
+
+  protected preparePanel(): void {
     this.handleTableHover = this.handleTableHover.bind(this);
     this.handleTableLeave = this.handleTableLeave.bind(this);
     this.init();
   }
 
   private init() {
-    // Listen for clicks on the document
-    document.addEventListener('click', this.handleDocumentClick);
-
-    // Listen for table hover events
     this.view.dom.addEventListener('mouseenter', this.handleTableHover, true);
     this.view.dom.addEventListener('mouseleave', this.handleTableLeave, true);
-
-    // Listen for scroll events to update panel position
-    window.addEventListener('scroll', this.updatePanelPosition.bind(this), true);
-    window.addEventListener('resize', this.updatePanelPosition.bind(this));
-
-    // Listen for input events to update panel when content changes
-    this.view.dom.addEventListener('input', this.handleInput.bind(this));
-    this.view.dom.addEventListener('keyup', this.handleInput.bind(this));
-  }
-
-  private handleDocumentClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    const now = Date.now();
-
-    // Don't hide panel immediately after showing it (prevents event bubbling issues)
-    if (now - this.lastShowTime < 100) {
-      return;
-    }
-
-    // If clicking outside table or panel, hide the panel
-    if (!this.isTableOrPanelElement(target)) {
-      this.hidePanel();
-    }
   }
 
   private handleTableHover(event: MouseEvent) {
     const target = event.target as HTMLElement;
     const tableElement = target.closest('table');
+    if (!tableElement) {
+      return;
+    }
 
-    if (tableElement && !this.state.isVisible) {
+    if (this.state.tableElement !== tableElement) {
       this.showPanel(tableElement);
     }
   }
@@ -92,12 +63,11 @@ class TableEditPanelView {
     const tableElement = target.closest('table');
 
     if (tableElement && this.state.tableElement === tableElement) {
-      // Add a small delay to prevent flickering when moving between table cells
       // Double check we're still not hovering over table or panel
       const hoveredElement = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement;
 
       if (hoveredElement && !this.isTableOrPanelElement(hoveredElement)) {
-        this.hidePanel();
+        this.hide();
       }
     }
   }
@@ -116,10 +86,9 @@ class TableEditPanelView {
 
   private showPanel(tableElement: HTMLElement) {
     // Hide existing panel if any
-    this.hidePanel();
+    this.hide();
 
     this.state.tableElement = tableElement;
-    this.lastShowTime = Date.now();
     this.createPanel();
     this.createOverlay();
     this.createRowDividers();
@@ -127,7 +96,7 @@ class TableEditPanelView {
     this.state.isVisible = true;
   }
 
-  private hidePanel() {
+  protected hide() {
     if (this.state.panel) {
       this.state.panel.remove();
       this.state.panel = null;
@@ -140,8 +109,10 @@ class TableEditPanelView {
     this.state.tableElement = null;
   }
 
-  private updatePanelPosition() {
-    if (!this.state.panel || !this.state.tableElement) return;
+  protected updatePosition() {
+    if (!this.state.isVisible || !this.state.tableElement || !this.isPanelReady || !this.state.panel) {
+      return;
+    }
 
     const tableRect = this.state.tableElement.getBoundingClientRect();
 
@@ -149,6 +120,8 @@ class TableEditPanelView {
     this.state.panel.style.top = `${tableRect.top}px`;
     this.state.panel.style.width = `${tableRect.width}px`;
     this.state.panel.style.height = `${tableRect.height}px`;
+
+    this.recreateDividers();
   }
 
   private createPanel() {
@@ -156,7 +129,7 @@ class TableEditPanelView {
 
     const panel = document.createElement('div');
 
-    panel.className = 'toastui-editor-table-edit-panel';
+    panel.className = cls('table-edit-panel');
 
     // Position the panel to cover the table
     const tableRect = this.state.tableElement.getBoundingClientRect();
@@ -178,12 +151,11 @@ class TableEditPanelView {
 
       // Hide panel if not moving to the table or other panel elements
       if (!relatedTarget || !this.isTableOrPanelElement(relatedTarget)) {
-        this.hidePanel();
+        this.hide();
       }
     });
 
-    // Add to document body instead of editor DOM to avoid ProseMirror DOMObserver
-    document.body.appendChild(panel);
+    this.editPanelContainer.appendChild(panel);
     this.state.panel = panel;
 
     // Create delete table button
@@ -195,7 +167,7 @@ class TableEditPanelView {
 
     const overlay = document.createElement('div');
 
-    overlay.className = 'toastui-editor-table-edit-overlay';
+    overlay.className = cls('table-edit-overlay');
 
     this.state.panel.appendChild(overlay);
     this.state.overlay = overlay;
@@ -206,7 +178,7 @@ class TableEditPanelView {
 
     const deleteBtn = document.createElement('div');
 
-    deleteBtn.className = 'toastui-editor-delete-table-btn';
+    deleteBtn.className = cls('delete-table-btn');
     deleteBtn.innerHTML = '×';
     deleteBtn.title = 'Delete table';
 
@@ -223,7 +195,7 @@ class TableEditPanelView {
     if (!this.state.tableElement) return;
 
     // Hide the panel first
-    this.hidePanel();
+    this.hide();
 
     // Use event emitter to execute the removeTable command
     this.eventEmitter.emit('command', 'removeTable');
@@ -466,8 +438,6 @@ class TableEditPanelView {
     this.eventEmitter.emit('command', command);
 
     this.setCellSelection(tablePos, direction);
-    // Re-show panel and select newly added row after a longer delay to allow DOM to update
-    this.showPanel(this.state.tableElement);
   }
 
   private addColumn(columnIndex: number) {
@@ -544,8 +514,6 @@ class TableEditPanelView {
     this.eventEmitter.emit('command', command);
 
     this.setCellSelection(tablePos, direction);
-    // Re-show panel and select newly added column after a longer delay to allow DOM to update
-    this.showPanel(this.state.tableElement);
   }
 
   /**
@@ -644,22 +612,6 @@ class TableEditPanelView {
     }
   }
 
-  private handleInput() {
-    // Clear existing timer
-    if (this.updateTimer) {
-      clearTimeout(this.updateTimer);
-    }
-
-    // Debounce updates to avoid excessive recalculation
-    this.updateTimer = window.setTimeout(() => {
-      if (this.state.isVisible && this.state.tableElement) {
-        this.updatePanelPosition();
-        this.recreateDividers();
-      }
-      this.updateTimer = null;
-    }, 50); // 50ms debounce
-  }
-
   private recreateDividers() {
     if (!this.state.panel || !this.state.tableElement) return;
 
@@ -693,41 +645,17 @@ class TableEditPanelView {
     }
   }
 
-  isVisible(): boolean {
-    return this.state.isVisible;
-  }
-
-  handleDocumentChange() {
-    // Clear existing timer
-    if (this.updateTimer) {
-      clearTimeout(this.updateTimer);
+  protected documentChanged() {
+    if (!this.state.isVisible || !this.state.tableElement || !this.isPanelReady) {
+      return;
     }
-
-    // Debounce updates to avoid excessive recalculation during rapid changes
-    this.updateTimer = window.setTimeout(() => {
-      if (this.state.isVisible && this.state.tableElement) {
-        this.updatePanelPosition();
-        this.recreateDividers();
-      }
-      this.updateTimer = null;
-    }, 50); // 50ms debounce
+    this.updatePosition();
   }
 
   destroy() {
-    // Clear any pending updates
-    if (this.updateTimer) {
-      clearTimeout(this.updateTimer);
-      this.updateTimer = null;
-    }
-
-    document.removeEventListener('click', this.handleDocumentClick);
     this.view.dom.removeEventListener('mouseenter', this.handleTableHover, true);
     this.view.dom.removeEventListener('mouseleave', this.handleTableLeave, true);
-    this.view.dom.removeEventListener('input', this.handleInput.bind(this));
-    this.view.dom.removeEventListener('keyup', this.handleInput.bind(this));
-    window.removeEventListener('scroll', this.updatePanelPosition.bind(this), true);
-    window.removeEventListener('resize', this.updatePanelPosition.bind(this));
-    this.hidePanel();
+    this.hide();
   }
 }
 
@@ -738,23 +666,6 @@ export function tableEditPanel(eventEmitter: Emitter) {
     view(editorView) {
       tableEditPanelView = new TableEditPanelView(editorView, eventEmitter);
       return tableEditPanelView;
-    },
-    state: {
-      init() {
-        return null;
-      },
-      apply(tr, oldState) {
-        // When the document changes, update the panel if it's visible
-        if (tableEditPanelView && tableEditPanelView.isVisible() && tr.docChanged) {
-          // Use requestAnimationFrame to ensure DOM has updated
-          requestAnimationFrame(() => {
-            if (tableEditPanelView) {
-              tableEditPanelView.handleDocumentChange();
-            }
-          });
-        }
-        return oldState;
-      },
     },
   });
 }
