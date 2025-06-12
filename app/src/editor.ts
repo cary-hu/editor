@@ -12,6 +12,7 @@ import { render } from './ui/vdom/renderer';
  */
 class ToastUIEditor extends EditorCore {
   private defaultUI!: DefaultUI;
+  private themeObserver!: MutationObserver;
 
   constructor(options: EditorOptions) {
     super(options);
@@ -38,7 +39,10 @@ class ToastUIEditor extends EditorCore {
     this.defaultUI = {
       insertToolbarItem: layoutComp.insertToolbarItem.bind(layoutComp),
       removeToolbarItem: layoutComp.removeToolbarItem.bind(layoutComp),
-      destroy,
+      destroy: () => {
+        this.removeThemeObserver();
+        destroy();
+      },
     };
 
     this.pluginInfo.toolbarItems?.forEach((toolbarItem) => {
@@ -46,7 +50,39 @@ class ToastUIEditor extends EditorCore {
 
       this.defaultUI.insertToolbarItem({ groupIndex, itemIndex }, item);
     });
+
+    this.initThemeObserver();
+
     this.eventEmitter.emit('loadUI', this);
+  }
+
+  private initThemeObserver() {
+    // Check if there's already a theme attribute on the document element
+    const initialTheme = document.documentElement.getAttribute('data-toast-ui-theme');
+    if (initialTheme && initialTheme !== this.options.theme) {
+      this.setTheme(initialTheme);
+    }
+
+    this.themeObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'data-toast-ui-theme') {
+          const target = mutation.target as HTMLElement;
+          const newTheme = target.getAttribute('data-toast-ui-theme');
+          if (newTheme && newTheme !== this.options.theme) {
+            this.setTheme(newTheme);
+          }
+        }
+      }
+    });
+
+    this.themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-toast-ui-theme']
+    });
+  }
+
+  private removeThemeObserver() {
+    this.themeObserver?.disconnect();
   }
 
   /**
