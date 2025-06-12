@@ -23,6 +23,7 @@ export type EventTypes =
   | 'afterPreviewRender'
   | 'updatePreview'
   | 'changeMode'
+  | 'changeTheme'
   | 'needChangeMode'
   | 'command'
   | 'changePreviewStyle'

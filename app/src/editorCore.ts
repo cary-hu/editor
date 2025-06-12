@@ -346,6 +346,16 @@ class ToastUIEditorCore {
   static setLanguage(code: string | string[], data: Record<string, string>) {
     i18n.setLanguage(code, data);
   }
+  /**
+   * Set theme
+   * @param theme - theme name, can be 'light', 'dark', or custom theme name, will add class name toastui-editor-{theme}
+   */
+  setTheme(theme: string) {
+    if (this.options.theme !== theme) {
+      this.options.theme = theme;
+      this.eventEmitter.emit('changeTheme', theme);
+    }
+  }
 
   /**
    * change preview style

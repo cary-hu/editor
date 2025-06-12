@@ -26,6 +26,7 @@ interface State {
   editorType: EditorType;
   previewStyle: PreviewStyle;
   hide: boolean;
+  theme: string;
 }
 
 export class Layout extends Component<Props, State> {
@@ -33,12 +34,13 @@ export class Layout extends Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    const { editorType, previewStyle } = props;
+    const { editorType, previewStyle, theme } = props;
 
     this.state = {
       editorType,
       previewStyle,
       hide: false,
+      theme,
     };
     this.addEvent();
   }
@@ -60,8 +62,8 @@ export class Layout extends Component<Props, State> {
   }
 
   render() {
-    const { eventEmitter, hideModeSwitch, toolbarItems, theme } = this.props;
-    const { hide, previewStyle, editorType } = this.state;
+    const { eventEmitter, hideModeSwitch, toolbarItems } = this.props;
+    const { hide, previewStyle, editorType, theme } = this.state;
     const displayClassName = hide ? ' hidden' : '';
     const editorTypeClassName = cls(editorType === 'markdown' ? 'md-mode' : 'ww-mode');
     const previewClassName = `${cls('md')}-${previewStyle}-style`;
@@ -111,7 +113,14 @@ export class Layout extends Component<Props, State> {
     eventEmitter.listen('show', this.show);
     eventEmitter.listen('changeMode', this.changeMode);
     eventEmitter.listen('changePreviewStyle', this.changePreviewStyle);
+    eventEmitter.listen('changeTheme', this.changeTheme);
   }
+
+  private changeTheme = (theme: string) => {
+    if (this.state.theme !== theme) {
+      this.setState({ theme });
+    }
+  };
 
   private changeMode = (editorType: EditorType) => {
     if (editorType !== this.state.editorType) {
