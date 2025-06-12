@@ -808,6 +808,7 @@
   pointer-events: none;
   display: block;
   visibility: visible;
+  overflow: visible;
 }
 
 /* Delete table button */
@@ -852,35 +853,6 @@
 .toastui-editor-table-col-divider {
   position: absolute;
   pointer-events: auto;
-}
-
-.toastui-editor-add-row-btn,
-.toastui-editor-add-col-btn {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background-color: #007acc;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  border: none;
-  display: none;
-  z-index: 1;
-  line-height: 1;
-  justify-content: center;
-  align-items: center;
-}
-
-.toastui-editor-add-row-btn:hover,
-.toastui-editor-add-col-btn:hover {
-  background-color: #3367d6;
-  transform: translate(-50%, -50%) scale(1.1);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .toastui-editor-tooltip {
@@ -1169,13 +1141,122 @@
   height: 100%;
 }
 
+/* Row delete button container - positioned at the left side of rows */
+.toastui-editor-row-delete-container {
+  position: absolute;
+  left: 8px;
+  width: 20px;
+  height: 100%;
+  cursor: default;
+  z-index: 26;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.toastui-editor-row-delete-container:hover {
+  opacity: 1;
+}
+
+/* Column delete button container - positioned at the top of columns */
+.toastui-editor-col-delete-container {
+  position: absolute;
+  top: 8px;
+  width: 100%;
+  height: 20px;
+  cursor: default;
+  z-index: 26;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.toastui-editor-col-delete-container:hover {
+  opacity: 1;
+}
+
+/* Red overlay for rows/columns to be deleted */
+.toastui-editor-row-delete-overlay {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(220, 53, 69, 0.2);
+  border: 2px solid #dc3545;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 25;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.toastui-editor-col-delete-overlay {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(220, 53, 69, 0.2);
+  border: 2px solid #dc3545;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 25;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Show overlay when hovering delete button */
+.toastui-editor-row-delete-container:hover + .toastui-editor-row-delete-overlay,
+.toastui-editor-col-delete-container:hover + .toastui-editor-col-delete-overlay {
+  opacity: 1;
+}
+
+/* Highlight borders for add buttons - show insertion boundaries */
+.toastui-editor-row-add-highlight {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #007acc;
+  border-radius: 1px;
+  pointer-events: none;
+  z-index: 25;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  box-shadow: 0 0 4px rgba(0, 122, 204, 0.5);
+}
+
+.toastui-editor-col-add-highlight {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: #007acc;
+  border-radius: 1px;
+  pointer-events: none;
+  z-index: 25;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  box-shadow: 0 0 4px rgba(0, 122, 204, 0.5);
+}
+
+/* Show highlight when hovering add button containers */
+.toastui-editor-row-divider-container:hover + .toastui-editor-row-add-highlight,
+.toastui-editor-col-divider-container:hover + .toastui-editor-col-add-highlight {
+  opacity: 1;
+}
+
 /* Redesigned add row/column buttons */
 .toastui-editor-add-row-btn,
 .toastui-editor-add-col-btn {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
   width: 18px;
   height: 18px;
   border-radius: 50%;
@@ -1185,17 +1266,65 @@
   font-weight: bold;
   cursor: pointer;
   border: none;
-  display: none;
-  z-index: 1;
+  display: flex;
+  visibility: hidden;
+  z-index: 2;
   line-height: 1;
   justify-content: center;
   align-items: center;
 }
 
-.toastui-editor-add-row-btn:hover,
+/* Row buttons positioned at the right */
+.toastui-editor-add-row-btn {
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Column buttons positioned at the bottom */
+.toastui-editor-add-col-btn {
+  left: 50%;
+  bottom: 2px;
+  transform: translateX(-50%);
+}
+
+.toastui-editor-add-row-btn:hover {
+  background-color: #3367d6;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
 .toastui-editor-add-col-btn:hover {
   background-color: #3367d6;
-  transform: translate(-50%, -50%) scale(1.1);
+  transform: translateX(-50%) scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Remove row/column buttons */
+.toastui-editor-remove-row-btn,
+.toastui-editor-remove-col-btn {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #dc3545;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  visibility: hidden;
+  z-index: 2;
+  line-height: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+.toastui-editor-remove-row-btn:hover,
+.toastui-editor-remove-col-btn:hover {
+  background-color: #c82333;
+  transform: scale(1.1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 

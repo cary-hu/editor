@@ -78,8 +78,16 @@ class TableEditPanelView extends EditPanel {
       element.closest('.toastui-editor-table-edit-panel') ||
       element.classList.contains('toastui-editor-add-row-btn') ||
       element.classList.contains('toastui-editor-add-col-btn') ||
+      element.classList.contains('toastui-editor-remove-row-btn') ||
+      element.classList.contains('toastui-editor-remove-col-btn') ||
       element.classList.contains('toastui-editor-row-divider-container') ||
       element.classList.contains('toastui-editor-col-divider-container') ||
+      element.classList.contains('toastui-editor-row-delete-container') ||
+      element.classList.contains('toastui-editor-col-delete-container') ||
+      element.classList.contains('toastui-editor-row-delete-overlay') ||
+      element.classList.contains('toastui-editor-col-delete-overlay') ||
+      element.classList.contains('toastui-editor-row-add-highlight') ||
+      element.classList.contains('toastui-editor-col-add-highlight') ||
       element.classList.contains('toastui-editor-delete-table-btn')
     );
   }
@@ -207,22 +215,23 @@ class TableEditPanelView extends EditPanel {
     const rows = this.state.tableElement.querySelectorAll('tr');
     const panelRect = this.state.tableElement.getBoundingClientRect();
 
-    // Create hover zones instead of visible buttons
+    // Calculate how many body rows exist (total rows minus header)
+    const bodyRowCount = rows.length - 1;
+
+    // Create hover zones for adding rows and separate delete containers for body rows
     rows.forEach((row, index) => {
       const rowRect = row.getBoundingClientRect();
 
       // Calculate position relative to the panel (which uses fixed positioning)
       const dividerY = rowRect.bottom - panelRect.top;
 
-      // Create hover container that includes both the zone and button
+      // Create hover container for add row button
       const hoverContainer = document.createElement('div');
-
       hoverContainer.className = 'toastui-editor-row-divider-container';
-      hoverContainer.style.top = `${dividerY - 7}px`; // Expanded hover area
+      hoverContainer.style.top = `${dividerY - 5}px`; // Adjusted for 10px height container to center properly
 
       // Create add row button (initially hidden)
       const addRowBtn = document.createElement('div');
-
       addRowBtn.className = 'toastui-editor-add-row-btn';
       addRowBtn.innerHTML = '+';
       addRowBtn.title = index === 0 ? 'Add row after header' : 'Add row below';
@@ -230,32 +239,87 @@ class TableEditPanelView extends EditPanel {
       // Append button to container
       hoverContainer.appendChild(addRowBtn);
 
-      // Hover events for the container (includes both zone and button)
+      // Create highlight border for add row insertion point
+      const addHighlight = document.createElement('div');
+      addHighlight.className = 'toastui-editor-row-add-highlight';
+      addHighlight.style.top = `${dividerY}px`; // Position at the insertion line
+
+      // Hover events for the add row container
       hoverContainer.addEventListener('mouseenter', () => {
-        addRowBtn.style.display = 'flex';
+        addRowBtn.style.visibility = 'visible';
         addRowBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        addHighlight.style.opacity = '1';
       });
 
       hoverContainer.addEventListener('mouseleave', () => {
-        addRowBtn.style.display = 'none';
+        addRowBtn.style.visibility = 'hidden';
+        addHighlight.style.opacity = '0';
       });
 
       // Prevent hover container from interfering with cell selection
       hoverContainer.addEventListener('click', (event) => {
-        // Only allow clicks on the button, block all other clicks
         if (event.target !== addRowBtn) {
           event.stopPropagation();
           event.preventDefault();
         }
       });
 
-      // Click event for the button
+      // Click event for the add button
       addRowBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         this.addRow(index + 1);
       });
 
       this.state.panel!.appendChild(hoverContainer);
+      this.state.panel!.appendChild(addHighlight);
+
+      // Create separate delete container for body rows (positioned at row center, left side)
+      if (index > 0 && bodyRowCount > 1) { // Don't show delete button for header row or if only one body row exists
+        const deleteContainer = document.createElement('div');
+        deleteContainer.className = 'toastui-editor-row-delete-container';
+        
+        // Position at the center of the row height
+        const rowHeight = rowRect.height;
+        const rowTop = rowRect.top - panelRect.top;
+        deleteContainer.style.top = `${rowTop}px`;
+        deleteContainer.style.height = `${rowHeight}px`;
+
+        // Create delete row button
+        const deleteRowBtn = document.createElement('div');
+        deleteRowBtn.className = 'toastui-editor-remove-row-btn';
+        deleteRowBtn.innerHTML = '×';
+        deleteRowBtn.title = 'Delete row';
+
+        deleteContainer.appendChild(deleteRowBtn);
+
+        // Create red overlay for the row to be deleted
+        const deleteOverlay = document.createElement('div');
+        deleteOverlay.className = 'toastui-editor-row-delete-overlay';
+        deleteOverlay.style.top = `${rowTop}px`;
+        deleteOverlay.style.height = `${rowHeight}px`;
+
+        // Hover events for the delete container
+        deleteContainer.addEventListener('mouseenter', () => {
+          deleteContainer.style.opacity = '1';
+          deleteRowBtn.style.visibility = 'visible';
+          deleteOverlay.style.opacity = '1';
+        });
+
+        deleteContainer.addEventListener('mouseleave', () => {
+          deleteContainer.style.opacity = '0';
+          deleteRowBtn.style.visibility = 'hidden';
+          deleteOverlay.style.opacity = '0';
+        });
+
+        // Click event for the delete button
+        deleteRowBtn.addEventListener('click', (event) => {
+          event.stopPropagation();
+          this.removeRow(index);
+        });
+
+        this.state.panel!.appendChild(deleteContainer);
+        this.state.panel!.appendChild(deleteOverlay);
+      }
     });
   }
 
@@ -269,6 +333,9 @@ class TableEditPanelView extends EditPanel {
     const cells = firstRow.querySelectorAll('th, td');
     const panelRect = this.state.tableElement.getBoundingClientRect();
 
+    // Calculate how many columns exist
+    const columnCount = cells.length;
+
     // Add hover zone and button before first column (at the left)
     if (cells.length > 0) {
       const [firstCell] = cells;
@@ -279,13 +346,11 @@ class TableEditPanelView extends EditPanel {
 
       // Create hover container for column divider (first column)
       const hoverContainer = document.createElement('div');
-
       hoverContainer.className = 'toastui-editor-col-divider-container';
-      hoverContainer.style.left = `${dividerX - 7}px`; // Expanded hover area
+      hoverContainer.style.left = `${dividerX - 5}px`; // Adjusted for 10px width container to center properly
 
       // Create add column button (initially hidden)
       const addColBtn = document.createElement('div');
-
       addColBtn.className = 'toastui-editor-add-col-btn';
       addColBtn.innerHTML = '+';
       addColBtn.title = 'Add column left';
@@ -293,32 +358,87 @@ class TableEditPanelView extends EditPanel {
       // Append button to container
       hoverContainer.appendChild(addColBtn);
 
+      // Create highlight border for add column insertion point
+      const addHighlight = document.createElement('div');
+      addHighlight.className = 'toastui-editor-col-add-highlight';
+      addHighlight.style.left = `${dividerX}px`; // Position at the insertion line
+
       // Hover events for the container
       hoverContainer.addEventListener('mouseenter', () => {
-        addColBtn.style.display = 'flex';
-        addColBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        addColBtn.style.visibility = 'visible';
+        addHighlight.style.opacity = '1';
       });
 
       hoverContainer.addEventListener('mouseleave', () => {
-        addColBtn.style.display = 'none';
+        addColBtn.style.visibility = 'hidden';
+        addHighlight.style.opacity = '0';
       });
 
       // Prevent hover container from interfering with cell selection
       hoverContainer.addEventListener('click', (event) => {
-        // Only allow clicks on the button, block all other clicks
         if (event.target !== addColBtn) {
           event.stopPropagation();
           event.preventDefault();
         }
       });
 
-      // Click event for the button
+      // Click event for the add button
       addColBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         this.addColumn(0); // Button index 0 - insert before first column
       });
 
       this.state.panel!.appendChild(hoverContainer);
+      this.state.panel!.appendChild(addHighlight);
+
+      // Create delete container for first column (positioned above column center)
+      if (columnCount > 1) {
+        const deleteContainer = document.createElement('div');
+        deleteContainer.className = 'toastui-editor-col-delete-container';
+        
+        // Position at the center of the column width
+        const colLeft = firstCellRect.left - panelRect.left;
+        const colWidth = firstCellRect.width;
+        deleteContainer.style.left = `${colLeft}px`;
+        deleteContainer.style.width = `${colWidth}px`;
+
+        // Create delete column button
+        const deleteColBtn = document.createElement('div');
+        deleteColBtn.className = 'toastui-editor-remove-col-btn';
+        deleteColBtn.innerHTML = '×';
+        deleteColBtn.title = 'Delete first column';
+
+        deleteContainer.appendChild(deleteColBtn);
+
+        // Create red overlay for the column to be deleted
+        const deleteOverlay = document.createElement('div');
+        deleteOverlay.className = 'toastui-editor-col-delete-overlay';
+        deleteOverlay.style.left = `${colLeft}px`;
+        deleteOverlay.style.width = `${colWidth}px`;
+
+        // Hover events for the delete container
+        deleteContainer.addEventListener('mouseenter', () => {
+          deleteContainer.style.opacity = '1';
+          deleteColBtn.style.visibility = 'visible';
+          deleteColBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+          deleteOverlay.style.opacity = '1';
+        });
+
+        deleteContainer.addEventListener('mouseleave', () => {
+          deleteContainer.style.opacity = '0';
+          deleteColBtn.style.visibility = 'hidden';
+          deleteOverlay.style.opacity = '0';
+        });
+
+        // Click event for the delete button
+        deleteColBtn.addEventListener('click', (event) => {
+          event.stopPropagation();
+          this.removeColumn(0);
+        });
+
+        this.state.panel!.appendChild(deleteContainer);
+        this.state.panel!.appendChild(deleteOverlay);
+      }
     }
 
     // Add hover zones and buttons between columns and after last column
@@ -330,13 +450,11 @@ class TableEditPanelView extends EditPanel {
 
       // Create hover container for column divider
       const hoverContainer = document.createElement('div');
-
       hoverContainer.className = 'toastui-editor-col-divider-container';
-      hoverContainer.style.left = `${dividerX - 7}px`; // Expanded hover area
+      hoverContainer.style.left = `${dividerX - 5}px`; // Adjusted for 10px width container to center properly
 
       // Create add column button (initially hidden)
       const addColBtn = document.createElement('div');
-
       addColBtn.className = 'toastui-editor-add-col-btn';
       addColBtn.innerHTML = '+';
       addColBtn.title = 'Add column right';
@@ -344,32 +462,88 @@ class TableEditPanelView extends EditPanel {
       // Append button to container
       hoverContainer.appendChild(addColBtn);
 
+      // Create highlight border for add column insertion point
+      const addHighlight = document.createElement('div');
+      addHighlight.className = 'toastui-editor-col-add-highlight';
+      addHighlight.style.left = `${dividerX}px`; // Position at the insertion line
+
       // Hover events for the container
       hoverContainer.addEventListener('mouseenter', () => {
-        addColBtn.style.display = 'flex';
+        addColBtn.style.visibility = 'visible';
         addColBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        addHighlight.style.opacity = '1';
       });
 
       hoverContainer.addEventListener('mouseleave', () => {
-        addColBtn.style.display = 'none';
+        addColBtn.style.visibility = 'hidden';
+        addHighlight.style.opacity = '0';
       });
 
       // Prevent hover container from interfering with cell selection
       hoverContainer.addEventListener('click', (event) => {
-        // Only allow clicks on the button, block all other clicks
         if (event.target !== addColBtn) {
           event.stopPropagation();
           event.preventDefault();
         }
       });
 
-      // Click event for the button
+      // Click event for the add button
       addColBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         this.addColumn(index + 1); // Button index represents insertion point
       });
 
       this.state.panel!.appendChild(hoverContainer);
+      this.state.panel!.appendChild(addHighlight);
+
+      // Create delete container for each column (positioned above column center)
+      if (columnCount > 1) {
+        const deleteContainer = document.createElement('div');
+        deleteContainer.className = 'toastui-editor-col-delete-container';
+        
+        // Position at the center of the column width
+        const colLeft = cellRect.left - panelRect.left;
+        const colWidth = cellRect.width;
+        deleteContainer.style.left = `${colLeft}px`;
+        deleteContainer.style.width = `${colWidth}px`;
+
+        // Create delete column button
+        const deleteColBtn = document.createElement('div');
+        deleteColBtn.className = 'toastui-editor-remove-col-btn';
+        deleteColBtn.innerHTML = '×';
+        deleteColBtn.title = `Delete column ${index + 1}`;
+
+        deleteContainer.appendChild(deleteColBtn);
+
+        // Create red overlay for the column to be deleted
+        const deleteOverlay = document.createElement('div');
+        deleteOverlay.className = 'toastui-editor-col-delete-overlay';
+        deleteOverlay.style.left = `${colLeft}px`;
+        deleteOverlay.style.width = `${colWidth}px`;
+
+        // Hover events for the delete container
+        deleteContainer.addEventListener('mouseenter', () => {
+          deleteContainer.style.opacity = '1';
+          deleteColBtn.style.visibility = 'visible';
+          deleteColBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+          deleteOverlay.style.opacity = '1';
+        });
+
+        deleteContainer.addEventListener('mouseleave', () => {
+          deleteContainer.style.opacity = '0';
+          deleteColBtn.style.visibility = 'hidden';
+          deleteOverlay.style.opacity = '0';
+        });
+
+        // Click event for the delete button
+        deleteColBtn.addEventListener('click', (event) => {
+          event.stopPropagation();
+          this.removeColumn(index);
+        });
+
+        this.state.panel!.appendChild(deleteContainer);
+        this.state.panel!.appendChild(deleteOverlay);
+      }
     });
   }
 
@@ -612,6 +786,116 @@ class TableEditPanelView extends EditPanel {
     }
   }
 
+  private removeRow(rowIndex: number) {
+    if (!this.state.tableElement) return;
+
+    // Find the table element in the document and get the table offset map
+    const { state, dispatch } = this.view;
+    const { doc, tr } = state;
+
+    // Find the table position in the document
+    let tablePos: number | null = null;
+
+    doc.descendants((node, pos) => {
+      if (node.type.name === 'table') {
+        const domNode = this.view.domAtPos(pos + 1).node;
+
+        if (
+          domNode === this.state.tableElement ||
+          (this.state.tableElement && this.state.tableElement.contains(domNode as Node))
+        ) {
+          tablePos = pos + 1;
+
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    if (tablePos === null) return;
+
+    const cellPos = doc.resolve(tablePos);
+    const map = TableOffsetMap.create(cellPos);
+
+    if (!map) return;
+
+    // Don't allow deletion of header row (index 0) or if only one body row exists
+    if (rowIndex === 0 || map.totalRowCount <= 2) return;
+
+    // Calculate the target position for row deletion
+    const targetColIdx = 0; // Always use first column to set selection
+    const targetRowIdx = rowIndex;
+
+    // Get the cell offset for the target position
+    const { offset: cellOffset } = map.getCellInfo(targetRowIdx, targetColIdx);
+    const startCellPos = doc.resolve(cellOffset);
+    const endCellPos = startCellPos;
+
+    // Create cell selection and set it
+    const cellSelection = new CellSelection(startCellPos, endCellPos);
+
+    dispatch!(tr.setSelection(cellSelection));
+
+    // Use event emitter to execute the removeRow command
+    this.eventEmitter.emit('command', 'removeRow');
+  }
+
+  private removeColumn(columnIndex: number) {
+    if (!this.state.tableElement) return;
+
+    // Find the table element in the document and get the table offset map
+    const { state, dispatch } = this.view;
+    const { doc, tr } = state;
+
+    // Find the table position in the document
+    let tablePos: number | null = null;
+
+    doc.descendants((node, pos) => {
+      if (node.type.name === 'table') {
+        const domNode = this.view.domAtPos(pos + 1).node;
+
+        if (
+          domNode === this.state.tableElement ||
+          (this.state.tableElement && this.state.tableElement.contains(domNode as Node))
+        ) {
+          tablePos = pos + 1;
+
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    if (tablePos === null) return;
+
+    const cellPos = doc.resolve(tablePos);
+    const map = TableOffsetMap.create(cellPos);
+
+    if (!map) return;
+
+    // Don't allow deletion if only one column exists
+    if (map.totalColumnCount <= 1) return;
+
+    // Calculate the target position for column deletion
+    const targetRowIdx = 0; // Always use first row to set selection
+    const targetColIdx = columnIndex;
+
+    // Get the cell offset for the target position
+    const { offset: cellOffset } = map.getCellInfo(targetRowIdx, targetColIdx);
+    const startCellPos = doc.resolve(cellOffset);
+    const endCellPos = startCellPos;
+
+    // Create cell selection and set it
+    const cellSelection = new CellSelection(startCellPos, endCellPos);
+
+    dispatch!(tr.setSelection(cellSelection));
+
+    // Use event emitter to execute the removeColumn command
+    this.eventEmitter.emit('command', 'removeColumn');
+  }
+
   private recreateDividers() {
     if (!this.state.panel || !this.state.tableElement) return;
 
@@ -632,9 +916,9 @@ class TableEditPanelView extends EditPanel {
     const colsChanged = currentCols + 1 !== existingColDividers; // +1 because we have one extra divider before first column
 
     if (rowsChanged || colsChanged) {
-      // Remove existing dividers
+      // Remove existing dividers, delete containers, and highlight elements
       const existingDividers = this.state.panel.querySelectorAll(
-        '.toastui-editor-row-divider-container, .toastui-editor-col-divider-container'
+        '.toastui-editor-row-divider-container, .toastui-editor-col-divider-container, .toastui-editor-row-delete-container, .toastui-editor-col-delete-container, .toastui-editor-row-delete-overlay, .toastui-editor-col-delete-overlay, .toastui-editor-row-add-highlight, .toastui-editor-col-add-highlight'
       );
 
       existingDividers.forEach((divider) => divider.remove());
