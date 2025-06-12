@@ -1,0 +1,112 @@
+.toastui-editor-container {
+    /* Define the global color and background */
+    --toastui-editor-color: #333;
+    --toastui-editor-secondary-color: #999;
+    --toastui-editor-color-hover: #6c757d;
+    --toastui-editor-color-active: #00a9ff;
+    --toastui-editor-bg-color: #f7f9fc;
+    --toastui-editor-content-bg-color: #fff;
+    --toastui-editor-border-color: #dadde6;
+    --toastui-editor-box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+    --toastui-editor-border-radius: .25rem;
+    --toastui-editor-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --toastui-editor-font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --toastui-editor-font-size: 14px;
+    --toastui-editor-line-height: 1.5;
+
+    /* Color schema */
+    --toastui-editor-color-primary: #0d6efd;
+    --toastui-editor-color-primary-text: #fff;
+    --toastui-editor-color-primary-border: #a6c8ff;
+    --toastui-editor-color-secondary: #6c757d;
+    --toastui-editor-color-secondary-text: #fff;
+    --toastui-editor-color-secondary-border: #dadde6;
+    --toastui-editor-color-success: #198754;
+    --toastui-editor-color-success-text: #fff;
+    --toastui-editor-color-success-border: #28a745;
+    --toastui-editor-color-danger: #dc3545;
+    --toastui-editor-color-danger-text: #fff;
+    --toastui-editor-color-danger-border: #dc3545;
+    --toastui-editor-color-warning: #ffc107;
+    --toastui-editor-color-warning-text: #000;
+    --toastui-editor-color-warning-border: #ffc107;
+    --toastui-editor-color-info: #0dcaf0;
+    --toastui-editor-color-info-text: #000;
+    --toastui-editor-color-info-border: #17a2b8;
+    --toastui-editor-color-muted: #6c757d;
+    --toastui-editor-color-muted-text: #fff;
+    --toastui-editor-color-muted-border: #6c757d;
+    --toastui-editor-color-light: #f8f9fa;
+    --toastui-editor-color-light-text: #000;
+    --toastui-editor-color-dark: #212529;
+    --toastui-editor-color-dark-text: #fff;
+
+    /* Floating item color */
+    --toastui-editor-floating-item-bg-color: #f7f9fc;
+    --toastui-editor-floating-item-color: #333;
+
+    /* Table Color */
+    --toastui-editor-table-bg-color: #fff;
+    --toastui-editor-table-border-color: #dadde6;
+    --toastui-editor-table-header-bg-color: #f7f9fc;
+    --toastui-editor-table-header-color: #333;
+    --toastui-editor-table-cell-bg-color: #fff;
+    --toastui-editor-table-cell-color: #333;
+    --toastui-editor-table-cell-border-color: #e1e3e9;
+
+    /* Define the color variable for toolbar */
+    --toastui-editor-toolbar-color: #333;
+    --toastui-editor-toolbar-bg-color: #f7f9fc;
+    --toastui-editor-toolbar-divider-color: #e1e3e9;
+    --toastui-editor-toolbar-switch-color: #dadde6;
+    --toastui-editor-toolbar-switch-bg-color: #d6d8de;
+    --toastui-editor-toolbar-switch-before-bg-color: #d6d8de;
+    --toastui-editor-toolbar-switch-bg-color-checked: #acddfa;
+    --toastui-editor-toolbar-switch-bg-color-checked-light: #00a9ff;
+
+    /* Define the color variable for mode switch bar */
+    --toastui-editor-mode-switch-color: #9d9d9d;
+    --toastui-editor-mode-switch-color-active: #000;
+    --toastui-editor-mode-switch-bg-color: #f7f9fc;
+    --toastui-editor-mode-switch-bg-color-active: #fff;
+
+    /* Define the scroll bar color */
+    --toastui-editor-scrollbar-thumb-color: #c1c8d4;
+    --toastui-editor-scrollbar-thumb-hover-color: #a8b2c1;
+    --toastui-editor-scrollbar-track-color: #f7f9fc;
+    --toastui-editor-scrollbar-corner-color: #f5f7fa;
+
+    /* Define the content color variable */
+    --toastui-editor-content-table-header-bg-color: #f7f9fc;
+    --toastui-editor-content-table-header-color: #333;
+    --toastui-editor-content-table-cell-select-bg-color: #cfe2ff;
+    --toastui-editor-content-link-color: #4b96e6;
+    --toastui-editor-content-link-hover-color: #1f70de;
+    --toastui-editor-content-link-active-color: #0056b3;
+
+
+    --toastui-editor-primary-text-emphasis: #052c65;
+    --toastui-editor-secondary-text-emphasis: #2b2f32;
+    --toastui-editor-success-text-emphasis: #0a3622;
+    --toastui-editor-info-text-emphasis: #055160;
+    --toastui-editor-warning-text-emphasis: #664d03;
+    --toastui-editor-danger-text-emphasis: #58151c;
+    --toastui-editor-light-text-emphasis: #495057;
+    --toastui-editor-dark-text-emphasis: #495057;
+    --toastui-editor-primary-bg-subtle: #cfe2ff;
+    --toastui-editor-secondary-bg-subtle: #e2e3e5;
+    --toastui-editor-success-bg-subtle: #d1e7dd;
+    --toastui-editor-info-bg-subtle: #cff4fc;
+    --toastui-editor-warning-bg-subtle: #fff3cd;
+    --toastui-editor-danger-bg-subtle: #f8d7da;
+    --toastui-editor-light-bg-subtle: #fcfcfd;
+    --toastui-editor-dark-bg-subtle: #ced4da;
+    --toastui-editor-primary-border-subtle: #9ec5fe;
+    --toastui-editor-secondary-border-subtle: #c4c8cb;
+    --toastui-editor-success-border-subtle: #a3cfbb;
+    --toastui-editor-info-border-subtle: #9eeaf9;
+    --toastui-editor-warning-border-subtle: #ffe69c;
+    --toastui-editor-danger-border-subtle: #f1aeb5;
+    --toastui-editor-light-border-subtle: #e9ecef;
+    --toastui-editor-dark-border-subtle: #adb5bd;
+}

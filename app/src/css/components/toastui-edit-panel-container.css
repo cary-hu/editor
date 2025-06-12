@@ -1,0 +1,324 @@
+/* Edit Panel Container Styles */
+.toastui-edit-panel-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.toastui-edit-panel-container .toastui-editor-edit-dialog {
+    position: fixed;
+    pointer-events: auto;
+    background-color: var(--toastui-editor-floating-item-bg-color);
+    color: var(--toastui-editor-floating-item-color);
+    box-shadow: var(--toastui-editor-box-shadow);
+    border-radius: var(--toastui-editor-border-radius);
+    border: 1px solid var(--toastui-editor-border-color);
+    z-index: 20;
+    padding: 1rem;
+}
+
+.toastui-edit-panel-container .toastui-editor-edit-dialog .dialog-section {
+    margin-bottom: 16px;
+}
+
+.toastui-edit-panel-container .toastui-editor-edit-dialog .dialog-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.toastui-edit-panel-container .toastui-editor-edit-dialog button {
+    background-color: var(--toastui-editor-floating-item-bg-color);
+    border: 1px solid var(--toastui-editor-border-color);
+    border-radius: var(--toastui-editor-border-radius);
+    padding: 0 1rem;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.toastui-edit-panel-container .toastui-editor-edit-dialog button:hover {
+    color: var(--toastui-editor-color-primary-text);
+    border-color: var(--toastui-editor-color-primary);
+    background-color: var(--toastui-editor-color-primary);
+}
+
+.toastui-edit-panel-container .toastui-editor-edit-dialog button.active {
+    background-color: var(--toastui-editor-color-primary);
+    color: var(--toastui-editor-color-primary-text);
+}
+
+.toastui-edit-panel-container .toastui-editor-edit-dialog input {
+    width: 100%;
+    padding: 4px 8px;
+    border: 1px solid var(--toastui-editor-border-color);
+    border-radius: var(--toastui-editor-border-radius);
+    font-size: 12px;
+}
+
+.toastui-edit-panel-container .toastui-editor-edit-dialog input:focus {
+    outline: none;
+    border-color: var(--toastui-editor-border-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.toastui-editor-image-edit-dialog .dialog-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    padding-top: 16px;
+    border-top: 1px solid var(--toastui-editor-border-color);
+}
+
+/* table edit panel */
+.toastui-editor-table-edit-panel {
+    position: fixed;
+    z-index: 25;
+    box-sizing: border-box;
+    pointer-events: none;
+    display: block;
+    visibility: visible;
+    overflow: visible;
+}
+
+
+.toastui-editor-table-edit-overlay {
+    position: absolute;
+    border: 2px solid var(--toastui-editor-color-primary);
+    border-radius: 4px;
+    width: 100%;
+    height: 100%;
+}
+
+/* Delete table button */
+.toastui-editor-delete-table-btn {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--toastui-editor-color-danger);
+    color: var(--toastui-editor-color-danger-text);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+    z-index: 27;
+    box-shadow: var(--toastui-editor-box-shadow);
+    transition: all 0.2s ease;
+}
+
+.toastui-editor-delete-table-btn:hover {
+    transform: scale(1.1);
+}
+
+.toastui-editor-table-row-divider,
+.toastui-editor-table-col-divider {
+    position: absolute;
+    pointer-events: auto;
+}
+
+/* table edit panel hover containers */
+.toastui-editor-row-divider-container,
+.toastui-editor-col-divider-container {
+    position: absolute;
+    cursor: default;
+    z-index: 26;
+    background-color: transparent;
+    pointer-events: auto;
+}
+
+.toastui-editor-row-divider-container {
+    left: 0;
+    width: 100%;
+    height: 10px;
+}
+
+.toastui-editor-col-divider-container {
+    top: 0;
+    width: 10px;
+    height: 100%;
+}
+
+/* Row delete button container - positioned at the left side of rows */
+.toastui-editor-row-delete-container {
+    position: absolute;
+    left: 8px;
+    width: 20px;
+    height: 100%;
+    cursor: default;
+    z-index: 26;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.toastui-editor-row-delete-container:hover {
+    opacity: 1;
+}
+
+/* Column delete button container - positioned at the top of columns */
+.toastui-editor-col-delete-container {
+    position: absolute;
+    top: 8px;
+    width: 100%;
+    height: 20px;
+    cursor: default;
+    z-index: 26;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.toastui-editor-col-delete-container:hover {
+    opacity: 1;
+}
+
+/* Red overlay for rows/columns to be deleted */
+.toastui-editor-row-delete-overlay {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--toastui-editor-color-danger);
+    border: 2px solid var(--toastui-editor-border-color);
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 25;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.toastui-editor-col-delete-overlay {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--toastui-editor-color-danger);
+    border: 2px solid var(--toastui-editor-border-color);
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 25;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* Show overlay when hovering delete button */
+.toastui-editor-row-delete-container:hover+.toastui-editor-row-delete-overlay,
+.toastui-editor-col-delete-container:hover+.toastui-editor-col-delete-overlay {
+    opacity: 1;
+}
+
+/* Highlight borders for add buttons - show insertion boundaries */
+.toastui-editor-col-add-highlight,
+.toastui-editor-row-add-highlight {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--toastui-editor-color-primary);
+    border-radius: 1px;
+    pointer-events: none;
+    z-index: 25;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.toastui-editor-col-add-highlight {
+    height: 100%;
+    width: 2px;
+}
+
+.toastui-editor-row-divider-container:hover+.toastui-editor-row-add-highlight,
+.toastui-editor-col-divider-container:hover+.toastui-editor-col-add-highlight {
+    opacity: 1;
+}
+
+.toastui-editor-remove-row-btn,
+.toastui-editor-remove-col-btn,
+.toastui-editor-add-row-btn,
+.toastui-editor-add-col-btn {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--toastui-editor-color-primary);
+    color: var(--toastui-editor-color-primary-text);
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    visibility: hidden;
+    z-index: 2;
+    line-height: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.toastui-editor-add-row-btn {
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.toastui-editor-add-col-btn {
+    left: 50%;
+    bottom: 2px;
+    transform: translateX(-50%);
+}
+
+.toastui-editor-remove-row-btn,
+.toastui-editor-remove-col-btn {
+    background-color: var(--toastui-editor-color-danger);
+    color: var(--toastui-editor-color-danger-text);
+}
+
+/* image edit dialog */
+.toastui-editor-image-edit-dialog .preset-sizes,
+.toastui-editor-image-edit-dialog .vertical-align-controls,
+.toastui-editor-image-edit-dialog .size-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.toastui-edit-panel-container .toastui-editor-edit-dialog .save-btn {
+    border-color: var(--toastui-editor-color-success);
+}
+
+.toastui-edit-panel-container .toastui-editor-edit-dialog .delete-btn {
+    border-color: var(--toastui-editor-color-danger);
+}
+
+.toastui-editor-image-edit-dialog .size-input {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.toastui-editor-image-edit-dialog .size-unit {
+    font-size: 12px;
+    color: var(--toastui-editor-secondary-color);
+}
+
+.toastui-editor-image-edit-dialog .current-value {
+    font-size: 11px;
+    color: var(--toastui-editor-secondary-color);
+    margin-bottom: 4px;
+    font-style: italic;
+    user-select: none;
+}

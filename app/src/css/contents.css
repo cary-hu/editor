@@ -6,17 +6,14 @@
   40 - tooltip
 */
 .ProseMirror {
-  font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', '나눔바른고딕',
-    'Nanum Barun Gothic', '맑은고딕', 'Malgun Gothic', sans-serif;
-  color: #222;
-  font-size: 13px;
+  font-family: var(--toastui-editor-font-family);
   overflow-y: auto;
   overflow-X: hidden;
-  height: calc(100% - 36px);
+  height: 100%;
 }
 
 .ProseMirror .placeholder {
-  color: #999;
+  color: var(--toastui-editor-secondary-color);
 }
 
 .ProseMirror:focus {
@@ -29,20 +26,18 @@
 
 table.ProseMirror-selectednode {
   border-radius: 2px;
-  outline: 2px solid #00a9ff;
+  outline: 2px solid var(--toastui-editor-border-color);
 }
 
 .html-block.ProseMirror-selectednode {
   border-radius: 2px;
-  outline: 2px solid #00a9ff;
+  outline: 2px solid var(--toastui-editor-border-color);
 }
 
 .toastui-editor-contents {
   margin: 0;
   padding: 0;
-  font-size: 13px;
-  font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', '나눔바른고딕',
-    'Nanum Barun Gothic', '맑은고딕', 'Malgun Gothic', sans-serif;
+  font-family: var(--toastui-editor-font-family);
   z-index: 20;
 }
 
@@ -66,11 +61,10 @@ table.ProseMirror-selectednode {
 
 .toastui-editor-contents p {
   margin: 10px 0;
-  color: #222;
 }
 
-.toastui-editor-contents > h1:first-of-type,
-.toastui-editor-contents > div > div:first-of-type h1 {
+.toastui-editor-contents>h1:first-of-type,
+.toastui-editor-contents>div>div:first-of-type h1 {
   margin-top: 14px;
 }
 
@@ -81,13 +75,11 @@ table.ProseMirror-selectednode {
 .toastui-editor-contents h5,
 .toastui-editor-contents h6 {
   font-weight: bold;
-  color: #222;
 }
 
 .toastui-editor-contents h1 {
   font-size: 24px;
   line-height: 28px;
-  border-bottom: 3px double #999;
   margin: 52px 0 15px 0;
   padding-bottom: 7px;
 }
@@ -95,7 +87,6 @@ table.ProseMirror-selectednode {
 .toastui-editor-contents h2 {
   font-size: 22px;
   line-height: 23px;
-  border-bottom: 1px solid #dbdbdb;
   margin: 20px 0 13px 0;
   padding-bottom: 7px;
 }
@@ -130,50 +121,85 @@ table.ProseMirror-selectednode {
 }
 
 .toastui-editor-contents del {
-  color: #999;
+  color: var(--toastui-editor-secondary-color);
 }
 
 .toastui-editor-contents blockquote {
-  margin: 14px 0;
-  border-left: 4px solid #e5e5e5;
-  padding: 0 16px;
-  color: #999;
+  margin: 1rem 0;
+  border: 1px solid var(--toastui-editor-blockquote-left-border-color);
+  border-left: 4px solid var(--toastui-editor-blockquote-left-border-color);
+  padding: .5rem;
+  background-color: var(--toastui-editor-blockquote-bg-color);
+  color: var(--toastui-editor-blockquote-color) !important;
 }
 
-.toastui-editor-contents blockquote p,
-.toastui-editor-contents blockquote ul,
-.toastui-editor-contents blockquote ol {
-  color: #999;
+.toastui-editor-contents blockquote[data-block-quote-type="default"] {
+  --toastui-editor-blockquote-left-border-color: var(--toastui-editor-border-color);
+  --toastui-editor-blockquote-bg-color: var(--toastui-editor-color-light);
+  --toastui-editor-blockquote-color: var(--toastui-editor-color-light-text);
 }
 
-.toastui-editor-contents blockquote > :first-child {
+.toastui-editor-contents blockquote[data-block-quote-type="info"] {
+  --toastui-editor-blockquote-left-border-color: var(--toastui-editor-info-border-subtle);
+  --toastui-editor-blockquote-bg-color: var(--toastui-editor-info-bg-subtle);
+  --toastui-editor-blockquote-color: var(--toastui-editor-info-text-emphasis);
+}
+
+.toastui-editor-contents blockquote[data-block-quote-type="warning"] {
+  --toastui-editor-blockquote-left-border-color: var(--toastui-editor-warning-border-subtle);
+  --toastui-editor-blockquote-bg-color: var(--toastui-editor-warning-bg-subtle);
+  --toastui-editor-blockquote-color: var(--toastui-editor-warning-text-emphasis);
+}
+
+.toastui-editor-contents blockquote[data-block-quote-type="danger"] {
+  --toastui-editor-blockquote-left-border-color: var(--toastui-editor-danger-border-subtle);
+  --toastui-editor-blockquote-bg-color: var(--toastui-editor-danger-bg-subtle);
+  --toastui-editor-blockquote-color: var(--toastui-editor-danger-text-emphasis);
+}
+
+.toastui-editor-contents blockquote[data-block-quote-type="success"] {
+  --toastui-editor-blockquote-left-border-color: var(--toastui-editor-success-border-subtle);
+  --toastui-editor-blockquote-bg-color: var(--toastui-editor-success-bg-subtle);
+  --toastui-editor-blockquote-color: var(--toastui-editor-success-text-emphasis);
+}
+
+.toastui-editor-contents blockquote> :first-child {
   margin-top: 0;
 }
 
-.toastui-editor-contents blockquote > :last-child {
+.toastui-editor-contents blockquote> :last-child {
   margin-bottom: 0;
 }
 
 .toastui-editor-contents pre,
 .toastui-editor-contents code {
-  font-family: Consolas, Courier, 'Apple SD 산돌고딕 Neo', -apple-system, 'Lucida Grande',
-    'Apple SD Gothic Neo', '맑은 고딕', 'Malgun Gothic', 'Segoe UI', '돋움', dotum, sans-serif;
+  font-family: var(--toastui-editor-font-family-monospace);
   border: 0;
   border-radius: 0;
 }
 
 .toastui-editor-contents pre {
   margin: 2px 0 8px;
-  padding: 18px;
-  background-color: #f4f7f8;
+  padding: .75rem 1rem;
+  border: 1px solid var(--toastui-editor-border-color);
+  background-color: var(--toastui-editor-color-light);
+  color: var(--toastui-editor-color-light-text);
+  border-radius: var(--toastui-editor-border-radius);
+}
+
+.toastui-editor-contents pre code {
+  border: none;
+  background-color: unset;
+  color: unset;
+  border-radius: unset;
 }
 
 .toastui-editor-contents code {
-  color: #c1798b;
-  background-color: #f9f2f4;
   padding: 2px 3px;
-  letter-spacing: -0.3px;
-  border-radius: 2px;
+  border: 1px solid var(--toastui-editor-border-color);
+  background-color: var(--toastui-editor-color-light);
+  color: var(--toastui-editor-color-light-text);
+  border-radius: var(--toastui-editor-border-radius);
 }
 
 .toastui-editor-contents pre code {
@@ -191,9 +217,8 @@ table.ProseMirror-selectednode {
 }
 
 .toastui-editor-contents table {
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--toastui-editor-border-color);
   margin: 12px 0 14px;
-  color: #222;
   width: auto;
   border-collapse: collapse;
   box-sizing: border-box;
@@ -201,21 +226,21 @@ table.ProseMirror-selectednode {
 
 .toastui-editor-contents table th,
 .toastui-editor-contents table td {
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--toastui-editor-border-color);
   padding: 5px 14px 5px 12px;
   height: 32px;
 }
 
 .toastui-editor-contents table th {
-  background-color: #555;
-  font-weight: 300;
-  color: #fff;
+  background-color: var(--toastui-editor-content-table-header-bg-color);
+  font-weight: bolder;
+  color: var(--toastui-editor-content-table-header-color);
   padding-top: 6px;
 }
 
 .toastui-editor-contents th p {
   margin: 0;
-  color: #fff;
+  color: var(--toastui-editor-content-table-header-color);
 }
 
 .toastui-editor-contents td p {
@@ -224,11 +249,11 @@ table.ProseMirror-selectednode {
 }
 
 .toastui-editor-contents td.toastui-editor-cell-selected {
-  background-color: #d8dfec;
+  background-color: var(--toastui-editor-content-table-cell-select-bg-color);
 }
 
 .toastui-editor-contents th.toastui-editor-cell-selected {
-  background-color: #908f8f;
+  background-color: var(--toastui-editor-content-table-cell-select-bg-color);
 }
 
 .toastui-editor-contents ul,
@@ -239,7 +264,6 @@ table.ProseMirror-selectednode {
   list-style-type: none;
   padding-left: 24px;
   margin: 6px 0 10px;
-  color: #222;
 }
 
 .toastui-editor-contents ol {
@@ -247,33 +271,33 @@ table.ProseMirror-selectednode {
   counter-reset: li;
 }
 
-.toastui-editor-contents ol > li {
+.toastui-editor-contents ol>li {
   counter-increment: li;
 }
 
-.toastui-editor-contents ul > li::before,
-.toastui-editor-contents ol > li::before {
+.toastui-editor-contents ul>li::before,
+.toastui-editor-contents ol>li::before {
   display: inline-block;
   position: absolute;
 }
 
-.toastui-editor-contents ul > li::before {
+.toastui-editor-contents ul>li::before {
   content: '';
-  margin-top: 6px;
-  margin-left: -17px;
+  margin-top: 11px;
+  margin-left: -12px;
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background-color: #ccc;
+  background-color: var(--toastui-editor-secondary-color);
 }
 
-.toastui-editor-contents ol > li::before {
+.toastui-editor-contents ol>li::before {
   content: '.' counter(li);
   margin-left: -28px;
   width: 24px;
   text-align: right;
   direction: rtl;
-  color: #aaa;
+  color: var(--toastui-editor-secondary-color);
 }
 
 .toastui-editor-contents ul ul,
@@ -295,17 +319,17 @@ table.ProseMirror-selectednode {
 }
 
 .toastui-editor-contents hr {
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--toastui-editor-secondary-color);
   margin: 16px 0;
 }
 
 .toastui-editor-contents a {
   text-decoration: underline;
-  color: #4b96e6;
+  color: var(--toastui-editor-content-link-color);
 }
 
 .toastui-editor-contents a:hover {
-  color: #1f70de;
+  color: var(--toastui-editor-content-link-hover-color);
 }
 
 .toastui-editor-contents .image-link {
@@ -388,8 +412,7 @@ table.ProseMirror-selectednode {
   margin-left: 8px;
   padding: 3px;
   border: solid 1px #cccccc;
-  background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IuugiOydtOyWtF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiCgkgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMzAgMzAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMwIDMwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+Cgkuc3Qwe2ZpbGwtcnVsZTpldmVub2RkO2NsaXAtcnVsZTpldmVub2RkO2ZpbGw6IzU1NTU1NTt9Cjwvc3R5bGU+CjxnPgoJPGc+CgkJPGc+CgkJCTxnPgoJCQkJPGc+CgkJCQkJPHBhdGggY2xhc3M9InN0MCIgZD0iTTE1LjUsMTIuNWwyLDJMMTIsMjBoLTJ2LTJMMTUuNSwxMi41eiBNMTgsMTBsMiwybC0xLjUsMS41bC0yLTJMMTgsMTB6Ii8+CgkJCQk8L2c+CgkJCTwvZz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==')
-    no-repeat;
+  background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IuugiOydtOyWtF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiCgkgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMzAgMzAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMwIDMwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+Cgkuc3Qwe2ZpbGwtcnVsZTpldmVub2RkO2NsaXAtcnVsZTpldmVub2RkO2ZpbGw6IzU1NTU1NTt9Cjwvc3R5bGU+CjxnPgoJPGc+CgkJPGc+CgkJCTxnPgoJCQkJPGc+CgkJCQkJPHBhdGggY2xhc3M9InN0MCIgZD0iTTE1LjUsMTIuNWwyLDJMMTIsMjBoLTJ2LTJMMTUuNSwxMi41eiBNMTgsMTBsMiwybC0xLjUsMS41bC0yLTJMMTgsMTB6Ii8+CgkJCQk8L2c+CgkJCTwvZz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==') no-repeat;
   background-position: center;
   background-size: 30px 30px;
 }
@@ -415,7 +438,8 @@ table.ProseMirror-selectednode {
   padding: 3px 35px 0 10px;
   font-weight: bold;
   font-size: 13px;
-  color: #333;
+  line-height: 15px;
+  color: var(--toastui-editor-color);
   background: #e5e9ea url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IuugiOydtOyWtF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiCgkgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMzAgMzAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMwIDMwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+Cgkuc3Qwe2ZpbGwtcnVsZTpldmVub2RkO2NsaXAtcnVsZTpldmVub2RkO2ZpbGw6IzU1NTU1NTt9Cjwvc3R5bGU+CjxnPgoJPGc+CgkJPGc+CgkJCTxnPgoJCQkJPGc+CgkJCQkJPHBhdGggY2xhc3M9InN0MCIgZD0iTTE1LjUsMTIuNWwyLDJMMTIsMjBoLTJ2LTJMMTUuNSwxMi41eiBNMTgsMTBsMiwybC0xLjUsMS41bC0yLTJMMTgsMTB6Ii8+CgkJCQk8L2c+CgkJCTwvZz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==') no-repeat;
   background-position: right;
   border-radius: 2px;

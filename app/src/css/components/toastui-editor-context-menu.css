@@ -1,0 +1,102 @@
+/* Context Menu Styles */
+.toastui-editor-context-menu {
+    position: absolute;
+    width: auto;
+    min-width: 197px;
+    border-radius: var(--toastui-editor-border-radius);
+    box-shadow: var(--toastui-editor-box-shadow);
+    border: 1px solid var(--toastui-editor-border-color);
+    z-index: 30;
+    padding: .25rem;
+    background-color: var(--toastui-editor-floating-item-bg-color);
+}
+
+.toastui-editor-context-menu .menu-group {
+    list-style: none;
+    border-bottom: 1px solid var(--toastui-editor-border-color);
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+}
+
+.toastui-editor-context-menu .menu-group:last-child {
+    border-bottom: none !important;
+}
+
+.toastui-editor-context-menu .menu-item {
+    height: 32px;
+    line-height: 32px;
+    padding: 0 14px;
+    cursor: pointer;
+    border-radius: var(--toastui-editor-border-radius);
+}
+
+.toastui-editor-context-menu span {
+    display: inline-block;
+}
+
+.toastui-editor-context-menu span::before {
+    background: url('../../img/toastui-editor.png') no-repeat;
+    background-size: 466px 146px;
+    content: '';
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.toastui-editor-context-menu .add-row-up::before {
+    background-position: 3px -104px;
+}
+
+.toastui-editor-context-menu .add-row-down::before {
+    background-position: -19px -104px;
+}
+
+.toastui-editor-context-menu .remove-row::before {
+    background-position: -41px -104px;
+}
+
+.toastui-editor-context-menu .add-column-left::before {
+    background-position: -63px -104px;
+}
+
+.toastui-editor-context-menu .add-column-right::before {
+    background-position: -85px -104px;
+}
+
+.toastui-editor-context-menu .remove-column::before {
+    background-position: -111px -104px;
+}
+
+.toastui-editor-context-menu .align-column-left::before {
+    background-position: -129px -104px;
+}
+
+.toastui-editor-context-menu .align-column-center::before {
+    background-position: -151px -104px;
+}
+
+.toastui-editor-context-menu .align-column-right::before {
+    background-position: -173px -104px;
+}
+
+.toastui-editor-context-menu .remove-table::before {
+    background-position: -197px -104px;
+}
+
+.toastui-editor-context-menu .disabled span::before {
+    opacity: 0.3;
+}
+
+.toastui-editor-context-menu li:not(.disabled):hover {
+    background-color: var(--toastui-editor-color-primary);
+    color: var(--toastui-editor-color-primary-text);
+}
+
+.toastui-editor-context-menu li.disabled {
+    color: var(--toastui-editor-secondary-color);
+    opacity: .3;
+    cursor: default;
+}

@@ -1,0 +1,145 @@
+@import url('../variables.css');
+
+/* Base Editor Styles */
+.auto-height,
+.auto-height .toastui-editor-defaultUI {
+    height: auto;
+}
+
+.auto-height .toastui-editor-md-container {
+    position: relative;
+}
+
+:not(.auto-height)>.toastui-editor-defaultUI,
+:not(.auto-height)>.toastui-editor-defaultUI>.toastui-editor-main {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+:not(.auto-height)>.toastui-editor-defaultUI>.toastui-editor-main {
+    -ms-flex: 1;
+    flex: 1;
+}
+
+/* 
+  z-index basis
+  2: Toolbar, mode switch
+  1: - preview, wysiwyg, editor
+*/
+.toastui-editor-context-menu,
+.toastui-editor-mode-switch,
+.toastui-editor-toolbar {
+    z-index: 2;
+}
+
+.toastui-editor-main,
+.toastui-edit-panel-container {
+    z-index: 1;
+}
+
+/* toastui editor */
+.toastui-editor-md-container::after,
+.toastui-editor-defaultUI-toolbar::after {
+    content: '';
+    display: block;
+    height: 0;
+    clear: both;
+}
+
+.toastui-editor-main {
+    min-height: 0px;
+    position: relative;
+    height: inherit;
+    box-sizing: border-box;
+}
+
+.toastui-editor-main.hidden,
+.toastui-editor-defaultUI.hidden {
+    display: none;
+}
+
+/* default UI Styles */
+.toastui-editor-defaultUI .ProseMirror {
+    padding: 18px 25px;
+    height: 100%;
+}
+
+.toastui-editor-defaultUI {
+    position: relative;
+    border: 1px solid var(--toastui-editor-border-color);
+    height: 100%;
+    font-family: var(--toastui-editor-font-family);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.toastui-editor-defaultUI button {
+    color: var(--toastui-editor-color);
+    border: 1px solid transparent;
+    height: 28px;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--toastui-editor-border-radius);
+    outline-color: var(--toastui-editor-border-color);
+}
+
+
+
+.auto-height .toastui-editor-main-container {
+    position: relative;
+}
+
+.toastui-editor-main-container {
+    position: absolute;
+    line-height: 1;
+    width: 100%;
+    height: inherit;
+}
+
+/* Default Scrollbar Styles */
+.toastui-editor-md-preview::-webkit-scrollbar,
+.toastui-editor-ww-container .toastui-editor-contents::-webkit-scrollbar,
+.ProseMirror::-webkit-scrollbar,
+.toastui-editor-popup::-webkit-scrollbar,
+.toastui-editor-context-menu::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.toastui-editor-md-preview::-webkit-scrollbar-track,
+.toastui-editor-ww-container .toastui-editor-contents::-webkit-scrollbar-track,
+.ProseMirror::-webkit-scrollbar-track,
+.toastui-editor-popup::-webkit-scrollbar-track,
+.toastui-editor-context-menu::-webkit-scrollbar-track {
+    background: var(--toastui-editor-scrollbar-track-color);
+    border-radius: var(--toastui-editor-border-radius);
+}
+
+.toastui-editor-md-preview::-webkit-scrollbar-thumb,
+.toastui-editor-ww-container .toastui-editor-contents::-webkit-scrollbar-thumb,
+.ProseMirror::-webkit-scrollbar-thumb,
+.toastui-editor-popup::-webkit-scrollbar-thumb,
+.toastui-editor-context-menu::-webkit-scrollbar-thumb {
+    background: var(--toastui-editor-scrollbar-thumb-color);
+    border-radius: var(--toastui-editor-border-radius);
+    cursor: pointer;
+}
+
+.toastui-editor-md-preview::-webkit-scrollbar-thumb:hover,
+.toastui-editor-ww-container .toastui-editor-contents::-webkit-scrollbar-thumb:hover,
+.ProseMirror::-webkit-scrollbar-thumb:hover,
+.toastui-editor-popup::-webkit-scrollbar-thumb:hover,
+.toastui-editor-context-menu::-webkit-scrollbar-thumb:hover {
+    background: var(--toastui-editor-scrollbar-thumb-hover-color);
+    cursor: pointer;
+}
+
+.toastui-editor-md-preview::-webkit-scrollbar-corner,
+.toastui-editor-ww-container .toastui-editor-contents::-webkit-scrollbar-corner,
+.ProseMirror::-webkit-scrollbar-corner,
+.toastui-editor-popup::-webkit-scrollbar-corner,
+.toastui-editor-context-menu::-webkit-scrollbar-corner {
+    background: var(--toastui-editor-scrollbar-corner-color);
+}

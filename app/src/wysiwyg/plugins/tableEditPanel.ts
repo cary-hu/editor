@@ -277,7 +277,7 @@ class TableEditPanelView extends EditPanel {
       if (index > 0 && bodyRowCount > 1) { // Don't show delete button for header row or if only one body row exists
         const deleteContainer = document.createElement('div');
         deleteContainer.className = 'toastui-editor-row-delete-container';
-        
+
         // Position at the center of the row height
         const rowHeight = rowRect.height;
         const rowTop = rowRect.top - panelRect.top;
@@ -302,7 +302,7 @@ class TableEditPanelView extends EditPanel {
         deleteContainer.addEventListener('mouseenter', () => {
           deleteContainer.style.opacity = '1';
           deleteRowBtn.style.visibility = 'visible';
-          deleteOverlay.style.opacity = '1';
+          deleteOverlay.style.opacity = '.1';
         });
 
         deleteContainer.addEventListener('mouseleave', () => {
@@ -395,7 +395,7 @@ class TableEditPanelView extends EditPanel {
       if (columnCount > 1) {
         const deleteContainer = document.createElement('div');
         deleteContainer.className = 'toastui-editor-col-delete-container';
-        
+
         // Position at the center of the column width
         const colLeft = firstCellRect.left - panelRect.left;
         const colWidth = firstCellRect.width;
@@ -420,8 +420,7 @@ class TableEditPanelView extends EditPanel {
         deleteContainer.addEventListener('mouseenter', () => {
           deleteContainer.style.opacity = '1';
           deleteColBtn.style.visibility = 'visible';
-          deleteColBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-          deleteOverlay.style.opacity = '1';
+          deleteOverlay.style.opacity = '.1';
         });
 
         deleteContainer.addEventListener('mouseleave', () => {
@@ -500,7 +499,7 @@ class TableEditPanelView extends EditPanel {
       if (columnCount > 1) {
         const deleteContainer = document.createElement('div');
         deleteContainer.className = 'toastui-editor-col-delete-container';
-        
+
         // Position at the center of the column width
         const colLeft = cellRect.left - panelRect.left;
         const colWidth = cellRect.width;
@@ -525,8 +524,7 @@ class TableEditPanelView extends EditPanel {
         deleteContainer.addEventListener('mouseenter', () => {
           deleteContainer.style.opacity = '1';
           deleteColBtn.style.visibility = 'visible';
-          deleteColBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-          deleteOverlay.style.opacity = '1';
+          deleteOverlay.style.opacity = '.1';
         });
 
         deleteContainer.addEventListener('mouseleave', () => {

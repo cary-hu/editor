@@ -2,6 +2,7 @@ import { Plugin } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Emitter } from '@t/event';
 import i18n from '@/i18n/i18n';
+import { cls } from '@/utils/dom';
 
 interface ImageEditPanelState {
   isVisible: boolean;
@@ -307,7 +308,7 @@ class ImageEditPanelView {
 
     const dialog = document.createElement('div');
 
-    dialog.className = 'toastui-editor-image-edit-dialog';
+    dialog.className = cls('image-edit-dialog', 'edit-dialog');
 
     // Create dialog content first
     this.createDialogContent(dialog);
