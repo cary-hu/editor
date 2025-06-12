@@ -31,7 +31,7 @@ const content = [
 const editor = new Editor({
     el: document.querySelector('#editor')!,
     previewStyle: 'vertical',
-    height: '400px',
+    height: '100vh',
     initialEditType: 'wysiwyg',
     useCommandShortcut: true,
     extendedAutolinks: true,
