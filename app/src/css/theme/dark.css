@@ -106,3 +106,7 @@
 .toastui-editor-dark .toastui-editor-context-menu::-webkit-scrollbar-corner {
   background: #2a2a2a;
 }
+
+.toastui-editor-dark .toastui-editor-context-menu li:not(.disabled):hover span::before {
+    background-position-y: -126px;
+}
