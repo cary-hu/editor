@@ -8,7 +8,7 @@ const optionDefinitions = [
 const options = commandLineArgs(optionDefinitions);
 
 const pkgMap = {
-  editor: '@toast-ui/editor',
+  editor: '@caryhu/tui.editor',
   toastmark: '@toast-ui/toastmark',
 };
 

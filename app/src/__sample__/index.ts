@@ -36,7 +36,6 @@ const editor = new Editor({
     useCommandShortcut: true,
     extendedAutolinks: true,
     frontMatter: true,
-    theme: 'dark',
     initialValue: content,
 });
 

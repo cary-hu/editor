@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
-const { merge } = require('webpack-merge');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+import { resolve as _resolve } from 'path';
+import { merge } from 'webpack-merge';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 
+const __dirname = _resolve();
 const commonConfig = {
-  entry: path.resolve(__dirname, './src/index.ts'),
+  entry: _resolve(__dirname, './src/index.ts'),
   mode: 'production',
   module: {
     rules: [
@@ -36,7 +37,7 @@ const commonConfig = {
       type: 'commonjs',
     },
     publicPath: '/dist',
-    path: path.resolve(__dirname, 'dist'),
+    path: _resolve(__dirname, 'dist'),
   },
   optimization: {
     minimize: true,
@@ -49,7 +50,7 @@ const commonConfig = {
   },
 };
 
-module.exports = (env) => {
+export default (env) => {
   const isProduction = env.WEBPACK_BUILD;
 
   if (isProduction) {
@@ -57,7 +58,7 @@ module.exports = (env) => {
   }
 
   return merge(commonConfig, {
-    entry: path.resolve(__dirname, './src/__sample__/index.ts'),
+    entry: _resolve(__dirname, './src/__sample__/index.ts'),
     mode: 'development',
     devtool: 'inline-source-map',
     output: {
@@ -65,7 +66,7 @@ module.exports = (env) => {
         type: 'umd',
       },
       publicPath: '/',
-      path: path.resolve(__dirname, '/'),
+      path: _resolve(__dirname, '/'),
     },
     module: {
       rules: [
