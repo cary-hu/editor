@@ -13,7 +13,7 @@
 }
 
 .ProseMirror .placeholder {
-  color: var(--toastui-editor-secondary-color);
+  color: var(--toastui-editor-color);
 }
 
 .ProseMirror:focus {
@@ -116,7 +116,7 @@ table.ProseMirror-selectednode {
 }
 
 .toastui-editor-contents del {
-  color: var(--toastui-editor-secondary-color);
+  color: var(--toastui-editor-color);
 }
 
 .toastui-editor-contents blockquote {
@@ -126,13 +126,13 @@ table.ProseMirror-selectednode {
   border-radius: var(--toastui-editor-border-radius);
   padding: .5rem;
   background-color: var(--toastui-editor-blockquote-bg-color);
-  color: var(--toastui-editor-blockquote-color) !important;
+  color: var(--toastui-editor-blockquote-color);
 }
 
 .toastui-editor-contents blockquote[data-block-quote-type="default"] {
-  --toastui-editor-blockquote-left-border-color: var(--toastui-editor-border-color);
-  --toastui-editor-blockquote-bg-color: var(--toastui-editor-color-light);
-  --toastui-editor-blockquote-color: var(--toastui-editor-color-light-text);
+  --toastui-editor-blockquote-left-border-color: var(--toastui-editor-light-border-subtle);
+  --toastui-editor-blockquote-bg-color: var(--toastui-editor-light-bg-subtle);
+  --toastui-editor-blockquote-color: var(--toastui-editor-light-text-emphasis);
 }
 
 .toastui-editor-contents blockquote[data-block-quote-type="info"] {
@@ -178,8 +178,8 @@ table.ProseMirror-selectednode {
   margin: 2px 0 8px;
   padding: .75rem 1rem;
   border: 1px solid var(--toastui-editor-border-color);
-  background-color: var(--toastui-editor-color-light);
-  color: var(--toastui-editor-color-light-text);
+  background-color: var(--toastui-editor-secondary-bg-color);
+  color: var(--toastui-editor-color);
   border-radius: var(--toastui-editor-border-radius);
 }
 
@@ -193,8 +193,8 @@ table.ProseMirror-selectednode {
 .toastui-editor-contents code {
   padding: 2px 3px;
   border: 1px solid var(--toastui-editor-border-color);
-  background-color: var(--toastui-editor-color-light);
-  color: var(--toastui-editor-color-light-text);
+  background-color: var(--toastui-editor-secondary-bg-color);
+  color: var(--toastui-editor-color);
   border-radius: var(--toastui-editor-border-radius);
 }
 
@@ -228,15 +228,14 @@ table.ProseMirror-selectednode {
 }
 
 .toastui-editor-contents table th {
-  background-color: var(--toastui-editor-content-table-header-bg-color);
+  background-color: var(--toastui-editor-secondary-bg-color);
   font-weight: bolder;
-  color: var(--toastui-editor-content-table-header-color);
   padding-top: 6px;
 }
 
 .toastui-editor-contents th p {
   margin: 0;
-  color: var(--toastui-editor-content-table-header-color);
+  color: var(--toastui-editor-color);
 }
 
 .toastui-editor-contents td p {
@@ -245,11 +244,11 @@ table.ProseMirror-selectednode {
 }
 
 .toastui-editor-contents td.toastui-editor-cell-selected {
-  background-color: var(--toastui-editor-content-table-cell-select-bg-color);
+  background-color: var(--toastui-editor-accent-color);
 }
 
 .toastui-editor-contents th.toastui-editor-cell-selected {
-  background-color: var(--toastui-editor-content-table-cell-select-bg-color);
+  background-color: var(--toastui-editor-accent-color);
 }
 
 .toastui-editor-contents ul,
@@ -284,7 +283,7 @@ table.ProseMirror-selectednode {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background-color: var(--toastui-editor-secondary-color);
+  background-color: var(--toastui-editor-color);
 }
 
 .toastui-editor-contents ol>li::before {
@@ -293,7 +292,7 @@ table.ProseMirror-selectednode {
   width: 24px;
   text-align: right;
   direction: rtl;
-  color: var(--toastui-editor-secondary-color);
+  color: var(--toastui-editor-color);
 }
 
 .toastui-editor-contents ul ul,
@@ -315,7 +314,7 @@ table.ProseMirror-selectednode {
 }
 
 .toastui-editor-contents hr {
-  border-top: 1px solid var(--toastui-editor-secondary-color);
+  border-top: 1px solid var(--toastui-editor-border-color);
   margin: 16px 0;
 }
 
@@ -342,7 +341,7 @@ table.ProseMirror-selectednode {
   border: 1px solid #c9ccd5;
   background: #fff url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj4KICAgIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj4KICAgICAgICA8ZyBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS41Ij4KICAgICAgICAgICAgPGc+CiAgICAgICAgICAgICAgICA8Zz4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNNy42NjUgMTUuMDdsLTEuODE5LS4wMDJjLTEuNDg2IDAtMi42OTItMS4yMjgtMi42OTItMi43NDR2LS4xOTJjMC0xLjUxNSAxLjIwNi0yLjc0NCAyLjY5Mi0yLjc0NGgzLjg0NmMxLjQ4NyAwIDIuNjkyIDEuMjI5IDIuNjkyIDIuNzQ0di4xOTIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0xMDAwIC00NTgxKSB0cmFuc2xhdGUoOTk1IDQ1NzYpIHRyYW5zbGF0ZSg1IDUpIHNjYWxlKDEgLTEpIHJvdGF0ZSg0NSAzNy4yOTMgMCkiLz4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTIuMzI2IDQuOTM0bDEuODIyLjAwMmMxLjQ4NyAwIDIuNjkzIDEuMjI4IDIuNjkzIDIuNzQ0di4xOTJjMCAxLjUxNS0xLjIwNiAyLjc0NC0yLjY5MyAyLjc0NGgtMy44NDVjLTEuNDg3IDAtMi42OTItMS4yMjktMi42OTItMi43NDRWNy42OCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTEwMDAgLTQ1ODEpIHRyYW5zbGF0ZSg5OTUgNDU3NikgdHJhbnNsYXRlKDUgNSkgc2NhbGUoMSAtMSkgcm90YXRlKDQ1IDMwLjk5NiAwKSIvPgogICAgICAgICAgICAgICAgPC9nPgogICAgICAgICAgICA8L2c+CiAgICAgICAgPC9nPgogICAgPC9nPgo8L3N2Zz4K') no-repeat;
   background-position: center;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+  box-shadow: var(--toastui-editor-box-shadow);
   cursor: pointer;
 }
 
@@ -436,9 +435,10 @@ table.ProseMirror-selectednode {
   font-size: 13px;
   line-height: 15px;
   color: var(--toastui-editor-color);
-  background: #e5e9ea url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IuugiOydtOyWtF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiCgkgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMzAgMzAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMwIDMwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+Cgkuc3Qwe2ZpbGwtcnVsZTpldmVub2RkO2NsaXAtcnVsZTpldmVub2RkO2ZpbGw6IzU1NTU1NTt9Cjwvc3R5bGU+CjxnPgoJPGc+CgkJPGc+CgkJCTxnPgoJCQkJPGc+CgkJCQkJPHBhdGggY2xhc3M9InN0MCIgZD0iTTE1LjUsMTIuNWwyLDJMMTIsMjBoLTJ2LTJMMTUuNSwxMi41eiBNMTgsMTBsMiwybC0xLjUsMS41bC0yLTJMMTgsMTB6Ii8+CgkJCQk8L2c+CgkJCTwvZz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==') no-repeat;
+  background: var(--toastui-editor-secondary-bg-color) url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IuugiOydtOyWtF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiCgkgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMzAgMzAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMwIDMwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+Cgkuc3Qwe2ZpbGwtcnVsZTpldmVub2RkO2NsaXAtcnVsZTpldmVub2RkO2ZpbGw6IzU1NTU1NTt9Cjwvc3R5bGU+CjxnPgoJPGc+CgkJPGc+CgkJCTxnPgoJCQkJPGc+CgkJCQkJPHBhdGggY2xhc3M9InN0MCIgZD0iTTE1LjUsMTIuNWwyLDJMMTIsMjBoLTJ2LTJMMTUuNSwxMi41eiBNMTgsMTBsMiwybC0xLjUsMS41bC0yLTJMMTgsMTB6Ii8+CgkJCQk8L2c+CgkJCTwvZz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==') no-repeat;
   background-position: right;
-  border-radius: 2px;
+  border-radius: var(--toastui-editor-border-radius);
+  border: 1px solid var(--toastui-editor-border-color);
   background-size: 30px 30px;
   cursor: pointer;
 }
@@ -451,7 +451,7 @@ table.ProseMirror-selectednode {
   right: 35px;
   border: 1px solid #ccc;
   border-radius: 2px;
-  background-color: #fff;
+  background-color: var(--toastui-editor-color);
   z-index: 30;
 }
 

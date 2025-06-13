@@ -3,7 +3,7 @@
     display: flex;
     padding: 0 .5rem;
     height: 45px;
-    background-color: var(--toastui-editor-toolbar-bg-color);
+    background-color: var(--toastui-editor-secondary-bg-color);
     border-bottom: 1px solid var(--toastui-editor-border-color);
 }
 
@@ -16,7 +16,7 @@
     display: inline-block;
     width: 1px;
     height: 18px;
-    background-color: var(--toastui-editor-toolbar-divider-color);
+    background-color: var(--toastui-editor-border-color);
     margin: 14px 12px;
 }
 
@@ -34,10 +34,6 @@
     border-radius: var(--toastui-editor-border-radius);
     margin: 7px 5px;
     border: 1px solid transparent;
-}
-
-.toastui-editor-defaultUI-toolbar button:not(:disabled):hover {
-    border: 1px solid var(--toastui-editor-border-color);
 }
 
 .toastui-editor-defaultUI-toolbar .scroll-sync {
@@ -58,7 +54,7 @@
 }
 
 .toastui-editor-defaultUI-toolbar .scroll-sync.active::before {
-    color: var(--toastui-editor-color-active);
+    color: var(--toastui-editor-color);
 }
 
 .toastui-editor-defaultUI-toolbar .scroll-sync input {
@@ -115,7 +111,7 @@
     border-radius: var(--toastui-editor-border-radius);
     box-shadow: var(--toastui-editor-box-shadow);
     border: 1px solid var(--toastui-editor-border-color);
-    background-color: var(--toastui-editor-toolbar-bg-color);
+    background-color: var(--toastui-editor-secondary-bg-color);
     display: -ms-flexbox;
     display: flex;
 }
@@ -128,7 +124,7 @@
 
 .toastui-editor-tooltip {
     position: absolute;
-    background-color: var(--toastui-editor-toolbar-bg-color);
+    background-color: var(--toastui-editor-secondary-bg-color);
     z-index: 40;
     padding: 4px 7px;
     font-size: 12px;
@@ -143,7 +139,7 @@
     display: inline-block;
     width: 10px;
     height: 10px;
-    background-color: var(--toastui-editor-toolbar-bg-color);
+    background-color: var(--toastui-editor-secondary-bg-color);
     border: 1px solid var(--toastui-editor-border-color);
     border-bottom: none;
     border-right: none;
@@ -265,7 +261,7 @@ only screen and (min-resolution: 2dppx) {
 .toastui-editor-popup {
     width: 400px;
     margin-right: auto;
-    background: var(--toastui-editor-toolbar-bg-color);
+    background: var(--toastui-editor-secondary-bg-color);
     z-index: 30;
     position: absolute;
     border-radius: var(--toastui-editor-border-radius);
@@ -291,11 +287,13 @@ only screen and (min-resolution: 2dppx) {
 }
 
 .toastui-editor-popup-body input[type='text'] {
+    padding: 4px 8px;
     width: 100%;
-    height: 30px;
-    padding: 0 12px;
-    border-radius: var(--toastui-editor-border-radius);
     border: 1px solid var(--toastui-editor-border-color);
+    border-radius: var(--toastui-editor-border-radius);
+    font-size: 12px;
+    background-color: var(--toastui-editor-bg-color);
+    color: var(--toastui-editor-color);
 }
 
 .toastui-editor-popup-body input[type='text']:focus {
@@ -306,7 +304,7 @@ only screen and (min-resolution: 2dppx) {
 .toastui-editor-popup-body input[type='text'].disabled {
     background-color: var(--toastui-editor-color-muted);
     border-color: var(--toastui-editor-border-color);
-    color: var(--toastui-editor-color-muted);
+    color: var(--toastui-editor-color);
 }
 
 .toastui-editor-popup-body input[type='file'] {
@@ -322,16 +320,16 @@ only screen and (min-resolution: 2dppx) {
 .toastui-editor-popup-body button {
     width: 64px;
     margin: 0 .25rem;
-    border: 1px solid transparent;
+    background-color: var(--toastui-editor-secondary-bg-color);
+    border: 1px solid var(--toastui-editor-border-color);
+    border-radius: var(--toastui-editor-border-radius);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .toastui-editor-popup-body .toastui-editor-ok-button {
-    background-color: var(--toastui-editor-color-primary);
-    color: var(--toastui-editor-border-text);
-}
-
-.toastui-editor-popup-body button:hover {
-    border-color: var(--toastui-editor-border-color);
+    border-color: var(--toastui-editor-color-success);
 }
 
 .toastui-editor-popup-body input.wrong,
@@ -362,39 +360,43 @@ only screen and (min-resolution: 2dppx) {
 }
 
 .toastui-editor-popup-add-image .toastui-editor-tabs .tab-item:hover {
-    border-bottom: 1px solid var(--toastui-editor-color-hover);
+    border-bottom: 1px solid var(--toastui-editor-accent-color);
 }
 
 .toastui-editor-popup-add-image .toastui-editor-tabs .tab-item.active {
-    color: var(--toastui-editor-color-active);
-    border-bottom: 2px solid var(--toastui-editor-color-active);
+    color: var(--toastui-editor-color);
+    border-bottom: 2px solid var(--toastui-editor-accent-color);
+}
+
+.toastui-editor-popup-add-image .select-file-container {
+    display: flex;
+    align-items: center;
 }
 
 .toastui-editor-popup-add-image .toastui-editor-file-name {
-    width: 58%;
+    flex-grow: 1;
     display: inline-block;
-    border-radius: var(--toastui-editor-border-radius);
-    border: 1px solid var(--toastui-editor-border-color);
-    height: 30px;
-    line-height: 30px;
-    padding: 0 12px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: pointer;
+    padding: 4px 8px;
+    width: 100%;
+    height: 24px;
+    border: 1px solid var(--toastui-editor-border-color);
+    border-radius: var(--toastui-editor-border-radius);
+    font-size: 12px;
+    background-color: var(--toastui-editor-bg-color);
+    color: var(--toastui-editor-color);
 }
 
 .toastui-editor-popup-add-image .toastui-editor-file-select-button {
-    width: 33%;
+    min-width: 100px;
+    height: 24px;
+    padding: 0 8px;
     margin-left: 5px;
-    height: 30px;
     border-radius: var(--toastui-editor-border-radius);
     border: 1px solid var(--toastui-editor-border-color);
-    vertical-align: top;
-}
-
-.toastui-editor-popup-add-image .toastui-editor-file-select-button:hover {
-    border-color: var(--toastui-editor-border-color);
 }
 
 .toastui-editor-popup-add-table {
@@ -410,12 +412,12 @@ only screen and (min-resolution: 2dppx) {
     width: 20px;
     height: 20px;
     border: 1px solid var(--toastui-editor-border-color);
-    background: var(--toastui-editor-table-bg-color);
+    background-color: var(--toastui-editor-bg-color);
     box-sizing: border-box;
 }
 
 .toastui-editor-popup-add-table .toastui-editor-table-cell.header {
-    background: var(--toastui-editor-table-header-bg-color);
+    background: var(--toastui-editor-secondary-bg-color);
 }
 
 .toastui-editor-popup-add-table .toastui-editor-table-row {
@@ -474,7 +476,8 @@ only screen and (min-resolution: 2dppx) {
 }
 
 .toastui-editor-popup-add-heading ul li:hover {
-    background-color: var(--toastui-editor-color-active);
+    background-color: var(--toastui-editor-color-primary);
+    color: var(--toastui-editor-color-primary-text);
 }
 
 .toastui-editor-popup-add-heading h1 {
@@ -520,37 +523,49 @@ only screen and (min-resolution: 2dppx) {
     padding: 8px 12px;
     margin-bottom: .25rem;
     cursor: pointer;
+    border: 1px solid var(--toastui-editor-border-color);
     border-left: 4px solid transparent;
     border-radius: var(--toastui-editor-border-radius);
 }
-
+.toastui-editor-popup-add-blockquote ul li.active,
 .toastui-editor-popup-add-blockquote ul li:hover {
-    background-color: var(--toastui-editor-color-active);
+    background-color: var(--toastui-editor-color-primary) !important;
+    color: var(--toastui-editor-color-primary-text) !important;
 }
 
 .toastui-editor-popup-add-blockquote ul li[data-type="default"] {
-    border-left-color: var(--toastui-editor-color-light);
+    border-color: var(--toastui-editor-light-border-subtle);
+    border-left-color: var(--toastui-editor-light-border-subtle);
+    color: var(--toastui-editor-light-text-emphasis);
+    background-color: var(--toastui-editor-light-bg-subtle);
 }
 
 .toastui-editor-popup-add-blockquote ul li[data-type="danger"] {
-    border-left-color: var(--toastui-editor-color-danger);
+    border-color: var(--toastui-editor-danger-border-subtle);
+    border-left-color: var(--toastui-editor-danger-border-subtle);
+    color: var(--toastui-editor-danger-text-emphasis);
+    background-color: var(--toastui-editor-danger-bg-subtle);
 }
 
 .toastui-editor-popup-add-blockquote ul li[data-type="info"] {
-    border-left-color: var(--toastui-editor-color-info);
+    border-color: var(--toastui-editor-info-border-subtle);
+    border-left-color: var(--toastui-editor-info-border-subtle);
+    color: var(--toastui-editor-info-text-emphasis);
+    background-color: var(--toastui-editor-info-bg-subtle);
 }
 
 .toastui-editor-popup-add-blockquote ul li[data-type="warning"] {
-    border-left-color: var(--toastui-editor-color-warning);
+    border-color: var(--toastui-editor-warning-border-subtle);
+    border-left-color: var(--toastui-editor-warning-border-subtle);
+    color: var(--toastui-editor-warning-text-emphasis);
+    background-color: var(--toastui-editor-warning-bg-subtle);
 }
 
 .toastui-editor-popup-add-blockquote ul li[data-type="success"] {
-    border-left-color: var(--toastui-editor-color-success);
-}
-
-.toastui-editor-popup-add-blockquote ul li.active {
-    background-color: var(--toastui-editor-color-active);
-    color: var(--toastui-editor-color-hover);
+    border-color: var(--toastui-editor-success-border-subtle);
+    border-left-color: var(--toastui-editor-success-border-subtle);
+    color: var(--toastui-editor-success-text-emphasis);
+    background-color: var(--toastui-editor-success-bg-subtle);
 }
 
 @media only screen and (max-width: 480px) {

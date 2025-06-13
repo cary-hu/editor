@@ -1,5 +1,3 @@
-@import url('../variables.css');
-
 /* Base Editor Styles */
 .auto-height,
 .auto-height .toastui-editor-defaultUI {
@@ -73,6 +71,8 @@
     font-family: var(--toastui-editor-font-family);
     border-radius: 4px;
     overflow: hidden;
+    background-color: var(--toastui-editor-bg-color);
+    color: var(--toastui-editor-color);
 }
 
 .toastui-editor-defaultUI button {
@@ -113,8 +113,8 @@
 .ProseMirror::-webkit-scrollbar-track,
 .toastui-editor-popup::-webkit-scrollbar-track,
 .toastui-editor-context-menu::-webkit-scrollbar-track {
-    background: var(--toastui-editor-scrollbar-track-color);
-    border-radius: var(--toastui-editor-border-radius);
+    background: #f7f9fc;
+    border-radius: .25rem;
 }
 
 .toastui-editor-md-preview::-webkit-scrollbar-thumb,
@@ -122,8 +122,8 @@
 .ProseMirror::-webkit-scrollbar-thumb,
 .toastui-editor-popup::-webkit-scrollbar-thumb,
 .toastui-editor-context-menu::-webkit-scrollbar-thumb {
-    background: var(--toastui-editor-scrollbar-thumb-color);
-    border-radius: var(--toastui-editor-border-radius);
+    background: #c1c8d4;
+    border-radius: .25rem;
     cursor: pointer;
 }
 
@@ -132,7 +132,7 @@
 .ProseMirror::-webkit-scrollbar-thumb:hover,
 .toastui-editor-popup::-webkit-scrollbar-thumb:hover,
 .toastui-editor-context-menu::-webkit-scrollbar-thumb:hover {
-    background: var(--toastui-editor-scrollbar-thumb-hover-color);
+    background: #a8b2c1;
     cursor: pointer;
 }
 
@@ -141,5 +141,5 @@
 .ProseMirror::-webkit-scrollbar-corner,
 .toastui-editor-popup::-webkit-scrollbar-corner,
 .toastui-editor-context-menu::-webkit-scrollbar-corner {
-    background: var(--toastui-editor-scrollbar-corner-color);
+    background: #f5f7fa;
 }

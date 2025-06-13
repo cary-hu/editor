@@ -8,7 +8,8 @@
     border: 1px solid var(--toastui-editor-border-color);
     z-index: 30;
     padding: .25rem;
-    background-color: var(--toastui-editor-floating-item-bg-color);
+    background-color: var(--toastui-editor-secondary-bg-color);
+    color: var(--toastui-editor-color);
 }
 
 .toastui-editor-context-menu .menu-group {
@@ -92,11 +93,11 @@
 
 .toastui-editor-context-menu li:not(.disabled):hover {
     background-color: var(--toastui-editor-color-primary);
-    color: var(--toastui-editor-color-primary-text);
+    color: var(--toastui-editor-color);
 }
 
 .toastui-editor-context-menu li.disabled {
-    color: var(--toastui-editor-secondary-color);
+    color: var(--toastui-editor-color);
     opacity: .3;
     cursor: default;
 }

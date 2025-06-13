@@ -1,6 +1,6 @@
 /* Mode Switch Tab Styles */
 .toastui-editor-mode-switch {
-  background-color: var(--toastui-editor-mode-switch-bg-color);
+  background-color: var(--toastui-editor-secondary-bg-color);
   border-top: 1px solid var(--toastui-editor-border-color);
   font-size: 12px;
   text-align: right;
@@ -14,8 +14,8 @@
   height: 24px;
   line-height: 24px;
   text-align: center;
-  background: var(--toastui-editor-mode-switch-bg-color);
-  color: var(--toastui-editor-mode-switch-color);
+  background: var(--toastui-editor-secondary-bg-color);
+  color: var(--toastui-editor-color);
   margin-top: -1px;
   margin-right: -1px;
   cursor: pointer;
@@ -28,5 +28,5 @@
 .toastui-editor-mode-switch .tab-item.active {
   border-top: 1px solid transparent;
   background-color: var(--toastui-editor-mode-switch-bg-color-active);
-  color: var(--toastui-editor-mode-switch-color-active);
+  color: var(--toastui-editor-color);
 }

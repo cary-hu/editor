@@ -3,7 +3,8 @@
     display: none;
     overflow: hidden;
     height: inherit;
-    background-color: var(--toastui-editor-content-bg-color);
+    background-color: var(--toastui-editor-bg-color);
+    color: var(--toastui-editor-color);
 }
 
 .toastui-editor-ww-container>.toastui-editor {
@@ -37,14 +38,14 @@
 
 .toastui-editor-ww-block-quote::after {
     content: '';
-    background: #e5e9ea url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IuugiOydtOyWtF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiCgkgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMzAgMzAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMwIDMwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+Cgkuc3Qwe2ZpbGwtcnVsZTpldmVub2RkO2NsaXAtcnVsZTpldmVub2RkO2ZpbGw6IzU1NTU1NTt9Cjwvc3R5bGU+CjxnPgoJPGc+CgkJPGc+CgkJCTxnPgoJCQkJPGc+CgkJCQkJPHBhdGggY2xhc3M9InN0MCIgZD0iTTE1LjUsMTIuNWwyLDJMMTIsMjBoLTJ2LTJMMTUuNSwxMi41eiBNMTgsMTBsMiwybC0xLjUsMS41bC0yLTJMMTgsMTB6Ii8+CgkJCQk8L2c+CgkJCTwvZz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==') no-repeat;
+    background: var(--toastui-editor-secondary-bg-color) url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IuugiOydtOyWtF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiCgkgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMzAgMzAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMwIDMwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+Cgkuc3Qwe2ZpbGwtcnVsZTpldmVub2RkO2NsaXAtcnVsZTpldmVub2RkO2ZpbGw6IzU1NTU1NTt9Cjwvc3R5bGU+CjxnPgoJPGc+CgkJPGc+CgkJCTxnPgoJCQkJPGc+CgkJCQkJPHBhdGggY2xhc3M9InN0MCIgZD0iTTE1LjUsMTIuNWwyLDJMMTIsMjBoLTJ2LTJMMTUuNSwxMi41eiBNMTgsMTBsMiwybC0xLjUsMS41bC0yLTJMMTgsMTB6Ii8+CgkJCQk8L2c+CgkJCTwvZz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==') no-repeat;
     background-position: center;
     position: absolute;
     top: 8px;
     right: 8px;
     width: 27px;
     height: 27px;
-    border: 1px solid #dadde6;
+    border: 1px solid var(--toastui-editor-border-color);
     border-radius: 3px;
 }
 
@@ -52,7 +53,7 @@
     position: absolute;
     top: -2px;
     right: 8px;
-    background: var(--toastui-editor-floating-item-bg-color);
+    background: var(--toastui-editor-secondary-bg-color);
     border: 1px solid var(--toastui-editor-border-color);
     border-radius: var(--toastui-editor-border-radius);
     box-shadow: var(--toastui-editor-box-shadow);
@@ -66,17 +67,55 @@
     display: block;
     width: 100%;
     padding: 8px 12px;
-    background: none;
-    border: none;
-    text-align: left;
     cursor: pointer;
-    color: var(--toastui-editor-floating-item-color);
-    transition: background-color 0.15s ease;
+    color: var(--toastui-editor-color);
+    transition: all 0.15s ease;
+    margin-bottom: .25rem;
+    cursor: pointer;
+    border: 1px solid var(--toastui-editor-border-color);
+    border-left: 4px solid transparent;
     border-radius: var(--toastui-editor-border-radius);
+    height: unset;
 }
 
 .toastui-editor-ww-block-quote-type button.active,
 .toastui-editor-ww-block-quote-type button:hover {
-    background: var(--toastui-editor-color-primary);
-    color: var(--toastui-editor-color-primary-text);
+    background-color: var(--toastui-editor-color-primary) !important;
+    color: var(--toastui-editor-color-primary-text) !important;
+}
+
+
+.toastui-editor-ww-block-quote-type button[value="default"] {
+    border-color: var(--toastui-editor-light-border-subtle);
+    border-left-color: var(--toastui-editor-light-border-subtle);
+    color: var(--toastui-editor-light-text-emphasis);
+    background-color: var(--toastui-editor-light-bg-subtle);
+}
+
+.toastui-editor-ww-block-quote-type button[value="danger"] {
+    border-color: var(--toastui-editor-danger-border-subtle);
+    border-left-color: var(--toastui-editor-danger-border-subtle);
+    color: var(--toastui-editor-danger-text-emphasis);
+    background-color: var(--toastui-editor-danger-bg-subtle);
+}
+
+.toastui-editor-ww-block-quote-type button[value="info"] {
+    border-color: var(--toastui-editor-info-border-subtle);
+    border-left-color: var(--toastui-editor-info-border-subtle);
+    color: var(--toastui-editor-info-text-emphasis);
+    background-color: var(--toastui-editor-info-bg-subtle);
+}
+
+.toastui-editor-ww-block-quote-type button[value="warning"] {
+    border-color: var(--toastui-editor-warning-border-subtle);
+    border-left-color: var(--toastui-editor-warning-border-subtle);
+    color: var(--toastui-editor-warning-text-emphasis);
+    background-color: var(--toastui-editor-warning-bg-subtle);
+}
+
+.toastui-editor-ww-block-quote-type button[value="success"] {
+    border-color: var(--toastui-editor-success-border-subtle);
+    border-left-color: var(--toastui-editor-success-border-subtle);
+    color: var(--toastui-editor-success-text-emphasis);
+    background-color: var(--toastui-editor-success-bg-subtle);
 }

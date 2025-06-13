@@ -11,8 +11,8 @@
 .toastui-edit-panel-container .toastui-editor-edit-dialog {
     position: fixed;
     pointer-events: auto;
-    background-color: var(--toastui-editor-floating-item-bg-color);
-    color: var(--toastui-editor-floating-item-color);
+    background-color: var(--toastui-editor-secondary-bg-color);
+    color: var(--toastui-editor-color);
     box-shadow: var(--toastui-editor-box-shadow);
     border-radius: var(--toastui-editor-border-radius);
     border: 1px solid var(--toastui-editor-border-color);
@@ -31,7 +31,7 @@
 }
 
 .toastui-edit-panel-container .toastui-editor-edit-dialog button {
-    background-color: var(--toastui-editor-floating-item-bg-color);
+    background-color: var(--toastui-editor-secondary-bg-color);
     border: 1px solid var(--toastui-editor-border-color);
     border-radius: var(--toastui-editor-border-radius);
     padding: 0 1rem;
@@ -39,14 +39,9 @@
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
-
+.toastui-edit-panel-container .toastui-editor-edit-dialog button.active,
 .toastui-edit-panel-container .toastui-editor-edit-dialog button:hover {
-    color: var(--toastui-editor-color-primary-text);
     border-color: var(--toastui-editor-color-primary);
-    background-color: var(--toastui-editor-color-primary);
-}
-
-.toastui-edit-panel-container .toastui-editor-edit-dialog button.active {
     background-color: var(--toastui-editor-color-primary);
     color: var(--toastui-editor-color-primary-text);
 }
@@ -56,13 +51,14 @@
     padding: 4px 8px;
     border: 1px solid var(--toastui-editor-border-color);
     border-radius: var(--toastui-editor-border-radius);
+    background-color: var(--toastui-editor-bg-color);
+    color: var(--toastui-editor-color);
     font-size: 12px;
 }
 
 .toastui-edit-panel-container .toastui-editor-edit-dialog input:focus {
-    outline: none;
-    border-color: var(--toastui-editor-border-color);
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    outline: 1px solid var(--toastui-editor-color-primary);
+    border-color: transparent;
 }
 
 .toastui-editor-image-edit-dialog .dialog-actions {
@@ -297,12 +293,14 @@
     margin-bottom: 8px;
 }
 
-.toastui-edit-panel-container .toastui-editor-edit-dialog .save-btn {
+.toastui-edit-panel-container .toastui-editor-edit-dialog .save-btn:hover {
     border-color: var(--toastui-editor-color-success);
+    background-color: var(--toastui-editor-color-success);
 }
 
-.toastui-edit-panel-container .toastui-editor-edit-dialog .delete-btn {
+.toastui-edit-panel-container .toastui-editor-edit-dialog .delete-btn:hover {
     border-color: var(--toastui-editor-color-danger);
+    background-color: var(--toastui-editor-color-danger);
 }
 
 .toastui-editor-image-edit-dialog .size-input {
@@ -312,12 +310,12 @@
 
 .toastui-editor-image-edit-dialog .size-unit {
     font-size: 12px;
-    color: var(--toastui-editor-secondary-color);
+    color: var(--toastui-editor-color);
 }
 
 .toastui-editor-image-edit-dialog .current-value {
     font-size: 11px;
-    color: var(--toastui-editor-secondary-color);
+    color: var(--toastui-editor-color);
     margin-bottom: 4px;
     font-style: italic;
     user-select: none;
