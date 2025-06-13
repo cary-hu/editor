@@ -360,12 +360,12 @@ only screen and (min-resolution: 2dppx) {
 }
 
 .toastui-editor-popup-add-image .toastui-editor-tabs .tab-item:hover {
-    border-bottom: 1px solid var(--toastui-editor-accent-color);
+    border-bottom: 1px solid var(--toastui-editor-primary-bg-subtle);
 }
 
 .toastui-editor-popup-add-image .toastui-editor-tabs .tab-item.active {
     color: var(--toastui-editor-color);
-    border-bottom: 2px solid var(--toastui-editor-accent-color);
+    border-bottom: 2px solid var(--toastui-editor-primary-bg-subtle);
 }
 
 .toastui-editor-popup-add-image .select-file-container {

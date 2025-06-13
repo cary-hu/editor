@@ -244,11 +244,11 @@ table.ProseMirror-selectednode {
 }
 
 .toastui-editor-contents td.toastui-editor-cell-selected {
-  background-color: var(--toastui-editor-accent-color);
+  background-color: var(--toastui-editor-primary-bg-subtle);
 }
 
 .toastui-editor-contents th.toastui-editor-cell-selected {
-  background-color: var(--toastui-editor-accent-color);
+  background-color: var(--toastui-editor-primary-bg-subtle);
 }
 
 .toastui-editor-contents ul,

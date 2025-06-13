@@ -1,7 +1,6 @@
 .toastui-editor-container {
     /* Define the global color and background */
     --toastui-editor-color: #333;
-    --toastui-editor-accent-color: #2196f3;
     --toastui-editor-bg-color: #f7f9fc;
     --toastui-editor-secondary-bg-color: color-mix(in srgb, var(--toastui-editor-bg-color), var(--toastui-editor-color) 2%);
     --toastui-editor-border-color: color-mix(in srgb, transparent, var(--toastui-editor-color) 15%);

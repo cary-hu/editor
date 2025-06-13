@@ -1,7 +1,6 @@
 .toastui-editor-dark.toastui-editor-container {
   /* Define the global color and background */
   --toastui-editor-color: #fff;
-  --toastui-editor-accent-color: #2196f3;
   --toastui-editor-bg-color: hsl(29, 10%, 17%);
   --toastui-editor-box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
   --toastui-editor-border-radius: .25rem;
