@@ -63,11 +63,6 @@ table.ProseMirror-selectednode {
   margin: 10px 0;
 }
 
-.toastui-editor-contents>h1:first-of-type,
-.toastui-editor-contents>div>div:first-of-type h1 {
-  margin-top: 14px;
-}
-
 .toastui-editor-contents h1,
 .toastui-editor-contents h2,
 .toastui-editor-contents h3,
@@ -80,25 +75,25 @@ table.ProseMirror-selectednode {
 .toastui-editor-contents h1 {
   font-size: 24px;
   line-height: 28px;
-  margin: 52px 0 15px 0;
+  margin-bottom: 1rem;
   padding-bottom: 7px;
 }
 
 .toastui-editor-contents h2 {
   font-size: 22px;
   line-height: 23px;
-  margin: 20px 0 13px 0;
+  margin-bottom: .75rem;
   padding-bottom: 7px;
 }
 
 .toastui-editor-contents h3 {
   font-size: 20px;
-  margin: 18px 0 2px;
+  margin-bottom: .5rem;
 }
 
 .toastui-editor-contents h4 {
   font-size: 18px;
-  margin: 10px 0 2px;
+  margin-bottom: .25rem;
 }
 
 .toastui-editor-contents h3,
@@ -117,7 +112,7 @@ table.ProseMirror-selectednode {
 .toastui-editor-contents h5,
 .toastui-editor-contents h6 {
   line-height: 17px;
-  margin: 9px 0 -4px;
+  margin: 0;
 }
 
 .toastui-editor-contents del {
