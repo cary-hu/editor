@@ -17,9 +17,14 @@ const pathMap = {
   toastmark: 'libs/toastmark',
 };
 
+let scriptType = process.env.type;
+if (!scriptType || !['editor', 'toastmark'].includes(scriptType)) {
+  scriptType = 'editor';
+}
+
 let script;
-let pkg = pkgMap[process.env.type];
-let path = pathMap[process.env.type];
+let pkg = pkgMap[scriptType];
+let path = pathMap[scriptType];
 
 Object.keys(options).forEach((key) => {
   const value = options[key];
