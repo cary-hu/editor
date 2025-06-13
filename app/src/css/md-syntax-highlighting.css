@@ -64,34 +64,54 @@
 }
 
 .toastui-editor-md-code.toastui-editor-md-marked-text {
-  color: #c1798b;
+  color: var(--toastui-editor-color-light-text);
 }
 
 .toastui-editor-md-code {
-  background-color: rgba(243, 229, 233, 0.5);
+  background-color: var(--toastui-editor-color-light);
+  border-top: 1px solid var(--toastui-editor-border-color);
+  border-bottom: 1px solid var(--toastui-editor-border-color);
   padding: 2px 0;
   letter-spacing: -0.3px;
 }
 
 .toastui-editor-md-code.toastui-editor-md-start {
+  border-left: 1px solid var(--toastui-editor-border-color);
   padding-left: 2px;
-  border-top-left-radius: 2px;
-  border-bottom-left-radius: 2px;
+  border-top-left-radius: var(--toastui-editor-border-radius);
+  border-bottom-left-radius: var(--toastui-editor-border-radius);
 }
 
 .toastui-editor-md-code.toastui-editor-md-end {
+  border-right: 1px solid var(--toastui-editor-border-color);
   padding-right: 2px;
-  border-top-right-radius: 2px;
-  border-bottom-right-radius: 2px;
+  border-top-right-radius: var(--toastui-editor-border-radius);
+  border-bottom-right-radius: var(--toastui-editor-border-radius);
 }
 
 .toastui-editor-md-code-block-line-background {
-  background-color: #f5f7f8;
+  background-color: var(--toastui-editor-color-light);
+  border-right: 1px solid var(--toastui-editor-border-color);
+  border-left: 1px solid var(--toastui-editor-border-color);
+  padding: 0 1rem;
+}
+
+.toastui-editor-md-code-block-line-background.end,
+.toastui-editor-md-custom-code-block-line-background.end {
+  border-bottom: 1px solid var(--toastui-editor-border-color);
+  border-bottom-left-radius: var(--toastui-editor-border-radius);
+  border-bottom-right-radius: var(--toastui-editor-border-radius);
+  padding: .75rem 1rem;
+  padding-top: 0;
 }
 
 .toastui-editor-md-code-block-line-background.start,
 .toastui-editor-md-custom-block-line-background.start {
-  margin-top: 2px;
+  border-top: 1px solid var(--toastui-editor-border-color);
+  border-top-left-radius: var(--toastui-editor-border-radius);
+  border-top-right-radius: var(--toastui-editor-border-radius);
+  padding: .75rem 1rem;
+  padding-bottom: 0;
 }
 
 .toastui-editor-md-code,
@@ -102,12 +122,15 @@
 .toastui-editor-md-custom-block {
   color: #452d6b;
 }
+
 .toastui-editor-md-custom-block-line-background {
   background-color: #f9f7fd;
 }
+
 .toastui-editor-md-custom-block .toastui-editor-md-delimiter {
   color: #b8b3c0;
 }
+
 .toastui-editor-md-custom-block .toastui-editor-md-meta {
   color: #5200d0;
 }

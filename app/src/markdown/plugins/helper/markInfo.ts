@@ -137,16 +137,22 @@ function lineBackground(parent: MdNode, start: MdPos, end: MdPos, prefix: string
 
   return parent!.type !== 'item' && parent!.type !== 'blockQuote'
     ? [
-        {
-          ...defaultBackground,
-          end: start,
-          spec: { attrs: { className: `${prefix}-line-background start` } },
-        },
-        {
-          ...defaultBackground,
-          start: [Math.min(start[0] + 1, end[0]), start[1]] as MdPos,
-        },
-      ]
+      {
+        ...defaultBackground,
+        end: start,
+        spec: { attrs: { className: `${prefix}-line-background start` } },
+      },
+      {
+        ...defaultBackground,
+        start: [Math.min(start[0] + 1, end[0]), start[1]] as MdPos,
+        end: [end[0] - 1, end[1]] as MdPos,
+      },
+      {
+        ...defaultBackground,
+        start: end,
+        spec: { attrs: { className: `${prefix}-line-background end` } },
+      },
+    ]
     : null;
 }
 
@@ -156,7 +162,7 @@ function codeBlock(node: CodeBlockMdNode, start: MdPos, end: MdPos, endLine: str
   const marks = [markInfo(setOffsetPos(start, 1), end, CODE_BLOCK)];
 
   if (fenceChar) {
-    marks.push(markInfo(start, addOffsetPos(start, fenceEnd), DELIM));
+    marks.push(markInfo(start, addOffsetPos(start, fenceEnd), DELIM, { start: true }));
   }
 
   if (info) {
@@ -173,7 +179,7 @@ function codeBlock(node: CodeBlockMdNode, start: MdPos, end: MdPos, endLine: str
   const reCodeBlockEnd = new RegExp(codeBlockEnd);
 
   if (reCodeBlockEnd.test(endLine)) {
-    marks.push(markInfo(setOffsetPos(end, 1), end, DELIM));
+    marks.push(markInfo(setOffsetPos(end, 1), end, DELIM, { end: true }));
   }
 
   const lineBackgroundMarkInfo = lineBackground(parent!, start, end, 'code-block');
