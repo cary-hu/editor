@@ -30,7 +30,7 @@ import { Strike } from './marks/strike';
 import { Emph } from './marks/emph';
 import { Code } from './marks/code';
 import { Link } from './marks/link';
-import { Delimiter, TaskDelimiter, MarkedText, Meta, TableCell } from './marks/simpleMark';
+import { Delimiter, TaskDelimiter, MarkedText, Meta, TableCell, BlockQuoteDelimiter } from './marks/simpleMark';
 import { Html } from './marks/html';
 import { CustomBlock } from './marks/customBlock';
 import { getEditorToMdPos, getMdToEditorPos } from './helper/pos';
@@ -159,6 +159,7 @@ export default class MdEditor extends EditorBase {
       new Link(),
       new Delimiter(),
       new TaskDelimiter(),
+      new BlockQuoteDelimiter(),
       new MarkedText(),
       new Meta(),
       new Html(),

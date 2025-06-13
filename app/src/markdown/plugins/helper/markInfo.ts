@@ -21,6 +21,7 @@ import {
 
 const HEADING = 'heading';
 const BLOCK_QUOTE = 'blockQuote';
+const BLOCK_QUOTE_DELIM = 'blockQuoteDelimiter';
 const LIST_ITEM = 'listItem';
 const TABLE = 'table';
 const TABLE_CELL = 'tableCell';
@@ -45,6 +46,7 @@ type MarkType =
   | MdNodeType
   | typeof LIST_ITEM
   | typeof DELIM
+  | typeof BLOCK_QUOTE_DELIM
   | typeof TASK_DELIM
   | typeof TEXT
   | typeof HTML
@@ -263,6 +265,14 @@ function blockQuote(node: MdNode, start: MdPos, end: MdPos) {
     }
 
     marks = [...marks, ...childMarks];
+  }
+  for (let line = start[0]; line <= end[0]; line++) {
+    const lineStart: MdPos = addOffsetPos([line, start[1]], 1);
+    const delimEnd: MdPos = [line, start[1]];
+
+    marks.push(
+      markInfo(delimEnd, lineStart, BLOCK_QUOTE_DELIM)
+    );
   }
 
   return marks;

@@ -16,6 +16,19 @@ export class TaskDelimiter extends Mark {
   }
 }
 
+export class BlockQuoteDelimiter extends Mark {
+  get name() {
+    return 'blockQuoteDelimiter';
+  }
+  get schema() {
+    return {
+      toDOM(): DOMOutputSpec {
+        return ['span', { class: clsWithMdPrefix('delimiter', 'block-quote') }, 0];
+      },
+    };
+  }
+}
+
 export class Delimiter extends Mark {
   get name() {
     return 'delimiter';
