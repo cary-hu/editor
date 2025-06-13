@@ -30,7 +30,7 @@ export class HeadingPopupBody extends Component<Props> {
           (level) =>
             html`
               <li data-level="${level}" data-type="Heading" aria-role="menuitem">
-                <${`h${level}`}>${i18n.get('Heading')} ${level}</$>
+                ${i18n.get('Heading')} ${level}
               </li>
             `
         )}
