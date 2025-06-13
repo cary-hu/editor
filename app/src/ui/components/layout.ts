@@ -64,14 +64,14 @@ export class Layout extends Component<Props, State> {
   render() {
     const { eventEmitter, hideModeSwitch, toolbarItems } = this.props;
     const { hide, previewStyle, editorType, theme } = this.state;
-    const displayClassName = hide ? ' hidden' : '';
+    const displayClassName = hide ? ' hidden ' : '';
     const editorTypeClassName = cls(editorType === 'markdown' ? 'md-mode' : 'ww-mode');
     const previewClassName = `${cls('md')}-${previewStyle}-style`;
     const themeClassName = cls([theme !== 'light', `${theme} `]);
 
     return html`
       <div
-        class="${themeClassName}${cls('defaultUI')}${displayClassName} toastui-editor-container"
+        class="${themeClassName}${cls('defaultUI')}${displayClassName} ${cls('container')}"
         ref=${(el: HTMLElement) => (this.refs.el = el)}
       >
         <${Toolbar}

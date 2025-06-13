@@ -4,7 +4,7 @@ import { ProsemirrorNode } from 'prosemirror-model';
 import isFunction from 'tui-code-snippet/type/isFunction';
 import css from 'tui-code-snippet/domUtil/css';
 
-import { setAttributes } from '@/utils/dom';
+import { cls, setAttributes } from '@/utils/dom';
 import { getCustomAttrs } from '@/wysiwyg/helper/node';
 
 import { Emitter } from '@t/event';
@@ -16,8 +16,8 @@ type InputPos = {
   right: number;
 };
 
-const WRAPPER_CLASS_NAME = 'toastui-editor-ww-block-quote';
-const BLOCK_QUOTE_TYPE_CLASS_NAME = 'toastui-editor-ww-block-quote-type';
+const WRAPPER_CLASS_NAME = cls('ww-block-quote');
+const BLOCK_QUOTE_TYPE_CLASS_NAME = cls('ww-block-quote-type');
 
 const BLOCK_QUOTE_TYPES = ['default', 'danger', 'info', 'warning', 'success'];
 
@@ -111,8 +111,7 @@ export class BlockQuoteView implements NodeView {
     const containerRect = this.view.dom.parentElement!.getBoundingClientRect();
 
     // Find mode switch element and get its height
-    const editorContainer = this.view.dom.closest('.toastui-editor-defaultUI');
-    const modeSwitch = editorContainer?.querySelector('.toastui-editor-mode-switch');
+    const modeSwitch = this.view.dom.closest(`.${cls('container')}`)!.querySelector(`.${cls('mode-switch')}`) as HTMLElement;
     const modeSwitchHeight = modeSwitch ? modeSwitch.getBoundingClientRect().height : 28; // fallback to 28px
 
     // Calculate available space considering mode switch

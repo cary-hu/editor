@@ -4,7 +4,7 @@ import { ProsemirrorNode } from 'prosemirror-model';
 import isFunction from 'tui-code-snippet/type/isFunction';
 import css from 'tui-code-snippet/domUtil/css';
 
-import { removeNode, setAttributes } from '@/utils/dom';
+import { cls, removeNode, setAttributes } from '@/utils/dom';
 import { getCustomAttrs } from '@/wysiwyg/helper/node';
 
 import { Emitter } from '@t/event';
@@ -16,8 +16,9 @@ type InputPos = {
   right: number;
 };
 
-const WRAPPER_CLASS_NAME = 'toastui-editor-ww-code-block';
-const CODE_BLOCK_LANG_CLASS_NAME = 'toastui-editor-ww-code-block-language';
+
+const WRAPPER_CLASS_NAME = cls('ww-code-block');
+const CODE_BLOCK_LANG_CLASS_NAME = cls('ww-code-block-language');
 
 export class CodeBlockView implements NodeView {
   dom!: HTMLElement;

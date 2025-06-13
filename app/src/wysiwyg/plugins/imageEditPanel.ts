@@ -3,6 +3,7 @@ import { EditorView } from 'prosemirror-view';
 import { Emitter } from '@t/event';
 import i18n from '@/i18n/i18n';
 import { cls } from '@/utils/dom';
+import { EditPanel } from './editPanel';
 
 interface ImageEditPanelState {
   isVisible: boolean;
@@ -18,34 +19,22 @@ interface ImageEditPanelState {
   };
 }
 
-class ImageEditPanelView {
-  private eventEmitter: Emitter;
+class ImageEditPanelView extends EditPanel {
 
-  private view: EditorView;
 
-  private state: ImageEditPanelState;
-
+  private state: ImageEditPanelState = {
+    isVisible: false,
+    imageElement: null,
+    dialog: null,
+    imageNode: null,
+    imagePos: null,
+    tempChanges: {},
+  };
   private lastShowTime = 0;
-
-  private updateTimer: number | null = null;
-
   private currentMousePosition: { x: number; y: number } | null = null;
 
   constructor(view: EditorView, eventEmitter: Emitter) {
-    this.view = view;
-    this.eventEmitter = eventEmitter;
-    this.state = {
-      isVisible: false,
-      imageElement: null,
-      dialog: null,
-      imageNode: null,
-      imagePos: null,
-      tempChanges: {},
-    };
-    this.handleDocumentClick = this.handleDocumentClick.bind(this);
-    this.handleImageHover = this.handleImageHover.bind(this);
-    this.handleImageLeave = this.handleImageLeave.bind(this);
-    this.init();
+    super(view, eventEmitter);
   }
 
   private init() {
@@ -60,11 +49,6 @@ class ImageEditPanelView {
     // Listen for image hover events
     this.view.dom.addEventListener('mouseenter', this.handleImageHover, true);
     this.view.dom.addEventListener('mouseleave', this.handleImageLeave, true);
-
-    // Listen for scroll events to update panel position with sticky behavior
-    window.addEventListener('scroll', this.handleScroll.bind(this), true);
-    this.view.dom.addEventListener('scroll', this.handleScroll.bind(this), true);
-    window.addEventListener('resize', this.handleResize.bind(this));
   }
 
   private handleDocumentClick(event: MouseEvent) {
@@ -77,29 +61,39 @@ class ImageEditPanelView {
     }
     // If clicking outside image or panel, hide the panel
     if (!this.isImageOrPanelElement(target)) {
-      this.hidePanel();
+      this.hide();
     }
+  }
+
+  protected preparePanel(): void {
+    this.handleDocumentClick = this.handleDocumentClick.bind(this);
+    this.handleImageHover = this.handleImageHover.bind(this);
+    this.handleImageLeave = this.handleImageLeave.bind(this);
+    this.init();
   }
 
   private handleImageHover(event: MouseEvent) {
     const target = event.target as HTMLElement;
     const imageElement = target.closest('img');
 
-    if (imageElement) {
-      // If we're hovering over a different image than the one currently being edited
-      if (this.state.imageElement !== imageElement) {
-        // Find the image node in the ProseMirror document
-        const pos = this.view.posAtDOM(imageElement, 0);
+    if (!imageElement) {
+      return;
+    }
+    // If we're hovering over a different image than the one currently being edited
+    if (this.state.imageElement === imageElement) {
+      return;
+    }
+    // Find the image node in the ProseMirror document
+    const pos = this.view.posAtDOM(imageElement, 0);
 
-        if (pos !== null) {
-          const node = this.view.state.doc.nodeAt(pos);
+    if (pos === null) {
+      return;
+    }
+    const node = this.view.state.doc.nodeAt(pos);
 
-          // Make sure we have a valid image node with attrs
-          if (node && node.type.name === 'image' && node.attrs) {
-            this.showPanel(imageElement, node, pos);
-          }
-        }
-      }
+    // Make sure we have a valid image node with attrs
+    if (node && node.type.name === 'image' && node.attrs) {
+      this.showPanel(imageElement, node, pos);
     }
   }
 
@@ -134,11 +128,11 @@ class ImageEditPanelView {
           ) as HTMLElement;
 
           if (hoveredElement && !this.isImageOrPanelElement(hoveredElement)) {
-            this.hidePanel();
+            this.hide();
           }
         } else {
           // If we can't get mouse position, hide the panel
-          this.hidePanel();
+          this.hide();
         }
       }, 100); // 100ms delay to allow for mouse movement to dialog
     }
@@ -147,8 +141,8 @@ class ImageEditPanelView {
   private isImageOrPanelElement(element: HTMLElement): boolean {
     return !!(
       element.closest('img') ||
-      element.closest('.toastui-editor-image-edit-dialog') ||
-      element.classList.contains('toastui-editor-image-edit-dialog') ||
+      element.closest(`.${cls('image-edit-dialog')}`) ||
+      element.classList.contains(cls('image-edit-dialog')) ||
       element.classList.contains('dialog-section') ||
       element.classList.contains('dialog-label') ||
       element.classList.contains('size-controls') ||
@@ -160,15 +154,15 @@ class ImageEditPanelView {
       element.classList.contains('caption-input') ||
       element.classList.contains('danger-zone') ||
       element.classList.contains('delete-btn') ||
-      element.classList.contains('toastui-editor-edit-image-btn') ||
-      element.classList.contains('toastui-editor-delete-image-btn') ||
-      element.classList.contains('toastui-editor-resize-handle')
+      element.classList.contains(cls('edit-image-btn')) ||
+      element.classList.contains(cls('delete-image-btn')) ||
+      element.classList.contains(cls('resize-handle'))
     );
   }
 
   private showPanel(imageElement: HTMLElement, imageNode: any, imagePos: number) {
     // Hide existing dialog if any
-    this.hidePanel();
+    this.hide();
 
     this.state.imageElement = imageElement;
     this.state.imageNode = imageNode;
@@ -179,7 +173,7 @@ class ImageEditPanelView {
     this.state.isVisible = true;
   }
 
-  private hidePanel() {
+  private hide() {
     if (this.state.dialog) {
       this.state.dialog.remove();
       this.state.dialog = null;
@@ -191,43 +185,32 @@ class ImageEditPanelView {
     this.state.tempChanges = {};
   }
 
-  private updatePanelPosition() {
+  protected updatePosition() {
+    if (!this.isImageVisible()) {
+      this.hide();
+      return;
+    }
     if (!this.state.dialog || !this.state.imageElement) return;
 
     const imageRect = this.state.imageElement.getBoundingClientRect();
     const editorRect = this.view.dom.getBoundingClientRect();
 
-    // Find the dedicated panel container for positioning reference
-    const editorContainer = this.view.dom.closest('.toastui-editor-container') as HTMLElement;
-    let panelContainer: HTMLElement | null = null;
-
-    if (editorContainer) {
-      panelContainer = editorContainer.querySelector('.toastui-edit-panel-container');
-    }
-
-    if (!panelContainer) {
-      console.warn('Panel container not found, positioning may be incorrect');
-      return;
-    }
-
-    const containerRect = panelContainer.getBoundingClientRect();
+    const containerRect = this.editPanelContainer.getBoundingClientRect();
     let topBoundary = 0; // Relative to panel container
     let bottomBoundary = containerRect.height; // Relative to panel container
 
     // Find toolbar boundary (relative to panel container)
-    const toolbar = editorContainer?.querySelector('.toastui-editor-toolbar');
 
-    if (toolbar) {
-      const toolbarRect = toolbar.getBoundingClientRect();
+    if (this.editorToolbar) {
+      const toolbarRect = this.editorToolbar.getBoundingClientRect();
 
       topBoundary = Math.max(0, toolbarRect.bottom - containerRect.top);
     }
 
     // Find status bar boundary (relative to panel container)
-    const statusBar = editorContainer?.querySelector('.toastui-editor-mode-switch');
 
-    if (statusBar) {
-      const statusBarRect = statusBar.getBoundingClientRect();
+    if (this.editorModeSwitchBar) {
+      const statusBarRect = this.editorModeSwitchBar.getBoundingClientRect();
 
       bottomBoundary = Math.min(containerRect.height, statusBarRect.top - containerRect.top);
     }
@@ -313,36 +296,13 @@ class ImageEditPanelView {
     // Create dialog content first
     this.createDialogContent(dialog);
 
-    // Add event listeners
-    dialog.addEventListener('mouseenter', () => {
-      // Keep dialog visible when hovering over it
-    });
-
-    // Add to dedicated edit panel container
-    const editorContainer = this.view.dom.closest('.toastui-editor-container') as HTMLElement;
-    let panelContainer: HTMLElement | null = null;
-
-    if (editorContainer) {
-      panelContainer = editorContainer.querySelector('.toastui-edit-panel-container');
-    }
-
-    if (panelContainer) {
-      panelContainer.appendChild(dialog);
-    } else {
-      // Fallback to editor container if panel container not found
-      console.warn('Edit panel container not found, falling back to editor container');
-      if (editorContainer) {
-        editorContainer.appendChild(dialog);
-      } else {
-        this.view.dom.appendChild(dialog);
-      }
-    }
+    this.editPanelContainer.appendChild(dialog);
 
     this.state.dialog = dialog;
 
     // Position the dialog after it's added to DOM and fully rendered
     requestAnimationFrame(() => {
-      this.updatePanelPosition();
+      this.updatePosition();
     });
   }
 
@@ -364,17 +324,16 @@ class ImageEditPanelView {
     dialog.innerHTML = `
       <div class="dialog-section">
         <label class="dialog-label">${i18n.get('Image size')}</label>
-        <div class="current-value">${i18n.get('Current value')}: ${
-      currentWidth || i18n.get('Not set')
-    }</div>
+        <div class="current-value">${i18n.get('Current value')}: ${currentWidth || i18n.get('Not set')
+      }</div>
         <div class="size-controls">
           <input type="number" class="size-input" id="width-input" value="${currentWidth}" placeholder="${i18n.get(
-      'Enter width'
-    )}" min="1">
+        'Enter width'
+      )}" min="1">
           <span class="size-unit">px</span>
           <button type="button" class="clear-btn" id="clear-width" title="${i18n.get(
-            'Clear width'
-          )}">${i18n.get('Clear')}</button>
+        'Clear width'
+      )}">${i18n.get('Clear')}</button>
         </div>
         <div class="preset-sizes">
           <button type="button" class="preset-btn" data-size="150">150px</button>
@@ -385,52 +344,46 @@ class ImageEditPanelView {
       <div class="dialog-section">
         <label class="dialog-label">${i18n.get('Vertical align')}</label>
         <div class="current-value">${i18n.get('Current value')}: ${this.getVerticalAlignDisplayName(
-      currentVerticalAlign
-    )}</div>
+        currentVerticalAlign
+      )}</div>
         <div class="vertical-align-controls">
-          <button type="button" class="align-btn ${
-            currentVerticalAlign === 'top' ? 'active' : ''
-          }" data-align="top" title="${i18n.get('Top align')}">Top</button>
-          <button type="button" class="align-btn ${
-            currentVerticalAlign === 'middle' ? 'active' : ''
-          }" data-align="middle" title="${i18n.get('Middle align')}">Middle</button>
-          <button type="button" class="align-btn ${
-            currentVerticalAlign === 'bottom' ? 'active' : ''
-          }" data-align="bottom" title="${i18n.get('Bottom align')}">Bottom</button>
-          <button type="button" class="align-btn ${
-            currentVerticalAlign === 'baseline' ? 'active' : ''
-          }" data-align="baseline" title="${i18n.get('Baseline align')}">Baseline</button>
+          <button type="button" class="align-btn ${currentVerticalAlign === 'top' ? 'active' : ''
+      }" data-align="top" title="${i18n.get('Top align')}">Top</button>
+          <button type="button" class="align-btn ${currentVerticalAlign === 'middle' ? 'active' : ''
+      }" data-align="middle" title="${i18n.get('Middle align')}">Middle</button>
+          <button type="button" class="align-btn ${currentVerticalAlign === 'bottom' ? 'active' : ''
+      }" data-align="bottom" title="${i18n.get('Bottom align')}">Bottom</button>
+          <button type="button" class="align-btn ${currentVerticalAlign === 'baseline' ? 'active' : ''
+      }" data-align="baseline" title="${i18n.get('Baseline align')}">Baseline</button>
           <button type="button" class="clear-btn" id="clear-align" title="${i18n.get(
-            'Clear align'
-          )}">${i18n.get('Clear')}</button>
+        'Clear align'
+      )}">${i18n.get('Clear')}</button>
         </div>
       </div>
       <div class="dialog-section">
         <label class="dialog-label">${i18n.get('Alt Text')}</label>
-        <div class="current-value">${i18n.get('Current value')}: ${
-      currentAltText || i18n.get('Not set')
-    }</div>
+        <div class="current-value">${i18n.get('Current value')}: ${currentAltText || i18n.get('Not set')
+      }</div>
         <input type="text" class="alt-input" id="alt-input" value="${currentAltText}" placeholder="${i18n.get(
-      'Describe this image'
-    )}...">
+        'Describe this image'
+      )}...">
       </div>
 
       <div class="dialog-section">
         <label class="dialog-label">${i18n.get('Caption')}</label>
-        <div class="current-value">${i18n.get('Current value')}: ${
-      currentCaption || i18n.get('Not set')
-    }</div>
+        <div class="current-value">${i18n.get('Current value')}: ${currentCaption || i18n.get('Not set')
+      }</div>
         <input type="text" class="caption-input" id="caption-input" value="${currentCaption}" placeholder="${i18n.get(
-      'Image caption text'
-    )}...">
+        'Image caption text'
+      )}...">
       </div>
 
       <div class="dialog-actions">
         <button type="button" class="save-btn" id="save-changes">${i18n.get('Save')}</button>
         <button type="button" class="reset-btn" id="reset-changes">${i18n.get('Reset')}</button>
         <button type="button" class="delete-btn" id="delete-image" title="${i18n.get(
-          'Delete image'
-        )}">${i18n.get('Delete image')}</button>
+        'Delete image'
+      )}">${i18n.get('Delete image')}</button>
       </div>
     `;
 
@@ -675,74 +628,29 @@ class ImageEditPanelView {
 
     tr.delete(this.state.imagePos, this.state.imagePos + 1);
     this.view.dispatch(tr);
-    this.hidePanel();
+    this.hide();
   }
 
-  isVisible(): boolean {
-    return this.state.isVisible;
-  }
-
-  handleDocumentChange() {
-    // Clear existing timer
-    if (this.updateTimer) {
-      clearTimeout(this.updateTimer);
+  protected documentChanged(): void {
+    if (this.state.isVisible && this.state.imageElement) {
+      this.updatePosition();
     }
-
-    // Debounce updates to avoid excessive recalculation during rapid changes
-    this.updateTimer = window.setTimeout(() => {
-      if (this.state.isVisible && this.state.imageElement) {
-        this.updatePanelPosition();
-      }
-      this.updateTimer = null;
-    }, 50); // 50ms debounce
   }
 
   destroy() {
-    // Clear any pending updates
-    if (this.updateTimer) {
-      clearTimeout(this.updateTimer);
-      this.updateTimer = null;
-    }
 
     document.removeEventListener('click', this.handleDocumentClick);
     this.view.dom.removeEventListener('mouseenter', this.handleImageHover, true);
     this.view.dom.removeEventListener('mouseleave', this.handleImageLeave, true);
-    this.view.dom.removeEventListener('scroll', this.handleScroll.bind(this), true);
-    window.removeEventListener('scroll', this.handleScroll.bind(this), true);
-    window.removeEventListener('resize', this.handleResize.bind(this));
 
     // Clean up mouse position tracking
     this.currentMousePosition = null;
 
-    this.hidePanel();
+    this.hide();
   }
 
   private getCurrentMousePosition(): { x: number; y: number } | null {
     return this.currentMousePosition;
-  }
-
-  private handleScroll() {
-    if (!this.state.isVisible || !this.state.imageElement) return;
-
-    // Check if image is still visible in the editor viewport
-    if (!this.isImageVisible()) {
-      this.hidePanel();
-    } else {
-      // Update panel position with sticky behavior during scroll
-      this.updatePanelPosition();
-    }
-  }
-
-  private handleResize() {
-    if (!this.state.isVisible || !this.state.imageElement) return;
-
-    // Check if image is still visible after resize
-    if (!this.isImageVisible()) {
-      this.hidePanel();
-    } else {
-      // Update position if image is still visible
-      this.updatePanelPosition();
-    }
   }
 
   private isImageVisible(): boolean {
@@ -768,23 +676,6 @@ export function imageEditPanel(eventEmitter: Emitter) {
     view(editorView) {
       imageEditPanelView = new ImageEditPanelView(editorView, eventEmitter);
       return imageEditPanelView;
-    },
-    state: {
-      init() {
-        return null;
-      },
-      apply(tr, oldState) {
-        // When the document changes, update the panel if it's visible
-        if (imageEditPanelView && imageEditPanelView.isVisible() && tr.docChanged) {
-          // Use requestAnimationFrame to ensure DOM has updated
-          requestAnimationFrame(() => {
-            if (imageEditPanelView) {
-              imageEditPanelView.handleDocumentChange();
-            }
-          });
-        }
-        return oldState;
-      },
     },
   });
 }
