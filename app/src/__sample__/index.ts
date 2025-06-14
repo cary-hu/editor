@@ -23,7 +23,20 @@ const content = [
     '   * Syntax Highlight',
     '        1. Markdown',
     '        2. Preview',
+    '```javascript',
+    'const editor = new Editor({',
+    '  el: document.querySelector("#editor"),',
+    '  previewStyle: "vertical",',
+    '  height: "100vh",',
+    '  initialEditType: "wysiwyg",',
+    '  useCommandShortcut: true,',
+    '  extendedAutolinks: true,',
+    '  frontMatter: true,',
+    '  initialValue: "Hello, Markdown!"',
+    '});',
+    '```',
     '',
+
     '## Support Wrappers',
     '',
     '> * Wrappers',
@@ -41,5 +54,6 @@ const editor = new Editor({
     extendedAutolinks: true,
     frontMatter: true,
     initialValue: content,
+    usageStatistics: false,
 });
 
