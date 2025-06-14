@@ -63,7 +63,6 @@
     border-radius: var(--toastui-editor-border-radius);
     box-shadow: var(--toastui-editor-box-shadow);
     z-index: 1000;
-    min-width: 120px;
     font-size: 12px;
     padding: .25rem;
 }
@@ -72,6 +71,7 @@
     display: block;
     width: 100%;
     padding: 8px 12px;
+    padding-left: 0;
     cursor: pointer;
     color: var(--toastui-editor-color);
     transition: all 0.15s ease;
@@ -81,12 +81,22 @@
     border-left: 4px solid transparent;
     border-radius: var(--toastui-editor-border-radius);
     height: unset;
+    text-align: left;
+}
+
+.toastui-editor-ww-block-quote-type button::before {
+    font-weight: 900;
+    font-family: 'Font Awesome 6 Free';
+    width: 27px;
+    height: 27px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .toastui-editor-ww-block-quote-type button.active,
 .toastui-editor-ww-block-quote-type button:hover {
-    background-color: var(--toastui-editor-color-primary) !important;
-    color: var(--toastui-editor-color-primary-text) !important;
+    background-color: var(--toastui-editor-primary-bg-subtle) !important;
 }
 
 
@@ -123,4 +133,29 @@
     border-left-color: var(--toastui-editor-success-border-subtle);
     color: var(--toastui-editor-success-text-emphasis);
     background-color: var(--toastui-editor-success-bg-subtle);
+}
+
+
+.toastui-editor-ww-block-quote-type button[value="default"]::before {
+    content: '\f10e';
+}
+
+.toastui-editor-ww-block-quote-type button[value="danger"]::before {
+    content: '\f12a';
+    color: var(--toastui-editor-color-danger);
+}
+
+.toastui-editor-ww-block-quote-type button[value="info"]::before {
+    content: '\f129';
+    color: var(--toastui-editor-color-info);
+}
+
+.toastui-editor-ww-block-quote-type button[value="warning"]::before {
+    content: '\f071';
+    color: var(--toastui-editor-color-warning);
+}
+
+.toastui-editor-ww-block-quote-type button[value="success"]::before {
+    content: '\f00c';
+    color: var(--toastui-editor-color-success);
 }
