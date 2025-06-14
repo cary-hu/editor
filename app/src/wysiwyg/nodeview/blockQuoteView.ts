@@ -195,6 +195,7 @@ export class BlockQuoteView implements NodeView {
   private handleMousedown = (ev: MouseEvent) => {
     const target = ev.target as HTMLElement;
 
+    const style = getComputedStyle(target, ':after');
     // Only show type selector if clicking on the wrapper itself, not on content
     if (target === this.dom || target === this.contentDOM) {
       if (this.select) {
@@ -202,7 +203,7 @@ export class BlockQuoteView implements NodeView {
         return;
       }
 
-      if (isFunction(this.getPos)) {
+      if (style.fontWeight === '900' && isFunction(this.getPos)) {
         const { top, right } = this.view.coordsAtPos(this.getPos());
 
         this.createTypeEditor({ top, right });

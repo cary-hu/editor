@@ -233,7 +233,7 @@ class TableEditPanelView extends EditPanel {
       // Create add row button (initially hidden)
       const addRowBtn = document.createElement('div');
       addRowBtn.className = cls('add-row-btn');
-      addRowBtn.innerHTML = '+';
+      addRowBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
       addRowBtn.title = index === 0 ? 'Add row after header' : 'Add row below';
 
       // Append button to container
@@ -287,7 +287,7 @@ class TableEditPanelView extends EditPanel {
         // Create delete row button
         const deleteRowBtn = document.createElement('div');
         deleteRowBtn.className = cls('remove-row-btn');
-        deleteRowBtn.innerHTML = '×';
+        deleteRowBtn.innerHTML = '<i class="fa-solid fa-minus"></i>';
         deleteRowBtn.title = 'Delete row';
 
         deleteContainer.appendChild(deleteRowBtn);
@@ -352,7 +352,7 @@ class TableEditPanelView extends EditPanel {
       // Create add column button (initially hidden)
       const addColBtn = document.createElement('div');
       addColBtn.className = cls('add-col-btn');
-      addColBtn.innerHTML = '+';
+      addColBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
       addColBtn.title = 'Add column left';
 
       // Append button to container
@@ -405,7 +405,7 @@ class TableEditPanelView extends EditPanel {
         // Create delete column button
         const deleteColBtn = document.createElement('div');
         deleteColBtn.className = cls('remove-col-btn');
-        deleteColBtn.innerHTML = '×';
+        deleteColBtn.innerHTML = '<i class="fa-solid fa-minus"></i>';
         deleteColBtn.title = 'Delete first column';
 
         deleteContainer.appendChild(deleteColBtn);
@@ -455,7 +455,7 @@ class TableEditPanelView extends EditPanel {
       // Create add column button (initially hidden)
       const addColBtn = document.createElement('div');
       addColBtn.className = cls('add-col-btn');
-      addColBtn.innerHTML = '+';
+      addColBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
       addColBtn.title = 'Add column right';
 
       // Append button to container
@@ -509,7 +509,7 @@ class TableEditPanelView extends EditPanel {
         // Create delete column button
         const deleteColBtn = document.createElement('div');
         deleteColBtn.className = cls('remove-col-btn');
-        deleteColBtn.innerHTML = '×';
+        deleteColBtn.innerHTML = '<i class="fa-solid fa-minus"></i>';
         deleteColBtn.title = `Delete column ${index + 1}`;
 
         deleteContainer.appendChild(deleteColBtn);

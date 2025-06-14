@@ -278,12 +278,13 @@ table.ProseMirror-selectednode {
 
 .toastui-editor-contents ul>li::before {
   content: '';
-  margin-top: 11px;
+  margin-top: 8px;
   margin-left: -12px;
   width: 5px;
   height: 5px;
   border-radius: 50%;
   background-color: var(--toastui-editor-color);
+  opacity: .3;
 }
 
 .toastui-editor-contents ol>li::before {
@@ -423,23 +424,32 @@ table.ProseMirror-selectednode {
   position: relative;
 }
 
+.toastui-editor-contents .toastui-editor-ww-code-block:before,
 .toastui-editor-contents .toastui-editor-ww-code-block:after {
-  content: attr(data-language);
+  box-sizing: border-box;
   position: absolute;
   display: inline-block;
-  top: 10px;
-  right: 10px;
-  height: 24px;
-  padding: 3px 35px 0 10px;
-  font-weight: bold;
-  font-size: 13px;
-  line-height: 15px;
+  top: 8px;
+  right: 8px;
+  height: 27px;
+  text-align: center;
+  line-height: 27px;
   color: var(--toastui-editor-color);
-  background: var(--toastui-editor-secondary-bg-color) url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IuugiOydtOyWtF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiCgkgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMzAgMzAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMwIDMwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+Cgkuc3Qwe2ZpbGwtcnVsZTpldmVub2RkO2NsaXAtcnVsZTpldmVub2RkO2ZpbGw6IzU1NTU1NTt9Cjwvc3R5bGU+CjxnPgoJPGc+CgkJPGc+CgkJCTxnPgoJCQkJPGc+CgkJCQkJPHBhdGggY2xhc3M9InN0MCIgZD0iTTE1LjUsMTIuNWwyLDJMMTIsMjBoLTJ2LTJMMTUuNSwxMi41eiBNMTgsMTBsMiwybC0xLjUsMS41bC0yLTJMMTgsMTB6Ii8+CgkJCQk8L2c+CgkJCTwvZz4KCQk8L2c+Cgk8L2c+CjwvZz4KPC9zdmc+Cg==') no-repeat;
-  background-position: right;
   border-radius: var(--toastui-editor-border-radius);
+}
+
+.toastui-editor-contents .toastui-editor-ww-code-block:before {
+  content: attr(data-language);
+  font-weight: bold;
   border: 1px solid var(--toastui-editor-border-color);
-  background-size: 30px 30px;
+  padding: 0 27px 0 10px;
+}
+
+.toastui-editor-contents .toastui-editor-ww-code-block:after {
+  content: '\f304';
+  font-weight: 900;
+  font-family: 'Font Awesome 6 Free';
+  width: 27px;
   cursor: pointer;
 }
 
@@ -449,9 +459,9 @@ table.ProseMirror-selectednode {
   width: 100px;
   height: 27px;
   right: 35px;
-  border: 1px solid #ccc;
-  border-radius: 2px;
-  background-color: var(--toastui-editor-color);
+  border: 1px solid var(--toastui-editor-border-color);
+  border-radius: var(--toastui-editor-border-radius);
+  background-color: var(--toastui-editor-secondary-bg-color);
   z-index: 30;
 }
 
@@ -462,6 +472,7 @@ table.ProseMirror-selectednode {
   height: 100%;
   width: 100%;
   background-color: transparent;
+  color: var(--toastui-editor-color);
   border: none;
   outline: none;
 }

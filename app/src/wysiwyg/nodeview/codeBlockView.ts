@@ -92,12 +92,12 @@ export class CodeBlockView implements NodeView {
 
     wrapper.appendChild(input);
     this.view.dom.parentElement!.appendChild(wrapper);
-    const wrpperWidth = wrapper.clientWidth;
+    const wrapperWidth = wrapper.clientWidth;
 
     css(wrapper, {
-      top: `${top + 10}px`,
-      left: `${right - wrpperWidth - 10}px`,
-      width: `${wrpperWidth}px`,
+      top: `${top + 8}px`,
+      left: `${right - wrapperWidth - 8}px`,
+      width: `${wrapperWidth}px`,
     });
 
     this.input = input;
@@ -129,7 +129,7 @@ export class CodeBlockView implements NodeView {
     const style = getComputedStyle(target, ':after');
 
     // judge to click pseudo element with background image for IE11
-    if (style.backgroundImage !== 'none' && isFunction(this.getPos)) {
+    if (style.fontWeight === '900' && isFunction(this.getPos)) {
       const { top, right } = this.view.coordsAtPos(this.getPos());
 
       this.createLanguageEditor({ top, right });

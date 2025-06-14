@@ -1,5 +1,6 @@
 /* ToastUI Editor Components */
 @import url('./variables.css');
+@import url('./font/all.css');
 @import url('./components/base.css');
 @import url('./components/toastui-editor-toolbar.css');
 @import url('./components/toastui-editor-md-container.css');
