@@ -206,6 +206,8 @@ export class EditorCore {
 
   changePreviewStyle(style: PreviewStyle): void;
 
+  setTheme(theme: string): void;
+
   exec(name: string, payload?: Record<string, any>): void;
 
   addCommand(type: EditorType, name: string, command: CommandFn): void;
