@@ -100,6 +100,36 @@ describe('keymap', () => {
 
         expect(wwe.getSelection()).toEqual([23, 23]);
       });
+
+      it('should add new row and move to first cell when in last cell', () => {
+        wwe.setSelection(33, 33); // in 'qux' cell (last cell)
+
+        forceKeymapFn('table', 'moveToCell', ['right']);
+
+        const expected = oneLineTrim`
+          <table>
+            <thead>
+              <tr>
+                <th><p>foo</p></th>
+                <th><p>bar</p></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><p>baz</p></td>
+                <td><p>qux</p></td>
+              </tr>
+              <tr>
+                <td><p><br></p></td>
+                <td><p><br></p></td>
+              </tr>
+            </tbody>
+          </table>
+        `;
+
+        expect(wwe.getHTML()).toBe(expected);
+        expect(wwe.getSelection()).toEqual([40, 40]); // First cell of new row
+      });
     });
 
     describe('moveToCell keymap with left (shift + tab key)', () => {

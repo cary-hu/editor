@@ -1,5 +1,5 @@
 import { DOMOutputSpec, ProsemirrorNode } from 'prosemirror-model';
-import { TextSelection, Transaction } from 'prosemirror-state';
+import { TextSelection, Transaction, Selection } from 'prosemirror-state';
 import { Command } from 'prosemirror-commands';
 
 import NodeSchema from '@/spec/node';
@@ -324,7 +324,32 @@ export class Table extends NodeSchema {
         const cellIndex = map.getCellIndex(anchor);
         let newTr: Transaction | null;
 
-        if (canBeOutOfTable(direction, map, cellIndex)) {
+        // Check if we're in the last cell and pressing Tab (moving right)
+        const [rowIdx, colIdx] = cellIndex;
+        const isLastCell = rowIdx === map.totalRowCount - 1 && colIdx === map.totalColumnCount - 1;
+        const isMovingRight = direction === Direction.RIGHT;
+
+        if (isLastCell && isMovingRight) {
+          // Add a new row and move to its first cell
+          const { totalColumnCount } = map;
+          const rows: ProsemirrorNode[] = [];
+          let cells: ProsemirrorNode[] = [];
+
+          // Create cells for the new row
+          for (let colIdx = 0; colIdx < totalColumnCount; colIdx += 1) {
+            cells = cells.concat(createDummyCells(1, map.totalRowCount, schema));
+          }
+          rows.push(schema.nodes.tableRow.create(null, cells));
+
+          // Insert the new row at the end of the table
+          const tableEndPos = map.tableEndOffset - 2; // Position before </tbody></table>
+          const insertPos = tr.mapping.map(tableEndPos);
+          const insertTr = tr.insert(insertPos, rows);
+
+          // Move cursor to the first cell of the new row
+          const newRowFirstCellOffset = insertPos + 3; // Position inside the first cell of new row
+          newTr = insertTr.setSelection(Selection.near(insertTr.doc.resolve(newRowFirstCellOffset), 1));
+        } else if (canBeOutOfTable(direction, map, cellIndex)) {
           // When there is no content before or after the table,
           // an empty line('paragraph') is created by pressing the arrow keys.
           newTr = addParagraphAfterTable(tr, map, schema);
