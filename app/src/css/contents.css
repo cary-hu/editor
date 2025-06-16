@@ -431,9 +431,9 @@ table.ProseMirror-selectednode {
   display: inline-block;
   top: 8px;
   right: 8px;
-  height: 27px;
+  height: 32px;
   text-align: center;
-  line-height: 27px;
+  line-height: 32px;
   color: var(--toastui-editor-color);
   border-radius: var(--toastui-editor-border-radius);
 }
@@ -442,22 +442,26 @@ table.ProseMirror-selectednode {
   content: attr(data-language);
   font-weight: bold;
   border: 1px solid var(--toastui-editor-border-color);
-  padding: 0 27px 0 10px;
+  padding: 0 32px 0 10px;
+  width: 120px;
 }
 
 .toastui-editor-contents .toastui-editor-ww-code-block:after {
-  content: '\f304';
-  font-weight: 900;
-  font-family: 'Font Awesome 6 Free';
-  width: 27px;
+  content: '\e011';
+  font-family: "Iconify Explorer Font" !important;
+  font-size: .75em;
+  width: 32px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   cursor: pointer;
 }
 
 .toastui-editor-ww-code-block-language {
   position: fixed;
   display: inline-block;
-  width: 100px;
-  height: 27px;
+  width: 120px;
+  height: 32px;
   right: 35px;
   border: 1px solid var(--toastui-editor-border-color);
   border-radius: var(--toastui-editor-border-radius);

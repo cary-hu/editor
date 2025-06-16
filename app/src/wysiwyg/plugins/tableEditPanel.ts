@@ -846,7 +846,7 @@ class TableEditPanelView extends EditPanel {
     const controlRect = controlElement.getBoundingClientRect();
     const panelRect = this.state.panel!.getBoundingClientRect();
     let toolbarLeft = toolBarType === 'row' ? (controlRect.right - panelRect.left) : (controlRect.left - panelRect.left);
-    let toolbarTop = toolBarType === 'row' ? (controlRect.top - panelRect.top - controlRect.height) : (controlRect.bottom - panelRect.top - 50);
+    let toolbarTop = toolBarType === 'row' ? (controlRect.top - panelRect.top - controlRect.height) : (controlRect.bottom - panelRect.top - 10 - 50);
 
     toolbar.style.left = `${toolbarLeft}px`;
     toolbar.style.top = `${toolbarTop}px`;
@@ -875,19 +875,19 @@ class TableEditPanelView extends EditPanel {
           changesStructure: true
         },
         {
-          icon: 'align-left',
+          icon: 'table-align-item-left-line',
           title: 'Align column to left',
           action: () => this.alignColumn(rowIndex, 'left'),
           changesStructure: false
         },
         {
-          icon: 'align-center',
+          icon: 'table-align-item-horizontal-center-line',
           title: 'Align column to center',
           action: () => this.alignColumn(rowIndex, 'center'),
           changesStructure: false
         },
         {
-          icon: 'align-right',
+          icon: 'table-align-item-right-line',
           title: 'Align column to right',
           action: () => this.alignColumn(rowIndex, 'right'),
           changesStructure: false

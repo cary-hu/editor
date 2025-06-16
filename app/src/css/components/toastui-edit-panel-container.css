@@ -345,6 +345,8 @@ button.toastui-editor-table-toolbar-btn {
     border-radius: var(--toastui-editor-border-radius);
     color: var(--toastui-editor-color);
     transition: background-color 0.2s ease;
+    font-size: 1rem;
+    height: unset;
 }
 
 .toastui-editor-table-toolbar-btn:hover {

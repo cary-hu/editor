@@ -129,7 +129,7 @@ export class CodeBlockView implements NodeView {
     const style = getComputedStyle(target, ':after');
 
     // judge to click pseudo element with background image for IE11
-    if (style.fontWeight === '900' && isFunction(this.getPos)) {
+    if (style.cursor === 'pointer' && isFunction(this.getPos)) {
       const { top, right } = this.view.coordsAtPos(this.getPos());
 
       this.createLanguageEditor({ top, right });

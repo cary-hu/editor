@@ -13,7 +13,7 @@ interface ContextMenuInfo {
   payload?: {
     align: string;
   };
-  className: string;
+  icon: string;
   disableInThead?: boolean;
 }
 
@@ -39,7 +39,7 @@ function createMergedTableContextMenu(tableCell: Element) {
     mergedTableContextMenu.push({
       action: 'Merge cells',
       command: 'mergeCells',
-      className: 'merge-cells',
+      icon: 'merge-cells'
     });
   }
 
@@ -47,7 +47,7 @@ function createMergedTableContextMenu(tableCell: Element) {
     mergedTableContextMenu.push({
       action: 'Split cells',
       command: 'splitCells',
-      className: 'split-cells',
+      icon: 'split-cell'
     });
   }
 
@@ -60,42 +60,66 @@ const contextMenuGroups: ContextMenuInfo[][] = [
       action: 'Add row to up',
       command: 'addRowToUp',
       disableInThead: true,
-      className: 'add-row-up',
+      icon: 'row-plus-before',
     },
     {
       action: 'Add row to down',
       command: 'addRowToDown',
       disableInThead: true,
-      className: 'add-row-down',
+      icon: 'row-plus-after',
     },
-    { action: 'Remove row', command: 'removeRow', disableInThead: true, className: 'remove-row' },
+    {
+      action: 'Remove row',
+      command: 'removeRow',
+      disableInThead: true,
+      icon: 'row-remove'
+    },
   ],
   [
-    { action: 'Add column to left', command: 'addColumnToLeft', className: 'add-column-left' },
-    { action: 'Add column to right', command: 'addColumnToRight', className: 'add-column-right' },
-    { action: 'Remove column', command: 'removeColumn', className: 'remove-column' },
+    {
+      action: 'Add column to left',
+      command: 'addColumnToLeft',
+      icon: 'column-plus-before',
+    },
+    {
+      action: 'Add column to right',
+      command: 'addColumnToRight',
+      icon: 'column-plus-after',
+    },
+    {
+      action: 'Remove column',
+      command: 'removeColumn',
+      icon: 'column-remove',
+    },
   ],
   [
     {
       action: 'Align column to left',
       command: 'alignColumn',
       payload: { align: 'left' },
-      className: 'align-column-left',
+      icon: 'align-item-left-line'
     },
     {
       action: 'Align column to center',
       command: 'alignColumn',
       payload: { align: 'center' },
-      className: 'align-column-center',
+      icon: 'align-item-horizontal-center-line'
     },
     {
       action: 'Align column to right',
       command: 'alignColumn',
       payload: { align: 'right' },
-      className: 'align-column-right',
+      icon: 'align-item-right-line'
     },
   ],
-  [{ action: 'Remove table', command: 'removeTable', className: 'remove-table' }],
+  [
+    {
+      action: 'Remove table',
+      command: 'removeTable',
+      icon: 'remove'
+    }
+  ],
+
 ];
 
 function getContextMenuGroups(eventEmitter: Emitter, inTableHead: boolean, tableCell: Element) {
@@ -103,14 +127,14 @@ function getContextMenuGroups(eventEmitter: Emitter, inTableHead: boolean, table
 
   return contextMenuGroups.concat([mergedTableContextMenu])
     .map((contextMenuGroup) =>
-      contextMenuGroup.map(({ action, command, payload, disableInThead, className }) => {
+      contextMenuGroup.map(({ action, command, payload, disableInThead, icon }) => {
         return {
           label: i18n.get(action),
+          icon: `table-${icon}`,
           onClick: () => {
             eventEmitter.emit('command', command, payload);
           },
           disabled: inTableHead && !!disableInThead,
-          className,
         };
       })
     )

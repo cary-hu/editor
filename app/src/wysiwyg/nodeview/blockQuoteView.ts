@@ -203,7 +203,7 @@ export class BlockQuoteView implements NodeView {
         return;
       }
 
-      if (style.fontWeight === '900' && isFunction(this.getPos)) {
+      if (style.cursor === 'pointer' && isFunction(this.getPos)) {
         const { top, right } = this.view.coordsAtPos(this.getPos());
 
         this.createTypeEditor({ top, right });

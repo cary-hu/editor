@@ -453,16 +453,6 @@
     justify-content: start;
 }
 
-.toastui-editor-popup-add-blockquote ul li::before {
-    font-weight: 900;
-    font-family: 'Font Awesome 6 Free';
-    width: 27px;
-    height: 27px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .toastui-editor-popup-add-blockquote ul li.active,
 .toastui-editor-popup-add-blockquote ul li:hover {
     background-color: var(--toastui-editor-primary-bg-subtle) !important;
@@ -501,30 +491,6 @@
     border-left-color: var(--toastui-editor-success-border-subtle);
     color: var(--toastui-editor-success-text-emphasis);
     background-color: var(--toastui-editor-success-bg-subtle);
-}
-
-.toastui-editor-popup-add-blockquote ul li[data-type="default"]::before {
-    content: '\f10e';
-}
-
-.toastui-editor-popup-add-blockquote ul li[data-type="danger"]::before {
-    content: '\f12a';
-    color: var(--toastui-editor-color-danger);
-}
-
-.toastui-editor-popup-add-blockquote ul li[data-type="info"]::before {
-    content: '\f129';
-    color: var(--toastui-editor-color-info);
-}
-
-.toastui-editor-popup-add-blockquote ul li[data-type="warning"]::before {
-    content: '\f071';
-    color: var(--toastui-editor-color-warning);
-}
-
-.toastui-editor-popup-add-blockquote ul li[data-type="success"]::before {
-    content: '\f00c';
-    color: var(--toastui-editor-color-success);
 }
 
 @media only screen and (max-width: 480px) {

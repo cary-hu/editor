@@ -51,7 +51,7 @@ export class ContextMenu extends Component<Props, State> {
       ? menuGroups.reduce((acc, group) => {
           const menuItem: VNode[] = [];
 
-          group.forEach(({ label, className = false, disabled, onClick }) => {
+          group.forEach(({ label, className = false, icon, disabled, onClick }) => {
             const handleClick = () => {
               if (!disabled) {
                 onClick!();
@@ -66,6 +66,7 @@ export class ContextMenu extends Component<Props, State> {
                   class="menu-item${disabled ? ' disabled' : ''}"
                   aria-role="menuitem"
                 >
+                  <i class="${cls("icon")} ${icon}"></i>
                   <span class="${className}">${label}</span>
                 </li>
               `

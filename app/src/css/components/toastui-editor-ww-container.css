@@ -37,10 +37,12 @@
 }
 
 .toastui-editor-ww-block-quote::after {
-    content: '\f304';
-    font-weight: 900;
-    font-family: 'Font Awesome 6 Free';
-    background-position: center;
+    content: '\e011';
+    font-family: "Iconify Explorer Font" !important;
+    font-size: .75em;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     position: absolute;
     top: 8px;
     right: 8px;
@@ -71,7 +73,6 @@
     display: block;
     width: 100%;
     padding: 8px 12px;
-    padding-left: 0;
     cursor: pointer;
     color: var(--toastui-editor-color);
     transition: all 0.15s ease;
@@ -82,16 +83,6 @@
     border-radius: var(--toastui-editor-border-radius);
     height: unset;
     text-align: left;
-}
-
-.toastui-editor-ww-block-quote-type button::before {
-    font-weight: 900;
-    font-family: 'Font Awesome 6 Free';
-    width: 27px;
-    height: 27px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .toastui-editor-ww-block-quote-type button.active,
@@ -133,29 +124,4 @@
     border-left-color: var(--toastui-editor-success-border-subtle);
     color: var(--toastui-editor-success-text-emphasis);
     background-color: var(--toastui-editor-success-bg-subtle);
-}
-
-
-.toastui-editor-ww-block-quote-type button[value="default"]::before {
-    content: '\f10e';
-}
-
-.toastui-editor-ww-block-quote-type button[value="danger"]::before {
-    content: '\f12a';
-    color: var(--toastui-editor-color-danger);
-}
-
-.toastui-editor-ww-block-quote-type button[value="info"]::before {
-    content: '\f129';
-    color: var(--toastui-editor-color-info);
-}
-
-.toastui-editor-ww-block-quote-type button[value="warning"]::before {
-    content: '\f071';
-    color: var(--toastui-editor-color-warning);
-}
-
-.toastui-editor-ww-block-quote-type button[value="success"]::before {
-    content: '\f00c';
-    color: var(--toastui-editor-color-success);
 }
