@@ -726,7 +726,7 @@ class TableEditPanelView extends EditPanel {
     const controlRect = controlElement.getBoundingClientRect();
     const panelRect = this.state.panel!.getBoundingClientRect();
     let toolbarLeft = toolBarType === 'row' ? (controlRect.right - panelRect.left) : (controlRect.left - panelRect.left);
-    let toolbarTop = toolBarType === 'row' ? (controlRect.top - panelRect.top) : (controlRect.bottom - panelRect.top - 50);
+    let toolbarTop = toolBarType === 'row' ? (controlRect.top - panelRect.top - controlRect.height) : (controlRect.bottom - panelRect.top - 50);
 
     toolbar.style.left = `${toolbarLeft}px`;
     toolbar.style.top = `${toolbarTop}px`;
