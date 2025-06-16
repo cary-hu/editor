@@ -21,7 +21,7 @@ interface SpanMap {
 export interface RowInfo {
   [key: number]: CellInfo;
   length: number;
-  rowspanMap: SpanMap;
+  rowSpanMap: SpanMap;
   colspanMap: SpanMap;
 }
 
@@ -42,14 +42,14 @@ interface OffsetMap {
   getCellInfo(rowIdx: number, colIdx: number): CellInfo;
   posAt(rowIdx: number, colIdx: number): number;
   getNodeAndPos(rowIdx: number, colIdx: number): { node: Node; pos: number };
-  extendedRowspan(rowIdx: number, colIdx: number): boolean;
+  extendedRowSpan(rowIdx: number, colIdx: number): boolean;
   extendedColspan(rowIdx: number, colIdx: number): boolean;
-  getRowspanCount(rowIdx: number, colIdx: number): number;
+  getRowSpanCount(rowIdx: number, colIdx: number): number;
   getColspanCount(rowIdx: number, colIdx: number): number;
   decreaseColspanCount(rowIdx: number, colIdx: number): number;
-  decreaseRowspanCount(rowIdx: number, colIdx: number): number;
+  decreaseRowSpanCount(rowIdx: number, colIdx: number): number;
   getColspanStartInfo(rowIdx: number, colIdx: number): SpanInfo | null;
-  getRowspanStartInfo(rowIdx: number, colIdx: number): SpanInfo | null;
+  getRowSpanStartInfo(rowIdx: number, colIdx: number): SpanInfo | null;
   getRectOffsets(startCellPos: ResolvedPos, endCellPos?: ResolvedPos): SelectionInfo;
   getSpannedOffsets(selectionInfo: SelectionInfo): SelectionInfo;
 }
@@ -139,7 +139,7 @@ export class TableOffsetMap {
       if (i === rowIdx) {
         let index = colIdx;
 
-        // Skip the cells from previous row(via rowspan)
+        // Skip the cells from previous row(via rowSpan)
         while (index < this.totalColumnCount && this.rowInfo[i][index].offset < rowStart) {
           index += 1;
         }
@@ -158,48 +158,16 @@ export class TableOffsetMap {
     };
   }
 
-  extendedRowspan(rowIdx: number, colIdx: number) {
-    return false;
-  }
-
-  extendedColspan(rowIdx: number, colIdx: number) {
-    return false;
-  }
-
-  getRowspanCount(rowIdx: number, colIdx: number) {
-    return 0;
-  }
-
-  getColspanCount(rowIdx: number, colIdx: number) {
-    return 0;
-  }
-
-  decreaseColspanCount(rowIdx: number, colIdx: number) {
-    return 0;
-  }
-
-  decreaseRowspanCount(rowIdx: number, colIdx: number) {
-    return 0;
-  }
-
-  getColspanStartInfo(rowIdx: number, colIdx: number): SpanInfo | null {
-    return null;
-  }
-
-  getRowspanStartInfo(rowIdx: number, colIdx: number): SpanInfo | null {
-    return null;
-  }
-
   getCellStartOffset(rowIdx: number, colIdx: number) {
     const { offset } = this.rowInfo[rowIdx][colIdx];
 
-    return this.extendedRowspan(rowIdx, colIdx) ? this.posAt(rowIdx, colIdx) : offset;
+    return this.extendedRowSpan(rowIdx, colIdx) ? this.posAt(rowIdx, colIdx) : offset;
   }
 
   getCellEndOffset(rowIdx: number, colIdx: number) {
     const { offset, nodeSize } = this.rowInfo[rowIdx][colIdx];
 
-    return this.extendedRowspan(rowIdx, colIdx) ? this.posAt(rowIdx, colIdx) : offset + nodeSize;
+    return this.extendedRowSpan(rowIdx, colIdx) ? this.posAt(rowIdx, colIdx) : offset + nodeSize;
   }
 
   getCellIndex(cellPos: ResolvedPos): [rowIdx: number, colIdx: number] {
@@ -227,21 +195,175 @@ export class TableOffsetMap {
 
     return this.getSpannedOffsets({ startRowIdx, startColIdx, endRowIdx, endColIdx });
   }
+  extendedRowSpan(rowIdx: number, colIdx: number) {
+    const rowSpanInfo = this.rowInfo[rowIdx].rowSpanMap[colIdx];
 
+    return !!rowSpanInfo && rowSpanInfo.startSpanIdx !== rowIdx;
+  }
+  extendedColSpan(rowIdx: number, colIdx: number) {
+    const colspanInfo = this.rowInfo[rowIdx].colspanMap[colIdx];
+
+    return !!colspanInfo && colspanInfo.startSpanIdx !== colIdx;
+  }
+  getRowSpanCount(rowIdx: number, colIdx: number) {
+    const rowSpanInfo = this.rowInfo[rowIdx].rowSpanMap[colIdx];
+
+    return rowSpanInfo ? rowSpanInfo.count : 0;
+  }
+  getColspanCount(rowIdx: number, colIdx: number) {
+    const colspanInfo = this.rowInfo[rowIdx].colspanMap[colIdx];
+
+    return colspanInfo ? colspanInfo.count : 0;
+  }
+  decreaseColspanCount(rowIdx: number, colIdx: number) {
+    const colspanInfo = this.rowInfo[rowIdx].colspanMap[colIdx];
+    const startColspanInfo = this.rowInfo[rowIdx].colspanMap[colspanInfo.startSpanIdx];
+
+    startColspanInfo.count -= 1;
+
+    return startColspanInfo.count;
+  }
+  decreaseRowSpanCount(rowIdx: number, colIdx: number) {
+    const rowSpanInfo = this.rowInfo[rowIdx].rowSpanMap[colIdx];
+    const startRowSpanInfo = this.rowInfo[rowSpanInfo.startSpanIdx].rowSpanMap[colIdx];
+
+    startRowSpanInfo.count -= 1;
+
+    return startRowSpanInfo.count;
+  }
+  getColspanStartInfo(rowIdx: number, colIdx: number) {
+    const { colspanMap } = this.rowInfo[rowIdx];
+    const colspanInfo = colspanMap[colIdx];
+
+    if (colspanInfo) {
+      const { startSpanIdx } = colspanInfo;
+      const cellInfo = this.rowInfo[rowIdx][startSpanIdx];
+
+      return {
+        node: this.table.nodeAt(cellInfo.offset - this.tableStartOffset)!,
+        pos: cellInfo.offset,
+        startSpanIdx,
+        count: colspanMap[startSpanIdx].count,
+      };
+    }
+    return null;
+  }
+  getRowSpanStartInfo(rowIdx: number, colIdx: number) {
+    const { rowSpanMap } = this.rowInfo[rowIdx];
+    const rowSpanInfo = rowSpanMap[colIdx];
+
+    if (rowSpanInfo) {
+      const { startSpanIdx } = rowSpanInfo;
+      const cellInfo = this.rowInfo[startSpanIdx][colIdx];
+
+      return {
+        node: this.table.nodeAt(cellInfo.offset - this.tableStartOffset)!,
+        pos: cellInfo.offset,
+        startSpanIdx,
+        count: this.rowInfo[startSpanIdx].rowSpanMap[colIdx].count,
+      };
+    }
+    return null;
+  }
   getSpannedOffsets(selectionInfo: SelectionInfo): SelectionInfo {
-    return selectionInfo;
+    let { startRowIdx, startColIdx, endRowIdx, endColIdx } = selectionInfo;
+
+    for (let rowIdx = endRowIdx; rowIdx >= startRowIdx; rowIdx -= 1) {
+      if (this.rowInfo[rowIdx]) {
+        const { rowSpanMap, colspanMap } = this.rowInfo[rowIdx];
+
+        for (let colIdx = endColIdx; colIdx >= startColIdx; colIdx -= 1) {
+          const rowSpanInfo = rowSpanMap[colIdx];
+          const colspanInfo = colspanMap[colIdx];
+
+          if (rowSpanInfo) {
+            startRowIdx = Math.min(startRowIdx, rowSpanInfo.startSpanIdx);
+          }
+          if (colspanInfo) {
+            startColIdx = Math.min(startColIdx, colspanInfo.startSpanIdx);
+          }
+        }
+      }
+    }
+
+    for (let rowIdx = startRowIdx; rowIdx <= endRowIdx; rowIdx += 1) {
+      if (this.rowInfo[rowIdx]) {
+        const { rowSpanMap, colspanMap } = this.rowInfo[rowIdx];
+
+        for (let colIdx = startColIdx; colIdx <= endColIdx; colIdx += 1) {
+          const rowSpanInfo = rowSpanMap[colIdx];
+          const colspanInfo = colspanMap[colIdx];
+
+          if (rowSpanInfo) {
+            endRowIdx = Math.max(endRowIdx, rowIdx + rowSpanInfo.count - 1);
+          }
+          if (colspanInfo) {
+            endColIdx = Math.max(endColIdx, colIdx + colspanInfo.count - 1);
+          }
+        }
+      }
+    }
+
+    return { startRowIdx, startColIdx, endRowIdx, endColIdx };
   }
 }
-/* eslint-enable @typescript-eslint/no-unused-vars */
+function extendPrevRowSpan(prevRowInfo: RowInfo, rowInfo: RowInfo) {
+  const { rowSpanMap, colspanMap } = rowInfo;
+  const { rowSpanMap: prevRowSpanMap, colspanMap: prevColspanMap } = prevRowInfo;
 
-let createOffsetMap = (headOrBody: Node, startOffset: number) => {
+  Object.keys(prevRowSpanMap).forEach((key) => {
+    const colIdx = Number(key);
+    const prevRowSpanInfo = prevRowSpanMap[colIdx];
+
+    if (prevRowSpanInfo?.count > 1) {
+      const prevColspanInfo = prevColspanMap[colIdx];
+      const { count, startSpanIdx } = prevRowSpanInfo;
+
+      rowSpanMap[colIdx] = { count: count - 1, startSpanIdx };
+      colspanMap[colIdx] = prevColspanInfo;
+
+      rowInfo[colIdx] = { ...prevRowInfo[colIdx], extended: true };
+      rowInfo.length += 1;
+    }
+  });
+}
+function extendPrevColspan(
+  rowSpan: number,
+  colSpan: number,
+  rowIdx: number,
+  colIdx: number,
+  rowInfo: RowInfo
+) {
+  const { rowSpanMap, colspanMap } = rowInfo;
+
+  for (let i = 1; i < colSpan; i += 1) {
+    colspanMap[colIdx + i] = { count: colSpan - i, startSpanIdx: colIdx };
+
+    if (rowSpan > 1) {
+      rowSpanMap[colIdx + i] = { count: rowSpan, startSpanIdx: rowIdx };
+    }
+
+    rowInfo[colIdx + i] = { ...rowInfo[colIdx] };
+    rowInfo.length += 1;
+  }
+}
+let createOffsetMap = (headOrBody: Node, startOffset: number, startFromBody = false) => {
   const cellInfoMatrix: RowInfo[] = [];
+  const beInBody = headOrBody.type.name === 'tableBody';
 
-  headOrBody.forEach((row: Node, rowOffset: number) => {
+  headOrBody.forEach((row: Node, rowOffset: number, rowIdx: number) => {
     // get row index based on table(not table head or table body)
-    const rowInfo: RowInfo = { rowspanMap: {}, colspanMap: {}, length: 0 };
+    const rowIdxInWholeTable = beInBody && !startFromBody ? rowIdx + 1 : rowIdx;
+    const prevRowInfo = cellInfoMatrix[rowIdx - 1];
+    const rowInfo: RowInfo = { rowSpanMap: {}, colspanMap: {}, length: 0 };
 
-    row.forEach(({ nodeSize }: Node, cellOffset: number) => {
+    if (prevRowInfo) {
+      extendPrevRowSpan(prevRowInfo, rowInfo);
+    }
+
+    row.forEach(({ nodeSize, attrs }: Node, cellOffset: number) => {
+      const colSpan: number = attrs.colspan ?? 1;
+      const rowSpan: number = attrs.rowspan ?? 1;
       let colIdx = 0;
 
       while (rowInfo[colIdx]) {
@@ -253,7 +375,17 @@ let createOffsetMap = (headOrBody: Node, startOffset: number) => {
         offset: startOffset + rowOffset + cellOffset + 2,
         nodeSize,
       };
+
       rowInfo.length += 1;
+
+      if (rowSpan > 1) {
+        rowInfo.rowSpanMap[colIdx] = { count: rowSpan, startSpanIdx: rowIdxInWholeTable };
+      }
+
+      if (colSpan > 1) {
+        rowInfo.colspanMap[colIdx] = { count: colSpan, startSpanIdx: colIdx };
+        extendPrevColspan(rowSpan, colSpan, rowIdxInWholeTable, colIdx, rowInfo);
+      }
     });
     cellInfoMatrix.push(rowInfo);
   });

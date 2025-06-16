@@ -7,7 +7,7 @@ import removeClass from 'tui-code-snippet/domUtil/removeClass';
 import isString from 'tui-code-snippet/type/isString';
 import isNumber from 'tui-code-snippet/type/isNumber';
 
-import { Emitter, Handler } from '@t/event';
+import { Emitter, EventTypes, Handler } from '@t/event';
 import {
   Base,
   EditorOptions,
@@ -47,6 +47,7 @@ import { getEditorToMdPos, getMdToEditorPos } from './markdown/helper/pos';
 import { Pos } from '@t/toastmark';
 import { getToolbarState } from './wysiwyg/plugins/toolbarState';
 import { ToolbarStateMap } from '@t/ui';
+import { tableMarkdownParsers } from './plugins/table/markdown-parser';
 
 /**
  * ToastUIEditorCore
@@ -221,7 +222,7 @@ class ToastUIEditorCore {
       extendedAutolinks,
       referenceDefinition,
       frontMatter,
-      customParser: markdownParsers,
+      customParser: extend(tableMarkdownParsers, markdownParsers),
     });
 
     this.mdEditor = new MarkdownEditor(this.eventEmitter, {
@@ -394,10 +395,10 @@ class ToastUIEditorCore {
 
   /**
    * Bind eventHandler to event type
-   * @param {string} type Event type
+   * @param {EventTypes} type Event type
    * @param {function} handler Event handler
    */
-  on(type: string, handler: Handler) {
+  on(type: EventTypes, handler: Handler) {
     this.eventEmitter.listen(type, handler);
   }
 
@@ -411,10 +412,10 @@ class ToastUIEditorCore {
 
   /**
    * Add hook to TUIEditor event
-   * @param {string} type Event type
+   * @param {EventTypes} type Event type
    * @param {function} handler Event handler
    */
-  addHook(type: string, handler: Handler) {
+  addHook(type: EventTypes, handler: Handler) {
     this.eventEmitter.removeEventHandler(type);
     this.eventEmitter.listen(type, handler);
   }

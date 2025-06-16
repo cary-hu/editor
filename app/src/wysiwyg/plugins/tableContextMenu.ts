@@ -5,6 +5,7 @@ import { findCellElement } from '@/wysiwyg/helper/table';
 import i18n from '@/i18n/i18n';
 
 import { Emitter } from '@t/event';
+import toArray from 'tui-code-snippet/collection/toArray';
 
 interface ContextMenuInfo {
   action: string;
@@ -14,6 +15,43 @@ interface ContextMenuInfo {
   };
   className: string;
   disableInThead?: boolean;
+}
+
+const TABLE_CELL_SELECT_CLASS = '.toastui-editor-cell-selected';
+function hasSpanAttr(tableCell: Element) {
+  return (
+    Number(tableCell.getAttribute('colspan')) > 1 || Number(tableCell.getAttribute('rowspan')) > 1
+  );
+}
+
+function hasSpanningCell(headOrBody: Element) {
+  return toArray(headOrBody.querySelectorAll(TABLE_CELL_SELECT_CLASS)).some(hasSpanAttr);
+}
+
+function isCellSelected(headOrBody: Element) {
+  return !!headOrBody.querySelectorAll(TABLE_CELL_SELECT_CLASS).length;
+}
+function createMergedTableContextMenu(tableCell: Element) {
+  const headOrBody = tableCell.parentElement!.parentElement!;
+  const mergedTableContextMenu = [];
+
+  if (isCellSelected(headOrBody)) {
+    mergedTableContextMenu.push({
+      action: 'Merge cells',
+      command: 'mergeCells',
+      className: 'merge-cells',
+    });
+  }
+
+  if (hasSpanAttr(tableCell) || hasSpanningCell(headOrBody)) {
+    mergedTableContextMenu.push({
+      action: 'Split cells',
+      command: 'splitCells',
+      className: 'split-cells',
+    });
+  }
+
+  return mergedTableContextMenu;
 }
 
 const contextMenuGroups: ContextMenuInfo[][] = [
@@ -60,8 +98,10 @@ const contextMenuGroups: ContextMenuInfo[][] = [
   [{ action: 'Remove table', command: 'removeTable', className: 'remove-table' }],
 ];
 
-function getContextMenuGroups(eventEmitter: Emitter, inTableHead: boolean) {
-  return contextMenuGroups
+function getContextMenuGroups(eventEmitter: Emitter, inTableHead: boolean, tableCell: Element) {
+  const mergedTableContextMenu = createMergedTableContextMenu(tableCell);
+
+  return contextMenuGroups.concat([mergedTableContextMenu])
     .map((contextMenuGroup) =>
       contextMenuGroup.map(({ action, command, payload, disableInThead, className }) => {
         return {
@@ -104,7 +144,7 @@ export function tableContextMenu(eventEmitter: Emitter) {
 
             eventEmitter.emit('contextmenu', {
               pos: { left: `${clientX - left + 10}px`, top: `${clientY - top + 30}px` },
-              menuGroups: getContextMenuGroups(eventEmitter, inTableHead),
+              menuGroups: getContextMenuGroups(eventEmitter, inTableHead, tableCell),
               tableCell,
             });
 

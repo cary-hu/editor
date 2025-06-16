@@ -133,7 +133,7 @@ export function canBeOutOfTable(
   map: TableOffsetMap,
   [rowIdx, colIdx]: CellPosition
 ) {
-  const rowspanInfo = map.getRowspanStartInfo(rowIdx, colIdx)!;
+  const rowspanInfo = map.getRowSpanStartInfo(rowIdx, colIdx)!;
   const inFirstRow = direction === Direction.UP && rowIdx === 0;
   const inLastRow =
     direction === Direction.DOWN &&
@@ -228,7 +228,7 @@ export function getDownCellOffset([rowIdx, colIdx]: CellPosition, map: TableOffs
 
   if (rowIdx < totalRowCount - 1) {
     let nextRowIdx = rowIdx + 1;
-    const rowspanInfo = map.getRowspanStartInfo(rowIdx, colIdx)!;
+    const rowspanInfo = map.getRowSpanStartInfo(rowIdx, colIdx)!;
 
     if (rowspanInfo?.count > 1) {
       nextRowIdx += rowspanInfo.count - 1;

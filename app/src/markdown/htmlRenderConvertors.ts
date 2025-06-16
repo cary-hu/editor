@@ -9,6 +9,9 @@ import {
   OpenTagToken,
   Context,
   HTMLConvertor,
+  MergedTableRowMdNode,
+  MergedTableCellMdNode,
+  HTMLToken,
 } from '@t/toastmark';
 import { LinkAttributes, CustomHTMLRenderer } from '@t/editor';
 import { HTMLMdNode } from '@t/markdown';
@@ -122,6 +125,60 @@ const baseConvertors: HTMLConvertorMap = {
       ];
     }
     return origin!();
+  },
+  tableRow(node: MdNode, { entering, origin }: Context) {
+    if (entering) {
+      return origin!();
+    }
+
+    const result: HTMLToken[] = [];
+
+    if (node.lastChild) {
+      const columnLen = (node as MergedTableRowMdNode).parent.parent.columns.length;
+      const lastColIdx = (node as MergedTableRowMdNode).lastChild!.endIdx;
+
+      for (let i = lastColIdx + 1; i < columnLen; i += 1) {
+        if (!node.prev || !(node as MergedTableRowMdNode).prev!.rowSpanMap[i] || (node as MergedTableRowMdNode).prev!.rowSpanMap[i] <= 1) {
+          result.push(
+            {
+              type: 'openTag',
+              tagName: 'td',
+              outerNewLine: true,
+            },
+            {
+              type: 'closeTag',
+              tagName: 'td',
+              outerNewLine: true,
+            }
+          );
+        }
+      }
+    }
+
+    result.push({
+      type: 'closeTag',
+      tagName: 'tr',
+      outerNewLine: true,
+    });
+
+    return result;
+  },
+  tableCell(node: MdNode, { entering, origin }) {
+    const result = origin!();
+
+    if ((node as MergedTableCellMdNode).ignored) {
+      return result;
+    }
+
+    if (entering) {
+      const attributes: Record<string, string> = { ...(node as MergedTableCellMdNode).attrs };
+
+      (result as OpenTagToken).attributes = {
+        ...(result as OpenTagToken).attributes,
+        ...attributes,
+      };
+    }
+    return result;
   },
 };
 

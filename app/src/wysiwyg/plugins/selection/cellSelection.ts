@@ -115,7 +115,7 @@ export default class CellSelection extends Selection {
         if (cell) {
           isTableHeadCell = cell.type.name === 'tableHeadCell';
           // mark the extended cell for pasting
-          if (map.extendedRowspan(rowIdx, colIdx) || map.extendedColspan(rowIdx, colIdx)) {
+          if (map.extendedRowSpan(rowIdx, colIdx) || map.extendedColSpan(rowIdx, colIdx)) {
             cells.push(cell.type.create({ extended: true }));
           } else {
             cells.push(cell.copy(cell.content));

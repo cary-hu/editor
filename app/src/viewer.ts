@@ -5,13 +5,14 @@ import on from 'tui-code-snippet/domEvent/on';
 import off from 'tui-code-snippet/domEvent/off';
 
 import { CustomHTMLRenderer, ViewerOptions } from '@t/editor';
-import { Emitter, Handler } from '@t/event';
+import { Emitter, EventTypes, Handler } from '@t/event';
 import MarkdownPreview from './markdown/mdPreview';
 import { getPluginInfo } from './helper/plugin';
 import { last, sanitizeLinkAttribute } from './utils/common';
 import EventEmitter from './event/eventEmitter';
 import { cls, isPositionInBox, toggleClass } from './utils/dom';
 import { registerTagWhitelistIfPossible, sanitizeHTML } from './sanitizer/htmlSanitizer';
+import { tableMarkdownParsers } from './plugins/table/markdown-parser';
 
 const TASK_ATTR_NAME = 'data-task';
 const DISABLED_TASK_ATTR_NAME = 'data-task-disabled';
@@ -117,7 +118,7 @@ class ToastUIEditorViewer {
       extendedAutolinks,
       referenceDefinition,
       frontMatter,
-      customParser: markdownParsers,
+      customParser: extend(tableMarkdownParsers, markdownParsers),
     });
     this.preview = new MarkdownPreview(this.eventEmitter, {
       ...rendererOptions,
@@ -174,10 +175,10 @@ class ToastUIEditorViewer {
 
   /**
    * Bind eventHandler to event type
-   * @param {string} type Event type
+   * @param {EventTypes} type Event type
    * @param {function} handler Event handler
    */
-  on(type: string, handler: Handler) {
+  on(type: EventTypes, handler: Handler) {
     this.eventEmitter.listen(type, handler);
   }
 
@@ -191,10 +192,10 @@ class ToastUIEditorViewer {
 
   /**
    * Add hook to TUIEditor event
-   * @param {string} type Event type
+   * @param {EventTypes} type Event type
    * @param {function} handler Event handler
    */
-  addHook(type: string, handler: Handler) {
+  addHook(type: EventTypes, handler: Handler) {
     this.eventEmitter.removeEventHandler(type);
     this.eventEmitter.listen(type, handler);
   }
