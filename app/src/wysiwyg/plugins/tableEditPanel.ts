@@ -616,6 +616,123 @@ class TableEditPanelView extends EditPanel {
     this.eventEmitter.emit('command', 'removeColumn');
   }
 
+  /**
+   * Check if cells can be merged (multiple cells are selected and mergeable)
+   */
+  private canMergeCells(): boolean {
+    const { state } = this.view;
+    const { selection } = state;
+
+    // @ts-ignore
+    if (!selection.isCellSelection) return false;
+
+    // @ts-ignore
+    const startPos = selection.startCell.pos;
+    // @ts-ignore
+    const endPos = selection.endCell.pos;
+
+    // Must have different start and end positions (multiple cells selected)
+    if (startPos === endPos) return false;
+
+    // Get the table map to check if the selection is valid for merging
+    try {
+      // @ts-ignore
+      const map = TableOffsetMap.create(selection.startCell);
+      if (!map) return false;
+
+      // @ts-ignore
+      const selectionInfo = map.getRectOffsets(selection.startCell, selection.endCell);
+      const { startRowIdx, startColIdx, endRowIdx, endColIdx } = selectionInfo;
+
+      // Check if this would be merging header and body (not allowed)
+      const hasTableHead = startRowIdx === 0 && endRowIdx > startRowIdx;
+      if (hasTableHead) return false;
+
+      // Check if we're trying to merge the entire table (not allowed)
+      const { totalRowCount, totalColumnCount } = map;
+      const rowCount = endRowIdx - startRowIdx + 1;
+      const columnCount = endColIdx - startColIdx + 1;
+      const allSelected = rowCount >= totalRowCount - 1 && columnCount === totalColumnCount;
+      if (allSelected) return false;
+
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Check if cells can be split (selected cell/cells have colspan or rowspan)
+   */
+  private canSplitCells(): boolean {
+    const { state } = this.view;
+    const { selection } = state;
+
+    if (!this.state.tableElement) return false;
+
+    // @ts-ignore
+    if (!selection.isCellSelection) return false;
+
+    try {
+      // @ts-ignore
+      const map = TableOffsetMap.create(selection.startCell);
+      if (!map) return false;
+
+      // @ts-ignore
+      const selectionInfo = map.getRectOffsets(selection.startCell, selection.endCell);
+      const { startRowIdx, startColIdx, endRowIdx, endColIdx } = selectionInfo;
+
+      // Check if any cell in the selection has colspan or rowspan
+      for (let rowIdx = startRowIdx; rowIdx <= endRowIdx; rowIdx++) {
+        for (let colIdx = startColIdx; colIdx <= endColIdx; colIdx++) {
+          // Skip extended cells (they are part of a spanning cell but not the root)
+          if (map.extendedRowSpan(rowIdx, colIdx) || map.extendedColSpan(rowIdx, colIdx)) {
+            continue;
+          }
+
+          // Find the DOM element for this cell
+          const cellInfo = map.getCellInfo(rowIdx, colIdx);
+          const domNode = this.view.domAtPos(cellInfo.offset + 1).node;
+          let cellElement: Node | null = domNode;
+
+          // Find the actual td/th element
+          while (cellElement && cellElement.nodeType === Node.TEXT_NODE) {
+            cellElement = cellElement.parentNode;
+          }
+          while (cellElement && cellElement.nodeName !== 'TD' && cellElement.nodeName !== 'TH') {
+            cellElement = cellElement.parentNode;
+          }
+
+          if (cellElement) {
+            const colspan = parseInt((cellElement as HTMLElement).getAttribute('colspan') || '1');
+            const rowspan = parseInt((cellElement as HTMLElement).getAttribute('rowspan') || '1');
+            if (colspan > 1 || rowspan > 1) {
+              return true;
+            }
+          }
+        }
+      }
+
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Merge selected cells
+   */
+  private mergeCells(): void {
+    this.eventEmitter.emit('command', 'mergeCells');
+  }
+
+  /**
+   * Split selected cells
+   */
+  private splitCells(): void {
+    this.eventEmitter.emit('command', 'splitCells');
+  }
+
   protected documentChanged() {
     if (!this.state.isVisible || !this.state.tableElement || !this.isPanelReady) {
       return;
@@ -715,6 +832,9 @@ class TableEditPanelView extends EditPanel {
 
     controlElement.classList.add('active');
 
+    // Auto-select the row or column before showing toolbar
+    this.autoSelectRowOrColumn(toolBarType, rowIndex);
+
     // Create edit mask for the row
     this.createEditMask(toolBarType, rowIndex);
 
@@ -773,6 +893,27 @@ class TableEditPanelView extends EditPanel {
           changesStructure: false
         },
       ];
+
+    // Add merge/split cell buttons to both row and column toolbars
+    // Check if cells can be merged
+    if (this.canMergeCells()) {
+      buttons.unshift({
+        icon: 'table-merge-cells',
+        title: 'Merge cells',
+        action: () => this.mergeCells(),
+        changesStructure: true
+      });
+    }
+
+    // Check if cells can be split
+    if (this.canSplitCells()) {
+      buttons.unshift({
+        icon: 'table-split-cell',
+        title: 'Split cells',
+        action: () => this.splitCells(),
+        changesStructure: true
+      });
+    }
     if (toolBarType === 'row') {
       const totalRows = this.state.tableElement?.querySelectorAll('tbody tr').length || 0;
       if (rowIndex > 0) {
@@ -989,6 +1130,74 @@ class TableEditPanelView extends EditPanel {
     }
 
     this.hide();
+  }
+
+  /**
+   * Auto-select the entire row or column when toolbar is shown
+   * @param type - 'row' or 'column'
+   * @param index - row or column index
+   */
+  private autoSelectRowOrColumn(type: 'row' | 'column', index: number) {
+    if (!this.state.tableElement) return;
+
+    const { state, dispatch } = this.view;
+    const { doc } = state;
+
+    // Find the table position in the document
+    let tablePos: number | null = null;
+
+    doc.descendants((node, pos) => {
+      if (node.type.name === 'table') {
+        const domNode = this.view.domAtPos(pos + 1).node;
+
+        if (
+          domNode === this.state.tableElement ||
+          (this.state.tableElement && this.state.tableElement.contains(domNode as Node))
+        ) {
+          tablePos = pos + 1;
+          return false;
+        }
+      }
+      return true;
+    });
+
+    if (tablePos === null) return;
+
+    const cellPos = doc.resolve(tablePos);
+    const map = TableOffsetMap.create(cellPos);
+    if (!map) return;
+
+    try {
+      let startCellPos, endCellPos;
+
+      if (type === 'row') {
+        // Select entire row
+        const startColIdx = 0;
+        const endColIdx = map.totalColumnCount - 1;
+        const startCellInfo = map.getCellInfo(index, startColIdx);
+        const endCellInfo = map.getCellInfo(index, endColIdx);
+
+        startCellPos = doc.resolve(startCellInfo.offset);
+        endCellPos = doc.resolve(endCellInfo.offset);
+      } else {
+        // Select entire column, but skip header (start from row 1 instead of 0)
+        const startRowIdx = 1; // Skip header row (index 0)
+        const endRowIdx = map.totalRowCount - 1;
+        const startCellInfo = map.getCellInfo(startRowIdx, index);
+        const endCellInfo = map.getCellInfo(endRowIdx, index);
+
+        startCellPos = doc.resolve(startCellInfo.offset);
+        endCellPos = doc.resolve(endCellInfo.offset);
+      }
+
+      // Create cell selection
+      const cellSelection = new CellSelection(startCellPos, endCellPos);
+      const tr = state.tr.setSelection(cellSelection);
+      dispatch(tr);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn('Failed to auto-select row/column:', error);
+    }
   }
 }
 
