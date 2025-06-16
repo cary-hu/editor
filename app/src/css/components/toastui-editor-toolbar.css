@@ -164,13 +164,13 @@
 }
 
 .toastui-editor-toolbar-icons::after {
-    content: '\f304';
-    font-weight: 900;
-    font-family: 'Font Awesome 6 Free';
-    background-position: center;
-    width: 100%;
-    height: 100%;
-    font-size: 1.25rem;
+    content: '';
+    font-family: "Iconify Explorer Font" !important;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 1.2em;
+    color: var(--toastui-editor-color);
 }
 
 
@@ -182,71 +182,72 @@
 }
 
 .toastui-editor-toolbar-icons.heading:after {
-    content: '\f1dc';
+    content: "\e009";
 }
 
 .toastui-editor-toolbar-icons.bold:after {
-    content: '\f032';
+    content: "\e006";
 }
 
 .toastui-editor-toolbar-icons.italic:after {
-    content: '\f033';
+    content: "\e00c";
 }
 
 .toastui-editor-toolbar-icons.strike:after {
-    content: '\f0cc';
+    content: "\e015";
 }
 
 .toastui-editor-toolbar-icons.hrline:after {
-    content: '\f068';
+    content: "\e011";
 }
 
 .toastui-editor-toolbar-icons.quote:after {
-    content: '\f10e';
+    content: "\e014";
 }
 
 .toastui-editor-toolbar-icons.bullet-list:after {
-    content: '\f0ca';
+    content: "\e010";
 }
 
 .toastui-editor-toolbar-icons.ordered-list:after {
-    content: '\f0cb';
+    content: "\e00f";
 }
 
 .toastui-editor-toolbar-icons.task-list:after {
-    content: '\f0ae';
+    content: "\e00e";
 }
 
 .toastui-editor-toolbar-icons.indent:after {
-    content: '\f03c';
+    content: "\e00b";
 }
 
 .toastui-editor-toolbar-icons.outdent:after {
-    content: '\f03b';
+    content: "\e012";
 }
 
 .toastui-editor-toolbar-icons.table:after {
-    content: '\f0ce';
+    content: "\e016";
 }
 
 .toastui-editor-toolbar-icons.image:after {
-    content: '\f03e';
+    content: "\e00a";
 }
 
 .toastui-editor-toolbar-icons.link:after {
-    content: '\f0c1';
+    content: "\e00d";
 }
 
 .toastui-editor-toolbar-icons.code:after {
-    content: '\f121';
+    content: "\e007";
 }
 
 .toastui-editor-toolbar-icons.codeblock:after {
-    content: '\f1c9';
+    content: "\e01a";
+    font-size: 1.5em;
 }
 
 .toastui-editor-toolbar-icons.more:after {
-    content: '\f141';
+    content: "\e008";
 }
 
 .toastui-editor-toolbar-icons:not(:disabled).active {
