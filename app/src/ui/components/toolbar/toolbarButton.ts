@@ -11,7 +11,7 @@ import { Emitter } from '@t/event';
 import html from '@/ui/vdom/template';
 import { Component } from '@/ui/vdom/component';
 import { createPopupInfo } from '@/ui/toolbarItemFactory';
-import { getOuterWidth } from '@/utils/dom';
+import { cls, getOuterWidth } from '@/utils/dom';
 import { connectHOC } from './buttonHoc';
 
 interface Props {
@@ -92,7 +92,7 @@ export class ToolbarButtonComp extends Component<Props> {
         onMouseout=${hideTooltip}
         disabled=${!!disabled}
         aria-label=${item.text || item.tooltip || ''}
-      >
+      ><i class=${cls("icon") + ' ' + item.className?.split(" ")[0]}></i>
         ${item.text || ''}
       </button>
     `;

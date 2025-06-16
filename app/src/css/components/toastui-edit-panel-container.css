@@ -39,6 +39,7 @@
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
+
 .toastui-edit-panel-container .toastui-editor-edit-dialog button.active,
 .toastui-edit-panel-container .toastui-editor-edit-dialog button:hover {
     border-color: var(--toastui-editor-color-primary);
@@ -83,7 +84,7 @@
 
 .toastui-editor-table-edit-overlay {
     position: absolute;
-    border: 2px solid var(--toastui-editor-color-primary);
+    border: 1px solid var(--toastui-editor-color-primary);
     border-radius: 4px;
     width: 100%;
     height: 100%;
@@ -97,20 +98,21 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background-color: var(--toastui-editor-color-danger);
-    color: var(--toastui-editor-color-danger-text);
+    border: 1px solid var(--toastui-editor-border-color);
+    background-color: var(--toastui-editor-bg-color);
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
     pointer-events: auto;
-    z-index: 27;
     box-shadow: var(--toastui-editor-box-shadow);
     transition: all 0.2s ease;
+    z-index: 2;
 }
 
 .toastui-editor-delete-table-btn:hover {
-    transform: scale(1.1);
+    background-color: var(--toastui-editor-color-danger);
+    color: var(--toastui-editor-color-danger-text);
 }
 
 .toastui-editor-table-row-divider,
@@ -319,4 +321,75 @@
     margin-bottom: 4px;
     font-style: italic;
     user-select: none;
+}
+
+/* Cell edit controls for table editing */
+.toastui-editor-table-edit-toolbar {
+    position: absolute;
+    background-color: var(--toastui-editor-secondary-bg-color);
+    border: 1px solid var(--toastui-editor-border-color);
+    border-radius: var(--toastui-editor-border-radius);
+    box-shadow: var(--toastui-editor-box-shadow);
+    padding: 4px;
+    display: flex;
+    gap: 4px;
+    pointer-events: auto;
+    z-index: 4;
+}
+
+button.toastui-editor-table-toolbar-btn {
+    padding: .5rem;
+    border: 1px solid transparent;
+    background-color: transparent;
+    cursor: pointer;
+    border-radius: var(--toastui-editor-border-radius);
+    color: var(--toastui-editor-color);
+    transition: background-color 0.2s ease;
+}
+
+.toastui-editor-table-toolbar-btn:hover {
+    border-color: var(--toastui-editor-border-color);
+}
+
+/* Row and column hover areas */
+.toastui-editor-row-hover-area,
+.toastui-editor-col-hover-area {
+    position: absolute;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: background-color 0.2s ease;
+    background-color: var(--toastui-editor-border-color);
+}
+
+.toastui-editor-row-hover-area.active,
+.toastui-editor-col-hover-area.active,
+.toastui-editor-row-hover-area:hover,
+.toastui-editor-col-hover-area:hover {
+    background-color: var(--toastui-editor-color-primary);
+}
+
+.toastui-editor-row-hover-area {
+    left: 0px;
+    width: 10px;
+}
+
+
+.toastui-editor-col-hover-area {
+    top: 0px;
+    height: 10px;
+}
+
+.toastui-editor-table-edit-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--toastui-editor-primary-bg-subtle);
+    opacity: .3;
+    transition: all .3s ease;
+}
+
+.toastui-editor-table-edit-mask.danger {
+    background-color: var(--toastui-editor-danger-bg-subtle);
 }

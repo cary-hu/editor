@@ -1,4 +1,4 @@
-import { Plugin } from 'prosemirror-state';
+import { Plugin, PluginKey } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Emitter } from '@t/event';
 
@@ -6,12 +6,18 @@ import { TableOffsetMap } from '@/wysiwyg/helper/tableOffsetMap';
 import CellSelection from '@/wysiwyg/plugins/selection/cellSelection';
 import { EditPanel } from './editPanel';
 import { cls } from '@/utils/dom';
+import i18n from '@/i18n/i18n';
 
 interface TableEditPanelState {
   isVisible: boolean;
   tableElement: HTMLElement | null;
   overlay: HTMLElement | null;
   panel: HTMLElement | null;
+  toolbar: HTMLElement | null;
+  activeEditType: 'row' | 'column' | null;
+  activeEditIndex: number | null;
+  activeControl: HTMLElement | null;
+  editMask: HTMLElement | null;
 }
 
 class TableEditPanelView extends EditPanel {
@@ -20,7 +26,13 @@ class TableEditPanelView extends EditPanel {
     tableElement: null,
     overlay: null,
     panel: null,
+    toolbar: null,
+    activeControl: null,
+    activeEditType: null,
+    activeEditIndex: null,
+    editMask: null,
   };
+  private lastShowTime = 0;
 
   constructor(view: EditorView, eventEmitter: Emitter) {
     super(view, eventEmitter);
@@ -30,12 +42,15 @@ class TableEditPanelView extends EditPanel {
   protected preparePanel(): void {
     this.handleTableHover = this.handleTableHover.bind(this);
     this.handleTableLeave = this.handleTableLeave.bind(this);
+    this.handleDocumentClick = this.handleDocumentClick.bind(this);
     this.init();
   }
 
   private init() {
     this.view.dom.addEventListener('mouseenter', this.handleTableHover, true);
     this.view.dom.addEventListener('mouseleave', this.handleTableLeave, true);
+    // Listen for clicks on the document to hide panel when clicking outside
+    document.addEventListener('click', this.handleDocumentClick, true);
   }
 
   private handleTableHover(event: MouseEvent) {
@@ -73,23 +88,7 @@ class TableEditPanelView extends EditPanel {
   }
 
   private isTableOrPanelElement(element: HTMLElement): boolean {
-    return !!(
-      element.closest('table') ||
-      element.closest(`.${cls('table-edit-panel')}`) ||
-      element.classList.contains(cls('add-row-btn')) ||
-      element.classList.contains(cls('add-col-btn')) ||
-      element.classList.contains(cls('remove-row-btn')) ||
-      element.classList.contains(cls('remove-col-btn')) ||
-      element.classList.contains(cls('row-divider-container')) ||
-      element.classList.contains(cls('col-divider-container')) ||
-      element.classList.contains(cls('row-delete-container')) ||
-      element.classList.contains(cls('col-delete-container')) ||
-      element.classList.contains(cls('row-delete-overlay')) ||
-      element.classList.contains(cls('col-delete-overlay')) ||
-      element.classList.contains(cls('row-add-highlight')) ||
-      element.classList.contains(cls('col-add-highlight')) ||
-      element.classList.contains(cls('delete-table-btn'))
-    );
+    return !!(element.closest('table') || element.closest(`.${cls('table-edit-panel')}`));
   }
 
   private showPanel(tableElement: HTMLElement) {
@@ -97,14 +96,18 @@ class TableEditPanelView extends EditPanel {
     this.hide();
 
     this.state.tableElement = tableElement;
+    this.lastShowTime = Date.now(); // Record when panel was shown
     this.createPanel();
     this.createOverlay();
-    this.createRowDividers();
-    this.createColumnDividers();
+    this.createDeleteButton();
+    this.createCellEditControls();
     this.state.isVisible = true;
   }
 
   protected hide() {
+    if (this.state.activeEditType !== null) {
+      return;
+    }
     if (this.state.panel) {
       this.state.panel.remove();
       this.state.panel = null;
@@ -113,6 +116,7 @@ class TableEditPanelView extends EditPanel {
       this.state.overlay.remove();
       this.state.overlay = null;
     }
+    this.hideToolbar();
     this.state.isVisible = false;
     this.state.tableElement = null;
   }
@@ -123,13 +127,47 @@ class TableEditPanelView extends EditPanel {
     }
 
     const tableRect = this.state.tableElement.getBoundingClientRect();
+    const viewportOffset = { left: -10, top: -10 };
 
-    this.state.panel.style.left = `${tableRect.left}px`;
-    this.state.panel.style.top = `${tableRect.top}px`;
-    this.state.panel.style.width = `${tableRect.width}px`;
-    this.state.panel.style.height = `${tableRect.height}px`;
+    this.state.panel.style.left = `${tableRect.left + viewportOffset.left}px`;
+    this.state.panel.style.top = `${tableRect.top + viewportOffset.top}px`;
+    this.state.panel.style.width = `${tableRect.width + 10}px`;
+    this.state.panel.style.height = `${tableRect.height + 10}px`;
+  }
 
-    this.recreateDividers();
+  /**
+   * Recreates the entire panel and its controls to handle table structure changes
+   */
+  private recreatePanel() {
+    if (!this.state.isVisible || !this.state.tableElement) {
+      return;
+    }
+
+    // Store current table element
+    const currentTable = this.state.tableElement;
+
+    // Force hide current panel (bypass activeEditType check)
+    this.forceHide();
+
+    // Show panel again with updated structure
+    this.showPanel(currentTable);
+  }
+
+  /**
+   * Force hide the panel without checking activeEditType
+   */
+  private forceHide() {
+    if (this.state.panel) {
+      this.state.panel.remove();
+      this.state.panel = null;
+    }
+    if (this.state.overlay) {
+      this.state.overlay.remove();
+      this.state.overlay = null;
+    }
+    this.hideToolbar();
+    this.state.isVisible = false;
+    this.state.tableElement = null;
   }
 
   private createPanel() {
@@ -141,13 +179,13 @@ class TableEditPanelView extends EditPanel {
 
     // Position the panel to cover the table
     const tableRect = this.state.tableElement.getBoundingClientRect();
-    const viewportOffset = { left: 0, top: 0 };
+    const viewportOffset = { left: -10, top: -10 };
 
     // Use fixed positioning to avoid ProseMirror DOMObserver issues
     panel.style.left = `${tableRect.left + viewportOffset.left}px`;
     panel.style.top = `${tableRect.top + viewportOffset.top}px`;
-    panel.style.width = `${tableRect.width}px`;
-    panel.style.height = `${tableRect.height}px`;
+    panel.style.width = `${tableRect.width + 10}px`;
+    panel.style.height = `${tableRect.height + 10}px`;
 
     // Add hover event listeners to keep panel visible when hovering over it
     panel.addEventListener('mouseenter', () => {
@@ -165,9 +203,6 @@ class TableEditPanelView extends EditPanel {
 
     this.editPanelContainer.appendChild(panel);
     this.state.panel = panel;
-
-    // Create delete table button
-    this.createDeleteButton();
   }
 
   private createOverlay() {
@@ -187,7 +222,7 @@ class TableEditPanelView extends EditPanel {
     const deleteBtn = document.createElement('div');
 
     deleteBtn.className = cls('delete-table-btn');
-    deleteBtn.innerHTML = '×';
+    deleteBtn.innerHTML = `<i class="${cls("icon")} table-remove"></i>`;
     deleteBtn.title = 'Delete table';
 
     // Click event for the delete button
@@ -201,348 +236,35 @@ class TableEditPanelView extends EditPanel {
 
   private deleteTable() {
     if (!this.state.tableElement) return;
-
-    // Hide the panel first
-    this.hide();
-
+    // Find the table position in the document and set selection
+    const { state, dispatch } = this.view;
+    const { doc, tr } = state;
+    let tablePos: number | null = null;
+    doc.descendants((node, pos) => {
+      if (node.type.name === 'table') {
+        const domNode = this.view.domAtPos(pos + 1).node;
+        if (
+          domNode === this.state.tableElement ||
+          (this.state.tableElement && this.state.tableElement.contains(domNode as Node))
+        ) {
+          tablePos = pos + 1;
+          return false;
+        }
+      }
+      return true;
+    });
+    if (tablePos === null) return;
+    const cellPos = doc.resolve(tablePos);
+    const map = TableOffsetMap.create(cellPos);
+    if (!map) return;
+    // Create cell selection for the table
+    const startCellPos = doc.resolve(map.getCellInfo(0, 0).offset);
+    const endCellPos = doc.resolve(map.getCellInfo(map.totalRowCount - 1, map.totalColumnCount - 1).offset);
+    const cellSelection = new CellSelection(startCellPos, endCellPos);
+    dispatch!(tr.setSelection(cellSelection));
     // Use event emitter to execute the removeTable command
     this.eventEmitter.emit('command', 'removeTable');
-  }
-
-  private createRowDividers() {
-    if (!this.state.panel || !this.state.tableElement) return;
-
-    const rows = this.state.tableElement.querySelectorAll('tr');
-    const panelRect = this.state.tableElement.getBoundingClientRect();
-
-    // Calculate how many body rows exist (total rows minus header)
-    const bodyRowCount = rows.length - 1;
-
-    // Create hover zones for adding rows and separate delete containers for body rows
-    rows.forEach((row, index) => {
-      const rowRect = row.getBoundingClientRect();
-
-      // Calculate position relative to the panel (which uses fixed positioning)
-      const dividerY = rowRect.bottom - panelRect.top;
-
-      // Create hover container for add row button
-      const hoverContainer = document.createElement('div');
-      hoverContainer.className = cls('row-divider-container');
-      hoverContainer.style.top = `${dividerY - 5}px`; // Adjusted for 10px height container to center properly
-
-      // Create add row button (initially hidden)
-      const addRowBtn = document.createElement('div');
-      addRowBtn.className = cls('add-row-btn');
-      addRowBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
-      addRowBtn.title = index === 0 ? 'Add row after header' : 'Add row below';
-
-      // Append button to container
-      hoverContainer.appendChild(addRowBtn);
-
-      // Create highlight border for add row insertion point
-      const addHighlight = document.createElement('div');
-      addHighlight.className = cls('row-add-highlight');
-      addHighlight.style.top = `${dividerY}px`; // Position at the insertion line
-
-      // Hover events for the add row container
-      hoverContainer.addEventListener('mouseenter', () => {
-        addRowBtn.style.visibility = 'visible';
-        addRowBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-        addHighlight.style.opacity = '1';
-      });
-
-      hoverContainer.addEventListener('mouseleave', () => {
-        addRowBtn.style.visibility = 'hidden';
-        addHighlight.style.opacity = '0';
-      });
-
-      // Prevent hover container from interfering with cell selection
-      hoverContainer.addEventListener('click', (event) => {
-        if (event.target !== addRowBtn) {
-          event.stopPropagation();
-          event.preventDefault();
-        }
-      });
-
-      // Click event for the add button
-      addRowBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        this.addRow(index + 1);
-      });
-
-      this.state.panel!.appendChild(hoverContainer);
-      this.state.panel!.appendChild(addHighlight);
-
-      // Create separate delete container for body rows (positioned at row center, left side)
-      if (index > 0 && bodyRowCount > 1) { // Don't show delete button for header row or if only one body row exists
-        const deleteContainer = document.createElement('div');
-        deleteContainer.className = cls('row-delete-container');
-
-        // Position at the center of the row height
-        const rowHeight = rowRect.height;
-        const rowTop = rowRect.top - panelRect.top;
-        deleteContainer.style.top = `${rowTop}px`;
-        deleteContainer.style.height = `${rowHeight}px`;
-
-        // Create delete row button
-        const deleteRowBtn = document.createElement('div');
-        deleteRowBtn.className = cls('remove-row-btn');
-        deleteRowBtn.innerHTML = '<i class="fa-solid fa-minus"></i>';
-        deleteRowBtn.title = 'Delete row';
-
-        deleteContainer.appendChild(deleteRowBtn);
-
-        // Create red overlay for the row to be deleted
-        const deleteOverlay = document.createElement('div');
-        deleteOverlay.className = cls('row-delete-overlay');
-        deleteOverlay.style.top = `${rowTop}px`;
-        deleteOverlay.style.height = `${rowHeight}px`;
-
-        // Hover events for the delete container
-        deleteContainer.addEventListener('mouseenter', () => {
-          deleteContainer.style.opacity = '1';
-          deleteRowBtn.style.visibility = 'visible';
-          deleteOverlay.style.opacity = '.1';
-        });
-
-        deleteContainer.addEventListener('mouseleave', () => {
-          deleteContainer.style.opacity = '0';
-          deleteRowBtn.style.visibility = 'hidden';
-          deleteOverlay.style.opacity = '0';
-        });
-
-        // Click event for the delete button
-        deleteRowBtn.addEventListener('click', (event) => {
-          event.stopPropagation();
-          this.removeRow(index);
-        });
-
-        this.state.panel!.appendChild(deleteContainer);
-        this.state.panel!.appendChild(deleteOverlay);
-      }
-    });
-  }
-
-  private createColumnDividers() {
-    if (!this.state.panel || !this.state.tableElement) return;
-
-    const firstRow = this.state.tableElement.querySelector('tr');
-
-    if (!firstRow) return;
-
-    const cells = firstRow.querySelectorAll('th, td');
-    const panelRect = this.state.tableElement.getBoundingClientRect();
-
-    // Calculate how many columns exist
-    const columnCount = cells.length;
-
-    // Add hover zone and button before first column (at the left)
-    if (cells.length > 0) {
-      const [firstCell] = cells;
-      const firstCellRect = firstCell.getBoundingClientRect();
-
-      // Calculate position relative to the panel (which uses fixed positioning)
-      const dividerX = firstCellRect.left - panelRect.left;
-
-      // Create hover container for column divider (first column)
-      const hoverContainer = document.createElement('div');
-      hoverContainer.className = cls('col-divider-container');
-      hoverContainer.style.left = `${dividerX - 5}px`; // Adjusted for 10px width container to center properly
-
-      // Create add column button (initially hidden)
-      const addColBtn = document.createElement('div');
-      addColBtn.className = cls('add-col-btn');
-      addColBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
-      addColBtn.title = 'Add column left';
-
-      // Append button to container
-      hoverContainer.appendChild(addColBtn);
-
-      // Create highlight border for add column insertion point
-      const addHighlight = document.createElement('div');
-      addHighlight.className = cls('col-add-highlight');
-      addHighlight.style.left = `${dividerX}px`; // Position at the insertion line
-
-      // Hover events for the container
-      hoverContainer.addEventListener('mouseenter', () => {
-        addColBtn.style.visibility = 'visible';
-        addHighlight.style.opacity = '1';
-      });
-
-      hoverContainer.addEventListener('mouseleave', () => {
-        addColBtn.style.visibility = 'hidden';
-        addHighlight.style.opacity = '0';
-      });
-
-      // Prevent hover container from interfering with cell selection
-      hoverContainer.addEventListener('click', (event) => {
-        if (event.target !== addColBtn) {
-          event.stopPropagation();
-          event.preventDefault();
-        }
-      });
-
-      // Click event for the add button
-      addColBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        this.addColumn(0); // Button index 0 - insert before first column
-      });
-
-      this.state.panel!.appendChild(hoverContainer);
-      this.state.panel!.appendChild(addHighlight);
-
-      // Create delete container for first column (positioned above column center)
-      if (columnCount > 1) {
-        const deleteContainer = document.createElement('div');
-        deleteContainer.className = cls('col-delete-container');
-
-        // Position at the center of the column width
-        const colLeft = firstCellRect.left - panelRect.left;
-        const colWidth = firstCellRect.width;
-        deleteContainer.style.left = `${colLeft}px`;
-        deleteContainer.style.width = `${colWidth}px`;
-
-        // Create delete column button
-        const deleteColBtn = document.createElement('div');
-        deleteColBtn.className = cls('remove-col-btn');
-        deleteColBtn.innerHTML = '<i class="fa-solid fa-minus"></i>';
-        deleteColBtn.title = 'Delete first column';
-
-        deleteContainer.appendChild(deleteColBtn);
-
-        // Create red overlay for the column to be deleted
-        const deleteOverlay = document.createElement('div');
-        deleteOverlay.className = cls('col-delete-overlay');
-        deleteOverlay.style.left = `${colLeft}px`;
-        deleteOverlay.style.width = `${colWidth}px`;
-
-        // Hover events for the delete container
-        deleteContainer.addEventListener('mouseenter', () => {
-          deleteContainer.style.opacity = '1';
-          deleteColBtn.style.visibility = 'visible';
-          deleteOverlay.style.opacity = '.1';
-        });
-
-        deleteContainer.addEventListener('mouseleave', () => {
-          deleteContainer.style.opacity = '0';
-          deleteColBtn.style.visibility = 'hidden';
-          deleteOverlay.style.opacity = '0';
-        });
-
-        // Click event for the delete button
-        deleteColBtn.addEventListener('click', (event) => {
-          event.stopPropagation();
-          this.removeColumn(0);
-        });
-
-        this.state.panel!.appendChild(deleteContainer);
-        this.state.panel!.appendChild(deleteOverlay);
-      }
-    }
-
-    // Add hover zones and buttons between columns and after last column
-    cells.forEach((cell, index) => {
-      const cellRect = cell.getBoundingClientRect();
-
-      // Calculate position relative to the panel (which uses fixed positioning)
-      const dividerX = cellRect.right - panelRect.left;
-
-      // Create hover container for column divider
-      const hoverContainer = document.createElement('div');
-      hoverContainer.className = cls('col-divider-container');
-      hoverContainer.style.left = `${dividerX - 5}px`; // Adjusted for 10px width container to center properly
-
-      // Create add column button (initially hidden)
-      const addColBtn = document.createElement('div');
-      addColBtn.className = cls('add-col-btn');
-      addColBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
-      addColBtn.title = 'Add column right';
-
-      // Append button to container
-      hoverContainer.appendChild(addColBtn);
-
-      // Create highlight border for add column insertion point
-      const addHighlight = document.createElement('div');
-      addHighlight.className = cls('col-add-highlight');
-      addHighlight.style.left = `${dividerX}px`; // Position at the insertion line
-
-      // Hover events for the container
-      hoverContainer.addEventListener('mouseenter', () => {
-        addColBtn.style.visibility = 'visible';
-        addColBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-        addHighlight.style.opacity = '1';
-      });
-
-      hoverContainer.addEventListener('mouseleave', () => {
-        addColBtn.style.visibility = 'hidden';
-        addHighlight.style.opacity = '0';
-      });
-
-      // Prevent hover container from interfering with cell selection
-      hoverContainer.addEventListener('click', (event) => {
-        if (event.target !== addColBtn) {
-          event.stopPropagation();
-          event.preventDefault();
-        }
-      });
-
-      // Click event for the add button
-      addColBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        this.addColumn(index + 1); // Button index represents insertion point
-      });
-
-      this.state.panel!.appendChild(hoverContainer);
-      this.state.panel!.appendChild(addHighlight);
-
-      // Create delete container for each column (positioned above column center)
-      if (columnCount > 1) {
-        const deleteContainer = document.createElement('div');
-        deleteContainer.className = cls('col-delete-container');
-
-        // Position at the center of the column width
-        const colLeft = cellRect.left - panelRect.left;
-        const colWidth = cellRect.width;
-        deleteContainer.style.left = `${colLeft}px`;
-        deleteContainer.style.width = `${colWidth}px`;
-
-        // Create delete column button
-        const deleteColBtn = document.createElement('div');
-        deleteColBtn.className = cls('remove-col-btn');
-        deleteColBtn.innerHTML = '<i class="fa-solid fa-minus"></i>';
-        deleteColBtn.title = `Delete column ${index + 1}`;
-
-        deleteContainer.appendChild(deleteColBtn);
-
-        // Create red overlay for the column to be deleted
-        const deleteOverlay = document.createElement('div');
-        deleteOverlay.className = cls('col-delete-overlay');
-        deleteOverlay.style.left = `${colLeft}px`;
-        deleteOverlay.style.width = `${colWidth}px`;
-
-        // Hover events for the delete container
-        deleteContainer.addEventListener('mouseenter', () => {
-          deleteContainer.style.opacity = '1';
-          deleteColBtn.style.visibility = 'visible';
-          deleteOverlay.style.opacity = '.1';
-        });
-
-        deleteContainer.addEventListener('mouseleave', () => {
-          deleteContainer.style.opacity = '0';
-          deleteColBtn.style.visibility = 'hidden';
-          deleteOverlay.style.opacity = '0';
-        });
-
-        // Click event for the delete button
-        deleteColBtn.addEventListener('click', (event) => {
-          event.stopPropagation();
-          this.removeColumn(index);
-        });
-
-        this.state.panel!.appendChild(deleteContainer);
-        this.state.panel!.appendChild(deleteOverlay);
-      }
-    });
+    this.hide();
   }
 
   private addRow(rowIndex: number) {
@@ -894,56 +616,385 @@ class TableEditPanelView extends EditPanel {
     this.eventEmitter.emit('command', 'removeColumn');
   }
 
-  private recreateDividers() {
-    if (!this.state.panel || !this.state.tableElement) return;
-
-    // Check if table structure actually changed
-    const currentRows = this.state.tableElement.querySelectorAll('tr').length;
-    const currentCols =
-      this.state.tableElement.querySelector('tr')?.querySelectorAll('th, td').length || 0;
-
-    const existingRowDividers = this.state.panel.querySelectorAll(`.${cls('row-divider-container')}`).length;
-    const existingColDividers = this.state.panel.querySelectorAll(`.${cls('col-divider-container')}`).length;
-
-    // Only recreate if the structure actually changed
-    const rowsChanged = currentRows !== existingRowDividers;
-    const colsChanged = currentCols + 1 !== existingColDividers; // +1 because we have one extra divider before first column
-
-    if (rowsChanged || colsChanged) {
-      // Remove existing dividers, delete containers, and highlight elements
-      const existingDividers = this.state.panel.querySelectorAll(
-        `.${cls('row-divider-container')}, .${cls('col-divider-container')}, .${cls('row-delete-container')}, .${cls('col-delete-container')}, .${cls('row-delete-overlay')}, .${cls('col-delete-overlay')}, .${cls('row-add-highlight')}, .${cls('col-add-highlight')}`
-      );
-
-      existingDividers.forEach((divider) => divider.remove());
-
-      // Recreate dividers with updated table structure
-      this.createRowDividers();
-      this.createColumnDividers();
-    }
-  }
-
   protected documentChanged() {
     if (!this.state.isVisible || !this.state.tableElement || !this.isPanelReady) {
       return;
     }
-    this.updatePosition();
+
+    // Check if table structure has changed by comparing current row/column count
+    // with the number of controls we have
+    const currentRows = this.state.tableElement.querySelectorAll('tr').length;
+    const currentCols = this.state.tableElement.querySelector('tr')?.querySelectorAll('th, td').length || 0;
+
+    // Count existing controls
+    const existingRowControls = this.state.panel?.querySelectorAll(`.${cls('row-hover-area')}`).length || 0;
+    const existingColControls = this.state.panel?.querySelectorAll(`.${cls('col-hover-area')}`).length || 0;
+
+    // If structure changed, recreate panel; otherwise just update position
+    if (currentRows !== existingRowControls || currentCols !== existingColControls) {
+      this.recreatePanel();
+    } else {
+      this.updatePosition();
+    }
   }
 
   destroy() {
     this.view.dom.removeEventListener('mouseenter', this.handleTableHover, true);
     this.view.dom.removeEventListener('mouseleave', this.handleTableLeave, true);
+    document.removeEventListener('click', this.handleDocumentClick, true);
+    this.hide();
+  }
+
+  private createCellEditControls() {
+    if (!this.state.panel || !this.state.tableElement) return;
+
+    const rows = this.state.tableElement.querySelectorAll('tr');
+    const panelRect = this.state.tableElement.getBoundingClientRect();
+
+    // First, create all row edit controls and hover areas
+    rows.forEach((row, rowIndex) => {
+      const rowRect = row.getBoundingClientRect();
+      const rowTop = rowRect.top - panelRect.top + 10;
+      const rowHeight = rowRect.height;
+
+      // Row hover area - covers the row but leaves space for column controls
+      const rowHoverArea = document.createElement('div');
+      rowHoverArea.className = cls('row-hover-area');
+      rowHoverArea.style.top = `${rowTop}px`;
+      rowHoverArea.style.height = `${rowHeight}px`;
+
+      // Click events
+      const handleRowClick = (event: Event) => {
+        event.stopPropagation();
+        this.showToolbar(rowIndex, 'row', rowHoverArea);
+      };
+
+      rowHoverArea.addEventListener('click', handleRowClick);
+
+      // Add row elements to panel
+      this.state.panel!.appendChild(rowHoverArea);
+    });
+
+    // Then create all column edit controls and hover areas (these will be on top)
+    if (rows.length > 0) {
+      const firstRow = rows[0];
+      const cells = firstRow.querySelectorAll('th, td');
+
+      cells.forEach((cell, colIndex) => {
+        const cellRect = cell.getBoundingClientRect();
+        const cellLeft = cellRect.left - panelRect.left + 10;
+        const cellWidth = cellRect.width;
+
+        // Column hover area - covers the entire column
+        const colHoverArea = document.createElement('div');
+        colHoverArea.className = cls('col-hover-area');
+        colHoverArea.style.left = `${cellLeft}px`;
+        colHoverArea.style.width = `${cellWidth}px`;
+
+        // Click events
+        const handleColClick = (event: Event) => {
+          event.stopPropagation();
+          this.showToolbar(colIndex, 'column', colHoverArea);
+        };
+
+        colHoverArea.addEventListener('click', handleColClick);
+
+        // Add column elements to panel (these are added after row elements)
+        this.state.panel!.appendChild(colHoverArea);
+      });
+    }
+  }
+
+  private showToolbar(rowIndex: number, toolBarType: 'row' | 'column', controlElement: HTMLElement) {
+    // Hide existing toolbar
+    this.hideToolbar();
+
+    this.state.activeEditType = toolBarType;
+    this.state.activeEditIndex = rowIndex;
+    this.state.activeControl = controlElement;
+
+    controlElement.classList.add('active');
+
+    // Create edit mask for the row
+    this.createEditMask(toolBarType, rowIndex);
+
+    // Create toolbar
+    const toolbar = document.createElement('div');
+    toolbar.className = cls('table-edit-toolbar');
+
+    // Position toolbar
+    const controlRect = controlElement.getBoundingClientRect();
+    const panelRect = this.state.panel!.getBoundingClientRect();
+    let toolbarLeft = toolBarType === 'row' ? (controlRect.right - panelRect.left) : (controlRect.left - panelRect.left);
+    let toolbarTop = toolBarType === 'row' ? (controlRect.top - panelRect.top) : (controlRect.bottom - panelRect.top - 50);
+
+    toolbar.style.left = `${toolbarLeft}px`;
+    toolbar.style.top = `${toolbarTop}px`;
+
+    // Create toolbar buttons
+    const buttons = toolBarType === 'row' ?
+      [
+        {
+          icon: 'table-row-plus-after',
+          title: 'Add row to down',
+          action: () => this.addRow(rowIndex + 1),
+          changesStructure: true
+        },
+      ] :
+      [
+        {
+          icon: 'table-column-plus-before',
+          title: 'Add column to left',
+          action: () => this.addColumn(rowIndex),
+          changesStructure: true
+        },
+        {
+          icon: 'table-column-plus-after',
+          title: 'Add column to right',
+          action: () => this.addColumn(rowIndex + 1),
+          changesStructure: true
+        },
+        {
+          icon: 'align-left',
+          title: 'Align column to left',
+          action: () => this.alignColumn(rowIndex, 'left'),
+          changesStructure: false
+        },
+        {
+          icon: 'align-center',
+          title: 'Align column to center',
+          action: () => this.alignColumn(rowIndex, 'center'),
+          changesStructure: false
+        },
+        {
+          icon: 'align-right',
+          title: 'Align column to right',
+          action: () => this.alignColumn(rowIndex, 'right'),
+          changesStructure: false
+        },
+      ];
+    if (toolBarType === 'row') {
+      const totalRows = this.state.tableElement?.querySelectorAll('tbody tr').length || 0;
+      if (rowIndex > 0) {
+        buttons.push({
+          icon: 'table-row-plus-before',
+          title: 'Add row to up',
+          action: () => this.addRow(rowIndex),
+          changesStructure: true
+        });
+        if (totalRows > 1) {
+          buttons.push({
+            icon: 'table-row-remove',
+            title: 'Remove row',
+            action: () => this.removeRow(rowIndex),
+            changesStructure: true
+          });
+        }
+      }
+    } else {
+      const totalColumns = this.state.tableElement?.querySelector('tr')?.querySelectorAll('th, td').length || 0;
+      if (totalColumns > 1) {
+        buttons.push({
+          icon: 'table-column-remove',
+          title: 'Remove column',
+          action: () => this.removeColumn(rowIndex),
+          changesStructure: true
+        });
+      }
+    }
+
+    buttons.forEach(({ icon, title, action, changesStructure }) => {
+      const button = document.createElement('button');
+      button.className = cls('table-toolbar-btn');
+      button.innerHTML = `<i class="${cls('icon')} ${icon}"></i>`;
+      button.title = i18n.get(title);
+
+      // Check if this is a delete button
+      const isDeleteButton = icon === 'table-row-remove' || icon === 'table-column-remove';
+
+      if (isDeleteButton) {
+        // Add hover events for delete buttons to change mask color
+        button.addEventListener('mouseenter', () => {
+          this.setMaskColor('danger');
+        });
+
+        button.addEventListener('mouseleave', () => {
+          this.setMaskColor('normal');
+        });
+      }
+
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        action();
+
+        if (changesStructure) {
+          // For operations that change table structure, recreate the entire panel
+          setTimeout(() => {
+            this.recreatePanel();
+          }, 100); // Delay to allow DOM updates and command execution
+        } else {
+          // For operations that don't change structure, just update position
+          this.updatePosition();
+        }
+      });
+
+      toolbar.appendChild(button);
+    });
+
+    this.state.panel!.appendChild(toolbar);
+    this.state.toolbar = toolbar;
+  }
+  private hideToolbar() {
+    if (this.state.toolbar) {
+      this.state.toolbar.remove();
+      this.state.toolbar = null;
+    }
+    if (this.state.activeControl) {
+      this.state.activeControl.classList.remove('active');
+      this.state.activeControl = null;
+    }
+    if (this.state.editMask) {
+      this.state.editMask.remove();
+      this.state.editMask = null;
+    }
+    this.state.activeEditType = null;
+    this.state.activeEditIndex = null;
+  }
+
+  private createEditMask(type: 'row' | 'column', index: number) {
+    if (!this.state.panel || !this.state.tableElement) return;
+
+    // Remove existing edit mask
+    if (this.state.editMask) {
+      this.state.editMask.remove();
+      this.state.editMask = null;
+    }
+
+    const mask = document.createElement('div');
+    mask.className = cls('table-edit-mask');
+
+    const panelRect = this.state.tableElement.getBoundingClientRect();
+
+    if (type === 'row') {
+      // Create mask for the entire row
+      const rows = this.state.tableElement.querySelectorAll('tr');
+      if (index < rows.length) {
+        const row = rows[index];
+        const rowRect = row.getBoundingClientRect();
+        const rowTop = rowRect.top - panelRect.top + 10;
+        const rowHeight = rowRect.height;
+
+        mask.style.top = `${rowTop}px`;
+        mask.style.left = '0px';
+        mask.style.width = '100%';
+        mask.style.height = `${rowHeight}px`;
+      }
+    } else if (type === 'column') {
+      // Create mask for the entire column
+      const firstRow = this.state.tableElement.querySelector('tr');
+      if (firstRow) {
+        const cells = firstRow.querySelectorAll('th, td');
+        if (index < cells.length) {
+          const cell = cells[index];
+          const cellRect = cell.getBoundingClientRect();
+          const cellLeft = cellRect.left - panelRect.left + 10;
+          const cellWidth = cellRect.width;
+
+          mask.style.top = '0px';
+          mask.style.left = `${cellLeft}px`;
+          mask.style.width = `${cellWidth}px`;
+          mask.style.height = '100%';
+        }
+      }
+    }
+
+    this.state.panel.appendChild(mask);
+    this.state.editMask = mask;
+  }
+
+  /**
+   * Set the color of the edit mask
+   * @param mode - 'normal' for default color, 'danger' for red color
+   */
+  private setMaskColor(mode: 'normal' | 'danger') {
+    if (!this.state.editMask) return;
+
+    if (mode === 'danger') {
+      this.state.editMask.classList.add('danger');
+    } else {
+      this.state.editMask.classList.remove('danger');
+    }
+  }
+
+  private alignColumn(colIndex: number, alignment: 'left' | 'center' | 'right') {
+    // Get table element in document
+    const { state, dispatch } = this.view;
+    const { doc } = state;
+
+    let tablePos: number | null = null;
+    doc.descendants((node, pos) => {
+      if (node.type.name === 'table') {
+        const domNode = this.view.domAtPos(pos + 1).node;
+        if (
+          domNode === this.state.tableElement ||
+          (this.state.tableElement && this.state.tableElement.contains(domNode as Node))
+        ) {
+          tablePos = pos + 1;
+          return false;
+        }
+      }
+      return true;
+    });
+
+    if (tablePos === null) return;
+
+    const cellPos = doc.resolve(tablePos);
+    const map = TableOffsetMap.create(cellPos);
+    if (!map) return;
+
+    // Select the column
+    const firstCellInfo = map.getCellInfo(0, colIndex);
+    const lastRowIdx = map.totalRowCount - 1;
+    const lastCellInfo = map.getCellInfo(lastRowIdx, colIndex);
+
+    const startCellPos = doc.resolve(firstCellInfo.offset);
+    const endCellPos = doc.resolve(lastCellInfo.offset);
+
+    const cellSelection = new CellSelection(startCellPos, endCellPos);
+    const tr = state.tr.setSelection(cellSelection);
+    dispatch(tr);
+
+    // Execute align command
+    this.eventEmitter.emit('command', 'alignColumn', { align: alignment });
+  }
+
+  private handleDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+
+    // Check if clicking on specific panel elements that should not trigger any action
+    const isClickingOnToolbar = target.closest(`.${cls('table-edit-toolbar')}`);
+    const isClickingOnHoverArea = target.closest(`.${cls('row-hover-area')}`) || target.closest(`.${cls('col-hover-area')}`);
+
+    // Don't do anything if clicking on toolbar or hover areas
+    if (isClickingOnToolbar || isClickingOnHoverArea) {
+      return;
+    }
+
+
+    // If clicking outside table entirely, hide the whole panel
+    // First hide toolbar if active, then hide panel
+    if (this.state.activeEditType !== null) {
+      this.hideToolbar();
+      return;
+    }
+
     this.hide();
   }
 }
 
-export function tableEditPanel(eventEmitter: Emitter) {
-  let tableEditPanelView: TableEditPanelView | null = null;
-
+export function tableEditPanel(eventEmitter: Emitter): Plugin {
   return new Plugin({
-    view(editorView) {
-      tableEditPanelView = new TableEditPanelView(editorView, eventEmitter);
-      return tableEditPanelView;
-    },
+    key: new PluginKey('tableEditPanel'),
+    view: (view: EditorView) => new TableEditPanelView(view, eventEmitter),
   });
 }

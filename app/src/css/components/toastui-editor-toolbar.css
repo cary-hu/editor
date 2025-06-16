@@ -163,17 +163,6 @@
     border: 1px solid var(--toastui-editor-border-color);
 }
 
-.toastui-editor-toolbar-icons::after {
-    content: '';
-    font-family: "Iconify Explorer Font" !important;
-    font-style: normal;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    font-size: 1.2em;
-    color: var(--toastui-editor-color);
-}
-
-
 .toastui-editor-toolbar-icons[disabled="true"],
 .toastui-editor-toolbar-icons:disabled {
     opacity: 0.3;
@@ -181,73 +170,8 @@
     cursor: default;
 }
 
-.toastui-editor-toolbar-icons.heading:after {
-    content: "\e009";
-}
-
-.toastui-editor-toolbar-icons.bold:after {
-    content: "\e006";
-}
-
-.toastui-editor-toolbar-icons.italic:after {
-    content: "\e00c";
-}
-
-.toastui-editor-toolbar-icons.strike:after {
-    content: "\e015";
-}
-
-.toastui-editor-toolbar-icons.hrline:after {
-    content: "\e011";
-}
-
-.toastui-editor-toolbar-icons.quote:after {
-    content: "\e014";
-}
-
-.toastui-editor-toolbar-icons.bullet-list:after {
-    content: "\e010";
-}
-
-.toastui-editor-toolbar-icons.ordered-list:after {
-    content: "\e00f";
-}
-
-.toastui-editor-toolbar-icons.task-list:after {
-    content: "\e00e";
-}
-
-.toastui-editor-toolbar-icons.indent:after {
-    content: "\e00b";
-}
-
-.toastui-editor-toolbar-icons.outdent:after {
-    content: "\e012";
-}
-
-.toastui-editor-toolbar-icons.table:after {
-    content: "\e016";
-}
-
-.toastui-editor-toolbar-icons.image:after {
-    content: "\e00a";
-}
-
-.toastui-editor-toolbar-icons.link:after {
-    content: "\e00d";
-}
-
-.toastui-editor-toolbar-icons.code:after {
-    content: "\e007";
-}
-
-.toastui-editor-toolbar-icons.codeblock:after {
-    content: "\e01a";
-    font-size: 1.5em;
-}
-
-.toastui-editor-toolbar-icons.more:after {
-    content: "\e008";
+.toastui-editor-toolbar-icons .codeblock::before {
+    font-size: 1.25em;
 }
 
 .toastui-editor-toolbar-icons:not(:disabled).active {
