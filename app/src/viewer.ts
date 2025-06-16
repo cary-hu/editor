@@ -55,6 +55,7 @@ class ToastUIEditorViewer {
   private eventEmitter: Emitter;
 
   private preview: MarkdownPreview;
+  private themeObserver!: MutationObserver;
 
   constructor(options: ViewerOptions) {
     this.options = extend(
@@ -107,10 +108,18 @@ class ToastUIEditorViewer {
 
     const { el, initialValue, theme } = this.options;
     const existingHTML = el.innerHTML;
+    el.classList.add(cls('container'));
 
     if (theme !== 'light') {
       el.classList.add(cls(theme));
     }
+    this.eventEmitter.listen('changeTheme', (newTheme: string) => {
+      if (this.options.theme !== newTheme) {
+        el.classList.remove(cls(theme));
+        el.classList.add(cls(newTheme));
+        this.options.theme = newTheme;
+      }
+    });
     el.innerHTML = '';
 
     this.toastMark = new ToastMark('', {
@@ -134,6 +143,7 @@ class ToastUIEditorViewer {
     }
 
     el.appendChild(this.preview.previewContent);
+    this.initThemeObserver();
     this.eventEmitter.emit('load', this);
   }
 
@@ -174,6 +184,45 @@ class ToastUIEditorViewer {
   }
 
   /**
+   * Set theme
+   * @param theme - theme name, can be 'light', 'dark', or custom theme name, will add class name toastui-editor-{theme}
+   */
+  setTheme(theme: string) {
+    if (this.options.theme !== theme) {
+      this.eventEmitter.emit('changeTheme', theme);
+    }
+  }
+
+  private initThemeObserver() {
+    // Check if there's already a theme attribute on the document element
+    const initialTheme = document.documentElement.getAttribute('data-toastui-editor-theme');
+    if (initialTheme && initialTheme !== this.options.theme) {
+      this.setTheme(initialTheme);
+    }
+
+    this.themeObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'data-toastui-editor-theme') {
+          const target = mutation.target as HTMLElement;
+          const newTheme = target.getAttribute('data-toastui-editor-theme');
+          if (newTheme && newTheme !== this.options.theme) {
+            this.setTheme(newTheme);
+          }
+        }
+      }
+    });
+
+    this.themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-toastui-editor-theme']
+    });
+  }
+
+  private removeThemeObserver() {
+    this.themeObserver?.disconnect();
+  }
+
+  /**
    * Bind eventHandler to event type
    * @param {EventTypes} type Event type
    * @param {function} handler Event handler
@@ -206,6 +255,7 @@ class ToastUIEditorViewer {
   destroy() {
     off(this.preview.el!, 'mousedown', this.toggleTask.bind(this));
     this.preview.destroy();
+    this.removeThemeObserver();
     this.eventEmitter.emit('destroy');
   }
 

@@ -97,6 +97,8 @@ export class Viewer {
 
   setMarkdown(markdown: string): void;
 
+  setTheme(theme: string): void;
+
   on(type: string, handler: Handler): void;
 
   off(type: string): void;

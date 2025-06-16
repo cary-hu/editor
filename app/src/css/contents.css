@@ -39,6 +39,8 @@ table.ProseMirror-selectednode {
   padding: 0;
   font-family: var(--toastui-editor-font-family);
   z-index: 20;
+  background-color: var(--toastui-editor-bg-color);
+  color: var(--toastui-editor-color);
 }
 
 .toastui-editor-contents *:not(table) {
