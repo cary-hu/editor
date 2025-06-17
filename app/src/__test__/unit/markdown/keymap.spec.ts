@@ -257,7 +257,7 @@ describe('extend block quote keymap', () => {
 
   it('should undo extend the block quote properly', () => {
     const input = '> block\nparagraph';
-    const result = '<blockquote><p>block<br>paragraph</p></blockquote>';
+    const result = '<blockquote data-block-quote-type=\"default\"><p>block<br>paragraph</p></blockquote>';
 
     mde.setMarkdown(input);
     mde.setSelection([1, 6], [1, 6]);
