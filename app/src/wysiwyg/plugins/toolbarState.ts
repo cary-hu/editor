@@ -77,6 +77,8 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
 
   // Check if we're in a code block, table, or have inline code mark - if so, disable blockquote
   let blockQuoteDisabled = false;
+  // Track if we're inside a table to disable certain toolbar items
+  let insideTable = false;
 
   // Check for code blocks and tables: look for nodes with code: true in schema, codeBlock type, or table-related types
   for (let d = $from.depth; d >= 0; d -= 1) {
@@ -85,16 +87,20 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
     // Disable blockquote in code blocks
     if (
       node.type.spec.code === true ||
-      node.type.name === 'codeBlock' ||
+      node.type.name === 'codeBlock'
+    ) {
+      blockQuoteDisabled = true;
+    }
+    // Disable blockquote in table nodes and track table context
+    if (
       node.type.name === 'table' ||
       node.type.name === 'tableHead' ||
       node.type.name === 'tableBody' ||
       node.type.name === 'tableRow' ||
       node.type.name === 'tableHeadCell' ||
-      node.type.name === 'tableBodyCell'
-    ) {
+      node.type.name === 'tableBodyCell') {
       blockQuoteDisabled = true;
-      break;
+      insideTable = true;
     }
   }
 
@@ -133,6 +139,19 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
       disabled: blockQuoteDisabled,
       bqType: currentBqType,
     };
+  }
+
+  // Disable specific toolbar items when inside a table
+  if (insideTable) {
+    // Disable heading, table, hrline, and codeblock
+    const disableKeys: ToolbarStateKeys[] = ['heading', 'table', 'thematicBreak', 'codeBlock'];
+    disableKeys.forEach((key) => {
+      if (toolbarState[key]) {
+        toolbarState[key] = { ...toolbarState[key], disabled: true };
+      } else {
+        toolbarState[key] = { active: false, disabled: true };
+      }
+    });
   }
 
   return toolbarState;
