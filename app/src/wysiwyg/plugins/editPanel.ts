@@ -10,6 +10,9 @@ export abstract class EditPanel {
     protected editorModeSwitchBar?: HTMLElement;
 
     protected isPanelReady = false;
+    
+    // Static manager to ensure only one edit panel is visible at a time
+    private static activePanel: EditPanel | null = null;
 
     constructor(view: EditorView, eventEmitter: Emitter) {
         this.view = view;
@@ -33,8 +36,27 @@ export abstract class EditPanel {
         });
     }
 
+    /**
+     * Register this panel as the active one and hide any other active panels
+     */
+    protected setAsActivePanel(): void {
+        if (EditPanel.activePanel && EditPanel.activePanel !== this) {
+            EditPanel.activePanel.hide();
+        }
+        EditPanel.activePanel = this;
+    }
+
+    /**
+     * Unregister this panel as the active one
+     */
+    protected unsetAsActivePanel(): void {
+        if (EditPanel.activePanel === this) {
+            EditPanel.activePanel = null;
+        }
+    }
     protected abstract preparePanel(): void;
     protected abstract destroy(): void;
+    protected abstract hide(): void;
     protected abstract documentChanged(): void;
     protected abstract updatePosition(): void;
 }

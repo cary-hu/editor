@@ -163,7 +163,7 @@ class ImageEditPanelView extends EditPanel {
   private showPanel(imageElement: HTMLElement, imageNode: any, imagePos: number) {
     // Hide existing dialog if any
     this.hide();
-
+    this.setAsActivePanel();
     this.state.imageElement = imageElement;
     this.state.imageNode = imageNode;
     this.state.imagePos = imagePos;
@@ -173,7 +173,7 @@ class ImageEditPanelView extends EditPanel {
     this.state.isVisible = true;
   }
 
-  private hide() {
+  protected hide() {
     if (this.state.dialog) {
       this.state.dialog.remove();
       this.state.dialog = null;
@@ -647,6 +647,9 @@ class ImageEditPanelView extends EditPanel {
     this.currentMousePosition = null;
 
     this.hide();
+
+    // Ensure we unregister as active panel
+    this.unsetAsActivePanel();
   }
 
   private getCurrentMousePosition(): { x: number; y: number } | null {

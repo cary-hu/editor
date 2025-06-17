@@ -59,7 +59,9 @@ class TableEditPanelView extends EditPanel {
     if (!tableElement) {
       return;
     }
-
+    if (this.state.activeEditType !== null) {
+      return;
+    }
     if (this.state.tableElement !== tableElement) {
       this.showPanel(tableElement);
     }
@@ -82,7 +84,7 @@ class TableEditPanelView extends EditPanel {
       const hoveredElement = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement;
 
       if (hoveredElement && !this.isTableOrPanelElement(hoveredElement)) {
-        this.hide();
+        this.hideIfNotEditing();
       }
     }
   }
@@ -94,7 +96,7 @@ class TableEditPanelView extends EditPanel {
   private showPanel(tableElement: HTMLElement) {
     // Hide existing panel if any
     this.hide();
-
+    this.setAsActivePanel();
     this.state.tableElement = tableElement;
     this.lastShowTime = Date.now(); // Record when panel was shown
     this.createPanel();
@@ -104,21 +106,11 @@ class TableEditPanelView extends EditPanel {
     this.state.isVisible = true;
   }
 
-  protected hide() {
+  private hideIfNotEditing() {
     if (this.state.activeEditType !== null) {
       return;
     }
-    if (this.state.panel) {
-      this.state.panel.remove();
-      this.state.panel = null;
-    }
-    if (this.state.overlay) {
-      this.state.overlay.remove();
-      this.state.overlay = null;
-    }
-    this.hideToolbar();
-    this.state.isVisible = false;
-    this.state.tableElement = null;
+    this.hide();
   }
 
   protected updatePosition() {
@@ -146,9 +138,6 @@ class TableEditPanelView extends EditPanel {
     // Store current table element
     const currentTable = this.state.tableElement;
 
-    // Force hide current panel (bypass activeEditType check)
-    this.forceHide();
-
     // Show panel again with updated structure
     this.showPanel(currentTable);
   }
@@ -156,7 +145,7 @@ class TableEditPanelView extends EditPanel {
   /**
    * Force hide the panel without checking activeEditType
    */
-  private forceHide() {
+  protected hide() {
     if (this.state.panel) {
       this.state.panel.remove();
       this.state.panel = null;
@@ -197,7 +186,7 @@ class TableEditPanelView extends EditPanel {
 
       // Hide panel if not moving to the table or other panel elements
       if (!relatedTarget || !this.isTableOrPanelElement(relatedTarget)) {
-        this.hide();
+        this.hideIfNotEditing();
       }
     });
 
@@ -264,7 +253,7 @@ class TableEditPanelView extends EditPanel {
     dispatch!(tr.setSelection(cellSelection));
     // Use event emitter to execute the removeTable command
     this.eventEmitter.emit('command', 'removeTable');
-    this.hide();
+    this.hideIfNotEditing();
   }
 
   private addRow(rowIndex: number) {
@@ -759,7 +748,9 @@ class TableEditPanelView extends EditPanel {
     this.view.dom.removeEventListener('mouseenter', this.handleTableHover, true);
     this.view.dom.removeEventListener('mouseleave', this.handleTableLeave, true);
     document.removeEventListener('click', this.handleDocumentClick, true);
-    this.hide();
+    this.hideIfNotEditing();
+    // Ensure we unregister as active panel
+    this.unsetAsActivePanel();
   }
 
   private createCellEditControls() {
@@ -1129,7 +1120,7 @@ class TableEditPanelView extends EditPanel {
       return;
     }
 
-    this.hide();
+    this.hideIfNotEditing();
   }
 
   /**
