@@ -84,10 +84,9 @@
 .toastui-editor-defaultUI .toastui-editor-md-tab-container {
   float: left;
   height: 45px;
-  font-size: 13px;
-  background: #f7f9fc;
+  font-size: 12px;
+  background: var(--toastui-editor-bg-color);
   border-bottom: 1px solid var(--toastui-editor-border-color);
-  border-top-left-radius: 3px;
 }
 
 .toastui-editor-md-tab-container .toastui-editor-tabs {
@@ -100,24 +99,26 @@
   width: 70px;
   height: 33px;
   line-height: 33px;
-  font-size: 12px;
   font-weight: 500;
   text-align: center;
-  background: #eaedf1;
-  color: #969aa5;
+  background: var(--toastui-editor-secondary-bg-color);
+  color: var(--toastui-editor-color);
   cursor: pointer;
-  border: 1px solid #dadde6;
-  border-radius: 4px 4px 0 0;
+  border: 1px solid var(--toastui-editor-border-color);
   box-sizing: border-box;
-  margin-top: 13px;
+  margin-top: 12px;
+}
+
+.toastui-editor-md-tab-container .tab-item:first-of-type {
+  border-top-left-radius: var(--toastui-editor-border-radius);
+}
+
+.toastui-editor-md-tab-container .tab-item:last-of-type {
+  border-top-right-radius: var(--toastui-editor-border-radius);
 }
 
 .toastui-editor-md-tab-container .tab-item.active {
-  border-bottom: 1px solid #fff;
-  background-color: #fff;
-  color: #555;
-}
-
-.toastui-editor-md-tab-container .tab-item:last-child {
-  margin-left: -1px;
+  border-bottom: 1px solid var(--toastui-editor-mode-switch-bg-color-active);
+  background-color: var(--toastui-editor-mode-switch-bg-color-active);
+  color: var(--toastui-editor-color);
 }
