@@ -33,6 +33,88 @@ function convertMsoTableToCompletedTable(html: string) {
   return html;
 }
 
+function removeUnwantedSpans(html: string): string {
+  const container = document.createElement('div');
+  container.innerHTML = html;
+
+  // Find all span elements in the pasted content
+  const spans = container.querySelectorAll('span');
+
+  spans.forEach(span => {
+    let shouldRemove = false;
+
+    // Check if span has no attributes at all
+    if (span.attributes.length === 0) {
+      shouldRemove = true;
+    }
+    // Check if span has only style attributes
+    else if (span.attributes.length === 1 && span.hasAttribute('style')) {
+      shouldRemove = true;
+    }
+    // Check if span has only inline styles that don't provide semantic meaning
+    else if (span.hasAttribute('style') && !hasSemanticAttributes(span)) {
+      const styleAttr = span.getAttribute('style') || '';
+      const hasOnlyPresentationalStyles = styleAttr && (
+        styleAttr.includes('color:') ||
+        styleAttr.includes('font-size:') ||
+        styleAttr.includes('font-family:') ||
+        styleAttr.includes('background-color:') ||
+        styleAttr.includes('font-weight:') ||
+        styleAttr.includes('text-decoration:') ||
+        styleAttr.includes('font-style:') ||
+        styleAttr.includes('text-align:')
+      );
+
+      if (hasOnlyPresentationalStyles) {
+        shouldRemove = true;
+      }
+    }
+
+    // Remove span if it meets the criteria
+    if (shouldRemove) {
+      // Move all child nodes to parent and remove the span
+      while (span.firstChild) {
+        span.parentNode?.insertBefore(span.firstChild, span);
+      }
+      span.remove();
+    }
+  });
+
+  return container.innerHTML;
+}
+
+function hasSemanticAttributes(element: Element): boolean {
+  // List of attributes that provide semantic meaning or functionality
+  const semanticAttributes = [
+    'class', 'id', 'data-', 'role', 'aria-', 'title', 'lang',
+    'dir', 'tabindex', 'contenteditable', 'draggable', 'hidden',
+    'spellcheck', 'translate', 'itemscope', 'itemtype', 'itemprop'
+  ];
+
+  for (let i = 0; i < element.attributes.length; i++) {
+    const attrName = element.attributes[i].name.toLowerCase();
+
+    // Skip style attribute as it's handled separately
+    if (attrName === 'style') {
+      continue;
+    }
+
+    // Check if attribute name matches any semantic attribute
+    const hasSemanticAttr = semanticAttributes.some(semanticAttr => {
+      if (semanticAttr.endsWith('-')) {
+        return attrName.startsWith(semanticAttr);
+      }
+      return attrName === semanticAttr;
+    });
+
+    if (hasSemanticAttr) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export function changePastedHTML(html: string) {
   html = getContentBetweenFragmentComments(html);
   html = convertMsoTableToCompletedTable(html);
@@ -40,6 +122,9 @@ export function changePastedHTML(html: string) {
   if (isFromMso(html)) {
     html = convertMsoParagraphsToList(html);
   }
+
+  // Remove unwanted span elements with inline styles
+  html = removeUnwantedSpans(html);
 
   return html;
 }
