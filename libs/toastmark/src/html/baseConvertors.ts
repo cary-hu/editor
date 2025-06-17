@@ -173,7 +173,7 @@ export const baseConvertors: HTMLConvertorMap = {
 
   link(node: Node, { entering }) {
     if (entering) {
-      const { title, destination } = node as LinkNode;
+      const { title, destination, target, rel } = node as LinkNode;
 
       return {
         type: 'openTag',
@@ -181,6 +181,8 @@ export const baseConvertors: HTMLConvertorMap = {
         attributes: {
           href: escapeXml(destination!),
           ...(title && { title: escapeXml(title) }),
+          ...(target && { target: escapeXml(target) }),
+          ...(rel && { rel: escapeXml(rel) }),
         },
       };
     }

@@ -160,6 +160,8 @@ export interface LinkMdNode extends MdNode {
   title: string | null;
   extendedAutolink: boolean;
   lastChild: MdNode;
+  target: string | null;
+  rel: string | null;
 }
 
 export type ImageVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';

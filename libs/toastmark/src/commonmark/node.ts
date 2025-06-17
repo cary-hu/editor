@@ -246,6 +246,8 @@ export class LinkNode extends Node implements LinkMdNode {
   title: string | null = null;
   extendedAutolink = false;
   lastChild!: Node;
+  target: string | null = null;
+  rel: string | null = null;
 }
 
 export type ImageVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';

@@ -47,10 +47,10 @@ const rePunctuation = new RegExp(
 
 const reLinkTitle = new RegExp(
   `^(?:"(${ESCAPED_CHAR}|[^"\\x00])*"` +
-    `|` +
-    `'(${ESCAPED_CHAR}|[^'\\x00])*'` +
-    `|` +
-    `\\((${ESCAPED_CHAR}|[^()\\x00])*\\))`
+  `|` +
+  `'(${ESCAPED_CHAR}|[^'\\x00])*'` +
+  `|` +
+  `\\((${ESCAPED_CHAR}|[^()\\x00])*\\))`
 );
 
 const reLinkDestinationBraces = /^(?:<(?:[^<>\n\\\x00]|\\.)*>)/;
@@ -69,6 +69,9 @@ const reFinalSpace = / *$/;
 const reInitialSpace = /^ */;
 const reSpaceAtEndOfLine = /^ *(?:\n|$)/;
 const reLinkLabel = /^\[(?:[^\\\[\]]|\\.){0,1000}\]/;
+
+// Enhanced attributes regex for parsing {:target="_blank" rel="noopener"} syntax
+const reEnhancedAttrs = /^\{:([^}]+)\}/;
 
 // Matches a string of non-special characters.
 const reMain = /^[^\n`\[\]\\!<&*_'"~$]+/m;
@@ -633,6 +636,30 @@ export class InlineParser {
     return normalizeURI(unescapeString(res.substr(1, res.length - 2)));
   }
 
+  // Attempt to parse enhanced attributes like {:target="_blank" rel="noopener"}
+  parseEnhancedAttrs() {
+    const attrs = this.match(reEnhancedAttrs);
+    if (attrs === null) {
+      return null;
+    }
+
+    const result: { target?: string; rel?: string } = {};
+    const attrStr = attrs.slice(2, -1); // Remove {: and }
+
+    // Simple regex to parse target and rel attributes
+    const targetMatch = attrStr.match(/target\s*=\s*["']([^"']*)["']/);
+    const relMatch = attrStr.match(/rel\s*=\s*["']([^"']*)["']/);
+
+    if (targetMatch) {
+      result.target = targetMatch[1];
+    }
+    if (relMatch) {
+      result.rel = relMatch[1];
+    }
+
+    return Object.keys(result).length > 0 ? result : null;
+  }
+
   // Attempt to parse a link label, returning number of characters parsed.
   parseLinkLabel() {
     const m = this.match(reLinkLabel);
@@ -682,6 +709,7 @@ export class InlineParser {
   parseCloseBracket(block: BlockNode) {
     let dest: string | null = null;
     let title: string | null = null;
+    let enhancedAttrs: { target?: string; rel?: string } | null = null;
     let matched = false;
 
     this.pos += 1;
@@ -724,6 +752,11 @@ export class InlineParser {
         this.peek() === C_CLOSE_PAREN
       ) {
         this.pos += 1;
+
+        // Check for enhanced attributes after the closing parenthesis
+        this.spnl();
+        enhancedAttrs = this.parseEnhancedAttrs();
+
         matched = true;
       } else {
         this.pos = savepos;
@@ -764,6 +797,17 @@ export class InlineParser {
       const node = createNode(isImage ? 'image' : 'link') as LinkNode;
       node.destination = dest;
       node.title = title || '';
+
+      // Set enhanced attributes if they exist
+      if (enhancedAttrs) {
+        if (enhancedAttrs.target) {
+          node.target = enhancedAttrs.target;
+        }
+        if (enhancedAttrs.rel) {
+          node.rel = enhancedAttrs.rel;
+        }
+      }
+
       node.sourcepos = [opener.startpos, this.sourcepos(this.pos)];
 
       let tmp = opener.node.next;
