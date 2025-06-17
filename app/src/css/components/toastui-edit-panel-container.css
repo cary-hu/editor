@@ -6,10 +6,11 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
+    overflow: hidden;
 }
 
 .toastui-edit-panel-container .toastui-editor-edit-dialog {
-    position: fixed;
+    position: absolute;
     pointer-events: auto;
     background-color: var(--toastui-editor-secondary-bg-color);
     color: var(--toastui-editor-color);
@@ -72,7 +73,7 @@
 
 /* table edit panel */
 .toastui-editor-table-edit-panel {
-    position: fixed;
+    position: absolute;
     z-index: 25;
     box-sizing: border-box;
     pointer-events: none;
