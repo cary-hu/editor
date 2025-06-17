@@ -79,8 +79,10 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
   let blockQuoteDisabled = false;
   // Track if we're inside a table to disable certain toolbar items
   let insideTable = false;
+  // Track if we're inside a list to disable certain toolbar items
+  let insideList = false;
 
-  // Check for code blocks and tables: look for nodes with code: true in schema, codeBlock type, or table-related types
+  // Check for code blocks, tables, and lists: look for nodes with code: true in schema, codeBlock type, table-related types, or list types
   for (let d = $from.depth; d >= 0; d -= 1) {
     const node = $from.node(d);
 
@@ -101,6 +103,15 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
       node.type.name === 'tableBodyCell') {
       blockQuoteDisabled = true;
       insideTable = true;
+    }
+    // Track if we're inside a list
+    if (
+      node.type.name === 'bulletList' ||
+      node.type.name === 'orderedList' ||
+      node.type.name === 'taskList' ||
+      node.type.name === 'listItem'
+    ) {
+      insideList = true;
     }
   }
 
@@ -145,6 +156,19 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
   if (insideTable) {
     // Disable heading, table, hrline, and codeblock
     const disableKeys: ToolbarStateKeys[] = ['heading', 'table', 'thematicBreak', 'codeBlock'];
+    disableKeys.forEach((key) => {
+      if (toolbarState[key]) {
+        toolbarState[key] = { ...toolbarState[key], disabled: true };
+      } else {
+        toolbarState[key] = { active: false, disabled: true };
+      }
+    });
+  }
+
+  // Disable specific toolbar items when inside a list
+  if (insideList) {
+    // Disable heading, table, and codeblock
+    const disableKeys: ToolbarStateKeys[] = ['heading', 'table', 'codeBlock', 'thematicBreak'];
     disableKeys.forEach((key) => {
       if (toolbarState[key]) {
         toolbarState[key] = { ...toolbarState[key], disabled: true };
