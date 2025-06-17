@@ -66,24 +66,32 @@ export class ListItem extends NodeSchema {
       const { listItem } = schema.nodes;
       const { parent } = $from;
       const listItemParent = $from.node(-1);
-
+      
+      // Check if the current paragraph is empty and the cursor is in an empty selection
       if (empty && !parent.childCount && listItemParent.type === listItem) {
-        // move to previous sibling list item when the current list item is not top list item
-        if ($from.index(-2) >= 1) {
-          // should subtract '1' for considering tag length(<li>)
-          tr.delete($from.start(-1) - 1, $from.end(-1));
-          dispatch!(tr);
-          return true;
-        }
+        // Check if the entire list item is empty (only contains one empty paragraph)
+        const isListItemEmpty = listItemParent.childCount === 1 && 
+          listItemParent.firstChild?.type.name === 'paragraph' &&
+          listItemParent.firstChild?.content.size === 0;
+        
+        if (isListItemEmpty) {
+          // move to previous sibling list item when the current list item is not top list item
+          if ($from.index(-2) >= 1) {
+            // should subtract '1' for considering tag length(<li>)
+            tr.delete($from.start(-1) - 1, $from.end(-1));
+            dispatch!(tr);
+            return true;
+          }
 
-        const grandParentListItem = $from.node(-3);
+          const grandParentListItem = $from.node(-3);
 
-        // move to parent list item when the current list item is top list item
-        if (grandParentListItem.type === listItem) {
-          // should subtract '1' for considering tag length(<ul>)
-          tr.delete($from.start(-2) - 1, $from.end(-1));
-          dispatch!(tr);
-          return true;
+          // move to parent list item when the current list item is top list item
+          if (grandParentListItem.type === listItem) {
+            // should subtract '1' for considering tag length(<ul>)
+            tr.delete($from.start(-2) - 1, $from.end(-1));
+            dispatch!(tr);
+            return true;
+          }
         }
       }
       return false;
