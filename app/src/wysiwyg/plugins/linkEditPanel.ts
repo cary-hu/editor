@@ -492,40 +492,16 @@ class LinkEditPanelView extends EditPanel {
 
     private deleteLink() {
         if (this.state.linkPos === null) return;
-
         const { tr } = this.view.state;
-        const resolvedPos = tr.doc.resolve(this.state.linkPos);
+        const node = tr.doc.nodeAt(this.state.linkPos);
 
-        // Find the link mark
-        const linkMark = resolvedPos.marks().find(mark => mark.type.name === 'link');
-        if (!linkMark) return;
-
-        // Find the range of the link mark
+        if (!node) return;
         let start = this.state.linkPos;
-        let end = this.state.linkPos;
-
-        // Find the start of the link mark
-        for (let i = resolvedPos.pos - 1; i >= 0; i--) {
-            const pos = tr.doc.resolve(i);
-            if (pos.marks().some(mark => mark === linkMark)) {
-                start = i;
-            } else {
-                break;
-            }
-        }
-
-        // Find the end of the link mark
-        for (let i = resolvedPos.pos; i < tr.doc.content.size; i++) {
-            const pos = tr.doc.resolve(i);
-            if (pos.marks().some(mark => mark === linkMark)) {
-                end = i + 1;
-            } else {
-                break;
-            }
-        }
-
-        // Remove the link mark
+        let end = start + node.nodeSize;
+        const linkMark = node.marks.find(mark => mark.type.name === 'link');
+        if (!linkMark) return;
         tr.removeMark(start, end, linkMark);
+        this.state.tempChanges = {};
         this.view.dispatch(tr);
         this.hide();
     }
