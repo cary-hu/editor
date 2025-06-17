@@ -63,7 +63,7 @@
     border-color: transparent;
 }
 
-.toastui-editor-image-edit-dialog .dialog-actions {
+.toastui-editor-edit-dialog .dialog-actions {
     display: flex;
     gap: 8px;
     justify-content: center;
@@ -287,6 +287,7 @@
 }
 
 /* image edit dialog */
+.toastui-editor-edit-dialog .presets-button-group,
 .toastui-editor-image-edit-dialog .preset-sizes,
 .toastui-editor-image-edit-dialog .vertical-align-controls,
 .toastui-editor-image-edit-dialog .size-controls {
@@ -294,6 +295,7 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
+    margin-top: 8px;
 }
 
 .toastui-edit-panel-container .toastui-editor-edit-dialog .save-btn:hover {
@@ -316,7 +318,7 @@
     color: var(--toastui-editor-color);
 }
 
-.toastui-editor-image-edit-dialog .current-value {
+.toastui-editor-edit-dialog .current-value {
     font-size: 11px;
     color: var(--toastui-editor-color);
     margin-bottom: 4px;

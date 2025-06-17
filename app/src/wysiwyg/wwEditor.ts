@@ -13,6 +13,7 @@ import { tableSelection } from './plugins/selection/tableSelection';
 import { tableContextMenu } from './plugins/tableContextMenu';
 import { tableEditPanel } from './plugins/tableEditPanel';
 import { imageEditPanel } from './plugins/imageEditPanel';
+import { linkEditPanel } from './plugins/linkEditPanel';
 import { task } from './plugins/task';
 import { toolbarStateHighlight } from './plugins/toolbarState';
 
@@ -115,6 +116,7 @@ export default class WysiwygEditor extends EditorBase {
       tableContextMenu(this.eventEmitter),
       tableEditPanel(this.eventEmitter),
       imageEditPanel(this.eventEmitter),
+      linkEditPanel(this.eventEmitter),
       task(),
       toolbarStateHighlight(this.eventEmitter),
       ...this.createPluginProps(),
