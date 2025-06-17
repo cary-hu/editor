@@ -122,6 +122,11 @@ export class CodeBlockView implements NodeView {
         this.reset();
       }
     });
+    window.addEventListener('scroll', () => {
+      if (this.input) {
+        this.reset();
+      }
+    });
   }
 
   private handleMousedown = (ev: MouseEvent) => {
