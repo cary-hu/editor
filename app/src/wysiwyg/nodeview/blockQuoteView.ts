@@ -105,17 +105,22 @@ export class BlockQuoteView implements NodeView {
     this.view.dom.parentElement!.appendChild(wrapper);
 
     const wrapperWidth = wrapper.clientWidth;
-    const wrapperHeight = wrapper.clientHeight;    // Get viewport and container dimensions
+    const wrapperHeight = wrapper.clientHeight;
+
+    // Get viewport and editor container dimensions
     const viewportHeight = window.innerHeight;
     const viewportWidth = window.innerWidth;
     const containerRect = this.view.dom.parentElement!.getBoundingClientRect();
+    const editorRect = this.view.dom.getBoundingClientRect();
 
     // Find mode switch element and get its height
     const modeSwitch = this.view.dom.closest(`.${cls('container')}`)!.querySelector(`.${cls('mode-switch')}`) as HTMLElement;
     const modeSwitchHeight = modeSwitch ? modeSwitch.getBoundingClientRect().height : 28; // fallback to 28px
 
-    // Calculate available space considering mode switch
-    const effectiveViewportBottom = viewportHeight - modeSwitchHeight - 10; // 10px padding
+    // Calculate effective bottom boundary based on editor DOM and mode switch
+    const editorBottom = editorRect.bottom;
+    const modeSwitchTop = viewportHeight - modeSwitchHeight;
+    const effectiveViewportBottom = Math.min(editorBottom, modeSwitchTop) - 10; // 10px padding
 
     // Calculate optimal position
     let adjustedTop = top - 10;
@@ -128,11 +133,11 @@ export class BlockQuoteView implements NodeView {
       adjustedTop = top - wrapperHeight - 10;
     }
 
-    // Check top boundary - ensure dropdown doesn't go above container
-    const minTop = containerRect.top + 10;
+    // Check top boundary - ensure dropdown doesn't go above editor container
+    const minTop = Math.max(containerRect.top, editorRect.top) + 10;
     if (adjustedTop < minTop) {
       // If showing above would go too high, find best position
-      const spaceAbove = top - containerRect.top;
+      const spaceAbove = top - Math.max(containerRect.top, editorRect.top);
       const spaceBelow = effectiveViewportBottom - top;
 
       if (spaceBelow >= wrapperHeight + 20) {
@@ -190,6 +195,11 @@ export class BlockQuoteView implements NodeView {
         this.reset();
       }
     });
+    window.addEventListener('scroll', () => {
+      if (this.select) {
+        this.reset();
+      }
+    })
   }
 
   private handleMousedown = (ev: MouseEvent) => {
