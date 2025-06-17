@@ -4,12 +4,13 @@ import { Emitter } from '@t/event';
 import i18n from '@/i18n/i18n';
 import { cls } from '@/utils/dom';
 import { EditPanel } from './editPanel';
+import { Mark } from 'prosemirror-model';
 
 interface LinkEditPanelState {
     isVisible: boolean;
     linkElement: HTMLElement | null;
     dialog: HTMLElement | null;
-    linkNode: any | null;
+    linkNode: Mark | null;
     linkPos: number | null;
     tempChanges: {
         linkUrl?: string;
@@ -81,47 +82,19 @@ class LinkEditPanelView extends EditPanel {
         if (this.state.linkElement === linkElement) {
             return;
         }
-        // Find the link mark in the ProseMirror document
-        // We need to find the text content within the link element
-        let linkMark = null;
-        let linkPos = null;
-
-        // Try to find text nodes within the link element
-        const walker = document.createTreeWalker(
-            linkElement,
-            NodeFilter.SHOW_TEXT
-        );
-
-        let textNode = walker.nextNode();
-        while (textNode && !linkMark) {
-            const pos = this.view.posAtDOM(textNode, 0);
-            if (pos !== null) {
-                const resolvedPos = this.view.state.doc.resolve(pos);
-                linkMark = resolvedPos.marks().find(mark => mark.type.name === 'link');
-                if (linkMark) {
-                    linkPos = pos;
-                    break;
-                }
-            }
-            textNode = walker.nextNode();
+        const pos = this.view.posAtDOM(linkElement, 0);
+        if (pos === null) {
+            return;
         }
 
-        // If no text nodes found, try the element itself with different offset
-        if (!linkMark) {
-            const pos = this.view.posAtDOM(linkElement, 0);
-            if (pos !== null) {
-                // Try position after the element start
-                const resolvedPos = this.view.state.doc.resolve(pos + 1);
-                linkMark = resolvedPos.marks().find(mark => mark.type.name === 'link');
-                if (linkMark) {
-                    linkPos = pos + 1;
-                }
-            }
+        const node = this.view.state.doc.nodeAt(pos);
+        if (!node || !node.marks) {
+            return;
         }
+        const linkMark = node?.marks.find(mark => mark.type.name === 'link');
 
-
-        if (linkMark && linkPos !== null) {
-            this.showPanel(linkElement, linkMark, linkPos);
+        if (linkMark && pos !== null) {
+            this.showPanel(linkElement, linkMark, pos);
         }
     };
 
@@ -167,26 +140,10 @@ class LinkEditPanelView extends EditPanel {
     };
 
     private isLinkOrPanelElement(element: HTMLElement): boolean {
-        return !!(
-            element.closest('a[href]') ||
-            element.closest(`.${cls('link-edit-dialog')}`) ||
-            element.classList.contains(cls('link-edit-dialog')) ||
-            element.classList.contains('dialog-section') ||
-            element.classList.contains('dialog-label') ||
-            element.classList.contains('text-input') ||
-            element.classList.contains('url-input') ||
-            element.classList.contains('target-input') ||
-            element.classList.contains('rel-input') ||
-            element.classList.contains('save-btn') ||
-            element.classList.contains('reset-btn') ||
-            element.classList.contains('delete-btn') ||
-            element.classList.contains('preset-btn') ||
-            element.classList.contains(cls('edit-link-btn')) ||
-            element.classList.contains(cls('delete-link-btn'))
-        );
+        return !!(element.closest('a[href]') || element.closest(`.${cls('link-edit-dialog')}`));
     }
 
-    private showPanel(linkElement: HTMLElement, linkMark: any, linkPos: number) {
+    private showPanel(linkElement: HTMLElement, linkMark: Mark, linkPos: number) {
         // Hide existing dialog if any
         this.hide();
         this.setAsActivePanel();
@@ -461,36 +418,13 @@ class LinkEditPanelView extends EditPanel {
         if (this.state.linkPos === null) return;
 
         const { tr, schema } = this.view.state;
-        const resolvedPos = tr.doc.resolve(this.state.linkPos);
+        const node = tr.doc.nodeAt(this.state.linkPos);
 
-        // Find the range of the link mark
-        const linkMark = resolvedPos.marks().find(mark => mark.type.name === 'link');
-        if (!linkMark) return;
-
-        // Find the start and end of the link mark
+        if (!node) return;
         let start = this.state.linkPos;
-        let end = this.state.linkPos;
-
-        // Find the start of the link mark
-        for (let i = resolvedPos.pos - 1; i >= 0; i--) {
-            const pos = tr.doc.resolve(i);
-            if (pos.marks().some(mark => mark === linkMark)) {
-                start = i;
-            } else {
-                break;
-            }
-        }
-
-        // Find the end of the link mark
-        for (let i = resolvedPos.pos; i < tr.doc.content.size; i++) {
-            const pos = tr.doc.resolve(i);
-            if (pos.marks().some(mark => mark === linkMark)) {
-                end = i + 1;
-            } else {
-                break;
-            }
-        }
-
+        let end = start + node.nodeSize;
+        const linkMark = node.marks.find(mark => mark.type.name === 'link');
+        if (!linkMark) return;
         // Create new attributes for the link
         const newAttrs = { ...linkMark.attrs };
 
@@ -503,17 +437,15 @@ class LinkEditPanelView extends EditPanel {
         if ('rel' in this.state.tempChanges) {
             newAttrs.rel = this.state.tempChanges.rel;
         }
-
-        // Remove the old link mark and add the new one
         tr.removeMark(start, end, linkMark);
         const newLinkMark = schema.marks.link.create(newAttrs);
-        tr.addMark(start, end, newLinkMark);
-
-        // If text content changed, replace the text
         if ('linkText' in this.state.tempChanges && this.state.tempChanges.linkText !== undefined) {
             const textNode = schema.text(this.state.tempChanges.linkText, [newLinkMark]);
             tr.replaceWith(start, end, textNode);
+            end = start + textNode.nodeSize;
         }
+
+        tr.addMark(start, end, newLinkMark);
 
         this.view.dispatch(tr);
 
