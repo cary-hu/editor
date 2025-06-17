@@ -245,6 +245,8 @@ export interface LinkMdNode extends MdNode {
   title: string | null;
   extendedAutolink: boolean;
   lastChild: MdNode;
+  target: string | null;
+  rel: string | null;
 }
 
 export interface CodeMdNode extends MdNode {

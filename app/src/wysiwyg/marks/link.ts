@@ -27,6 +27,8 @@ export class Link extends Mark {
       attrs: {
         linkUrl: { default: '' },
         title: { default: null },
+        target: { default: null },
+        rel: { default: null },
         rawHTML: { default: null },
         ...getDefaultCustomAttrs(),
       },
@@ -39,11 +41,15 @@ export class Link extends Mark {
               .firstChild as HTMLElement;
             const href = sanitizedDOM.getAttribute('href') || '';
             const title = sanitizedDOM.getAttribute('title') || '';
+            const target = sanitizedDOM.getAttribute('target') || null;
+            const rel = sanitizedDOM.getAttribute('rel') || null;
             const rawHTML = sanitizedDOM.getAttribute('data-raw-html');
 
             return {
               linkUrl: href,
               title,
+              target,
+              rel,
               ...(rawHTML && { rawHTML }),
             };
           },
@@ -53,6 +59,9 @@ export class Link extends Mark {
         attrs.rawHTML || 'a',
         {
           href: attrs.linkUrl,
+          ...(attrs.title && { title: attrs.title }),
+          ...(attrs.target && { target: attrs.target }),
+          ...(attrs.rel && { rel: attrs.rel }),
           ...this.linkAttributes,
           ...getCustomAttrs(attrs),
         },
@@ -62,12 +71,16 @@ export class Link extends Mark {
 
   private addLink(): EditorCommand {
     return (payload) => (state, dispatch) => {
-      const { linkUrl, linkText = '' } = payload!;
+      const { linkUrl, linkText = '', target, rel } = payload!;
       const { schema, tr, selection } = state;
       const { empty, from, to } = selection;
 
       if (from && to && linkUrl) {
-        const attrs = { linkUrl };
+        const attrs: any = { linkUrl };
+        
+        if (target) attrs.target = target;
+        if (rel) attrs.rel = rel;
+        
         const mark = schema.mark('link', attrs);
 
         if (empty && linkText) {

@@ -181,12 +181,14 @@ const toWwConvertors: ToWwConvertorMap = {
 
   link(state, node, { entering }, customAttrs) {
     const { link } = state.schema.marks;
-    const { destination, title } = node as LinkMdNode;
+    const { destination, title, target, rel } = node as LinkMdNode;
 
     if (entering) {
       const attrs = {
         linkUrl: destination,
         title,
+        target,
+        rel,
         ...customAttrs,
       };
 

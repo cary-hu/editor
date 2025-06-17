@@ -285,19 +285,45 @@ export const toMdConvertors: ToMdConvertorMap = {
 
   link({ node }, { entering }) {
     const { attrs } = node;
-    const { title, rawHTML } = attrs;
+    const { title, rawHTML, target, rel } = attrs;
     const linkUrl = attrs.linkUrl.replace(/&amp;/g, '&');
     const titleAttr = title ? ` title="${escapeXml(title)}"` : '';
+    const targetAttr = target ? ` target="${escapeXml(target)}"` : '';
+    const relAttr = rel ? ` rel="${escapeXml(rel)}"` : '';
 
     if (entering) {
       return {
         delim: '[',
-        rawHTML: rawHTML ? `<${rawHTML} href="${escapeXml(linkUrl)}"${titleAttr}>` : null,
+        rawHTML: rawHTML ? `<${rawHTML} href="${escapeXml(linkUrl)}"${titleAttr}${targetAttr}${relAttr}>` : null,
       };
     }
 
+    let linkSuffix = `](${linkUrl}`;
+    
+    if (title) {
+      linkSuffix += ` ${quote(escapeTextForLink(title))}`;
+    }
+    
+    // Add enhanced attributes to markdown syntax
+    if (target || rel) {
+      linkSuffix += ')';
+      const enhancedAttrs = [];
+      if (target) {
+        enhancedAttrs.push(`target="${escapeTextForLink(target)}"`);
+      }
+      if (rel) {
+        enhancedAttrs.push(`rel="${escapeTextForLink(rel)}"`);
+      }
+      
+      if (enhancedAttrs.length > 0) {
+        linkSuffix += `{:${enhancedAttrs.join(' ')}}`;
+      }
+    } else {
+      linkSuffix += ')';
+    }
+
     return {
-      delim: `](${linkUrl}${title ? ` ${quote(escapeTextForLink(title))}` : ''})`,
+      delim: linkSuffix,
       rawHTML: getCloseRawHTML(rawHTML),
     };
   },
