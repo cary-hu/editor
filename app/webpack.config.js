@@ -157,7 +157,7 @@ module.exports = (env) => {
               use: [MiniCssExtractPlugin.loader, 'css-loader'],
             },
             {
-              test: /\.png$/i,
+              test: /\.png|\.eot|\.ttf|\.woff|\.woff2|\.svg$/i,
               type: 'asset/inline',
             },
           ],
