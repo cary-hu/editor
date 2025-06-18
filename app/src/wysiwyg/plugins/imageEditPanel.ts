@@ -221,7 +221,8 @@ class ImageEditPanelView extends EditPanel {
     const imageRelativeLeft = imageRect.left - containerRect.left;
 
     // Position dialog horizontally
-    const dialogWidth = 280;
+    // Get actual dialog width instead of using fixed value
+    const dialogWidth = this.state.dialog.offsetWidth || 280; // Fallback to 280 if not rendered yet
     const containerWidth = containerRect.width;
     const spaceToRight = containerWidth - imageRelativeRight;
     const spaceToLeft = imageRelativeLeft;
@@ -233,7 +234,12 @@ class ImageEditPanelView extends EditPanel {
     }
 
     // Ensure dialog doesn't go off container horizontally
-    left = Math.max(10, Math.min(left, containerWidth - dialogWidth - 10));
+    // If dialog would exceed right boundary, align it to the right edge
+    if (left + dialogWidth > containerWidth - 10) {
+      left = containerWidth - dialogWidth - 10;
+    }
+    // Ensure dialog doesn't go off the left boundary
+    left = Math.max(10, left);
 
     // Position dialog vertically with sticky behavior
     let top = imageRelativeTop;

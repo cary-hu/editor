@@ -119,10 +119,12 @@ class TableEditPanelView extends EditPanel {
     }
 
     const tableRect = this.state.tableElement.getBoundingClientRect();
+    const containerRect = this.editPanelContainer.getBoundingClientRect();
     const viewportOffset = { left: -10, top: -10 };
 
-    this.state.panel.style.left = `${tableRect.left + viewportOffset.left}px`;
-    this.state.panel.style.top = `${tableRect.top + viewportOffset.top}px`;
+    // Calculate position relative to editPanelContainer
+    this.state.panel.style.left = `${tableRect.left - containerRect.left + viewportOffset.left}px`;
+    this.state.panel.style.top = `${tableRect.top - containerRect.top + viewportOffset.top}px`;
     this.state.panel.style.width = `${tableRect.width + 10}px`;
     this.state.panel.style.height = `${tableRect.height + 10}px`;
   }
@@ -168,11 +170,12 @@ class TableEditPanelView extends EditPanel {
 
     // Position the panel to cover the table
     const tableRect = this.state.tableElement.getBoundingClientRect();
+    const containerRect = this.editPanelContainer.getBoundingClientRect();
     const viewportOffset = { left: -10, top: -10 };
 
-    // Use fixed positioning to avoid ProseMirror DOMObserver issues
-    panel.style.left = `${tableRect.left + viewportOffset.left}px`;
-    panel.style.top = `${tableRect.top + viewportOffset.top}px`;
+    // Use positioning relative to editPanelContainer
+    panel.style.left = `${tableRect.left - containerRect.left + viewportOffset.left}px`;
+    panel.style.top = `${tableRect.top - containerRect.top + viewportOffset.top}px`;
     panel.style.width = `${tableRect.width + 10}px`;
     panel.style.height = `${tableRect.height + 10}px`;
 

@@ -37,6 +37,7 @@ export class BlockQuoteView implements NodeView {
   private select: HTMLElement | null = null;
 
   private timer: NodeJS.Timeout | null = null;
+  protected editPanelContainer = document.querySelector(".toastui-edit-panel-container") as HTMLElement;
 
   constructor(node: ProsemirrorNode, view: EditorView, getPos: GetPos, eventEmitter: Emitter) {
     this.node = node;
@@ -47,6 +48,11 @@ export class BlockQuoteView implements NodeView {
     this.createElement();
     this.bindDOMEvent();
     this.bindEvent();
+    
+    // Initialize editPanelContainer when DOM is ready
+    this.eventEmitter.listen('loadUI', () => {
+      this.editPanelContainer = this.view.dom.closest(`.${cls('container')}`)!.querySelector('.toastui-edit-panel-container') as HTMLElement;
+    });
   }
 
   private createElement() {
@@ -98,78 +104,80 @@ export class BlockQuoteView implements NodeView {
       wrapper.appendChild(button);
     });
 
-    // Temporarily add to DOM to measure dimensions
+    // Temporarily add to editPanelContainer to measure dimensions
     wrapper.style.visibility = 'hidden';
-    wrapper.style.position = 'fixed';
+    wrapper.style.position = 'absolute';
     wrapper.style.top = '-9999px';
-    this.view.dom.parentElement!.appendChild(wrapper);
+    this.editPanelContainer.appendChild(wrapper);
 
     const wrapperWidth = wrapper.clientWidth;
     const wrapperHeight = wrapper.clientHeight;
 
-    // Get viewport and editor container dimensions
-    const viewportHeight = window.innerHeight;
-    const viewportWidth = window.innerWidth;
-    const containerRect = this.view.dom.parentElement!.getBoundingClientRect();
+    // Get container and editor dimensions relative to editPanelContainer
+    const containerRect = this.editPanelContainer.getBoundingClientRect();
     const editorRect = this.view.dom.getBoundingClientRect();
 
-    // Find mode switch element and get its height
+    // Convert viewport coordinates to editPanelContainer relative coordinates
+    const relativeTop = top - containerRect.top;
+    const relativeRight = right - containerRect.left;
+
+    // Find mode switch element and get its height relative to container
     const modeSwitch = this.view.dom.closest(`.${cls('container')}`)!.querySelector(`.${cls('mode-switch')}`) as HTMLElement;
-    const modeSwitchHeight = modeSwitch ? modeSwitch.getBoundingClientRect().height : 28; // fallback to 28px
-
-    // Calculate effective bottom boundary based on editor DOM and mode switch
-    const editorBottom = editorRect.bottom;
-    const modeSwitchTop = viewportHeight - modeSwitchHeight;
-    const effectiveViewportBottom = Math.min(editorBottom, modeSwitchTop) - 10; // 10px padding
-
-    // Calculate optimal position
-    let adjustedTop = top - 10;
-    let adjustedLeft = right - wrapperWidth - 5;
-
-    // Check bottom boundary - ensure dropdown doesn't overlap with mode switch
-    const dropdownBottom = top + wrapperHeight;
-    if (dropdownBottom > effectiveViewportBottom) {
-      // Show above the element instead
-      adjustedTop = top - wrapperHeight - 10;
+    let bottomBoundary = containerRect.height;
+    if (modeSwitch) {
+      const modeSwitchRect = modeSwitch.getBoundingClientRect();
+      bottomBoundary = modeSwitchRect.top - containerRect.top - 10; // 10px padding
     }
 
-    // Check top boundary - ensure dropdown doesn't go above editor container
-    const minTop = Math.max(containerRect.top, editorRect.top) + 10;
-    if (adjustedTop < minTop) {
+    // Calculate effective top boundary relative to container
+    const topBoundary = Math.max(0, editorRect.top - containerRect.top) + 10;
+
+    // Calculate optimal position relative to editPanelContainer
+    let adjustedTop = relativeTop - 10;
+    let adjustedLeft = relativeRight - wrapperWidth - 5;
+
+    // Check bottom boundary
+    const dropdownBottom = relativeTop + wrapperHeight;
+    if (dropdownBottom > bottomBoundary) {
+      // Show above the element instead
+      adjustedTop = relativeTop - wrapperHeight - 10;
+    }
+
+    // Check top boundary
+    if (adjustedTop < topBoundary) {
       // If showing above would go too high, find best position
-      const spaceAbove = top - Math.max(containerRect.top, editorRect.top);
-      const spaceBelow = effectiveViewportBottom - top;
+      const spaceAbove = relativeTop - topBoundary;
+      const spaceBelow = bottomBoundary - relativeTop;
 
       if (spaceBelow >= wrapperHeight + 20) {
         // Use below if there's enough space
-        adjustedTop = top + 10;
+        adjustedTop = relativeTop + 10;
       } else if (spaceAbove >= wrapperHeight + 20) {
         // Use above if there's enough space
-        adjustedTop = top - wrapperHeight - 10;
+        adjustedTop = relativeTop - wrapperHeight - 10;
       } else {
         // Use the larger space and clip if necessary
         if (spaceBelow > spaceAbove) {
-          adjustedTop = top + 10;
+          adjustedTop = relativeTop + 10;
         } else {
-          adjustedTop = Math.max(minTop, top - wrapperHeight - 10);
+          adjustedTop = Math.max(topBoundary, relativeTop - wrapperHeight - 10);
         }
       }
     }
 
-    // Check right boundary - ensure dropdown doesn't go off-screen to the left
+    // Check horizontal boundaries relative to container
     if (adjustedLeft < 10) {
       adjustedLeft = 10;
     }
 
-    // Check left boundary - ensure dropdown doesn't go off-screen to the right
-    if (adjustedLeft + wrapperWidth > viewportWidth - 10) {
-      adjustedLeft = viewportWidth - wrapperWidth - 10;
+    if (adjustedLeft + wrapperWidth > containerRect.width - 10) {
+      adjustedLeft = containerRect.width - wrapperWidth - 10;
     }
 
-    // Apply final positioning
+    // Apply final positioning relative to editPanelContainer
     css(wrapper, {
       visibility: 'visible',
-      position: 'fixed',
+      position: 'absolute',
       top: `${adjustedTop}px`,
       left: `${adjustedLeft}px`,
       right: 'unset',
