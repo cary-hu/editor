@@ -39,6 +39,7 @@
     font-size: 12px;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    text-wrap: nowrap;
 }
 
 .toastui-edit-panel-container .toastui-editor-edit-dialog button.active,
