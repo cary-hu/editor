@@ -67,6 +67,7 @@
     z-index: 1000;
     font-size: 12px;
     padding: .25rem;
+    pointer-events: auto;
 }
 
 .toastui-editor-ww-block-quote-type button {

@@ -1,4 +1,5 @@
 import { Plugin } from 'prosemirror-state';
+import { Node } from 'prosemirror-model';
 import { EditorView } from 'prosemirror-view';
 import { Emitter } from '@t/event';
 import i18n from '@/i18n/i18n';
@@ -9,7 +10,7 @@ interface ImageEditPanelState {
   isVisible: boolean;
   imageElement: HTMLElement | null;
   dialog: HTMLElement | null;
-  imageNode: any | null;
+  imageNode: Node | null;
   imagePos: number | null;
   tempChanges: {
     width?: string | null;
@@ -85,7 +86,6 @@ class ImageEditPanelView extends EditPanel {
     }
     // Find the image node in the ProseMirror document
     const pos = this.view.posAtDOM(imageElement, 0);
-
     if (pos === null) {
       return;
     }
@@ -139,25 +139,7 @@ class ImageEditPanelView extends EditPanel {
   }
 
   private isImageOrPanelElement(element: HTMLElement): boolean {
-    return !!(
-      element.closest('img') ||
-      element.closest(`.${cls('image-edit-dialog')}`) ||
-      element.classList.contains(cls('image-edit-dialog')) ||
-      element.classList.contains('dialog-section') ||
-      element.classList.contains('dialog-label') ||
-      element.classList.contains('size-controls') ||
-      element.classList.contains('size-input') ||
-      element.classList.contains('size-unit') ||
-      element.classList.contains('size-lock') ||
-      element.classList.contains('vertical-align-controls') ||
-      element.classList.contains('align-btn') ||
-      element.classList.contains('caption-input') ||
-      element.classList.contains('danger-zone') ||
-      element.classList.contains('delete-btn') ||
-      element.classList.contains(cls('edit-image-btn')) ||
-      element.classList.contains(cls('delete-image-btn')) ||
-      element.classList.contains(cls('resize-handle'))
-    );
+    return !!(element.closest('img') || element.closest(`.${cls('image-edit-dialog')}`));
   }
 
   private showPanel(imageElement: HTMLElement, imageNode: any, imagePos: number) {
@@ -186,10 +168,6 @@ class ImageEditPanelView extends EditPanel {
   }
 
   protected updatePosition() {
-    if (!this.isImageVisible()) {
-      this.hide();
-      return;
-    }
     if (!this.state.dialog || !this.state.imageElement) return;
 
     const imageRect = this.state.imageElement.getBoundingClientRect();
@@ -322,7 +300,7 @@ class ImageEditPanelView extends EditPanel {
       caption = '',
     } = this.state.imageNode.attrs;
 
-    const currentWidth = this.state.tempChanges.width ?? width;
+    const currentWidth = this.state.tempChanges.width ?? width ?? '';
     const currentVerticalAlign = this.state.tempChanges.verticalAlign ?? verticalAlign;
     const currentAltText = this.state.tempChanges.altText ?? altText ?? '';
     const currentCaption = this.state.tempChanges.caption ?? caption ?? '';
@@ -660,21 +638,6 @@ class ImageEditPanelView extends EditPanel {
 
   private getCurrentMousePosition(): { x: number; y: number } | null {
     return this.currentMousePosition;
-  }
-
-  private isImageVisible(): boolean {
-    if (!this.state.imageElement) return false;
-
-    const imageRect = this.state.imageElement.getBoundingClientRect();
-    const editorRect = this.view.dom.getBoundingClientRect();
-
-    // Check if image is within the editor's visible area
-    return (
-      imageRect.bottom > editorRect.top &&
-      imageRect.top < editorRect.bottom &&
-      imageRect.right > editorRect.left &&
-      imageRect.left < editorRect.right
-    );
   }
 }
 
