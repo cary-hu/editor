@@ -127,6 +127,7 @@ table.ProseMirror-selectednode {
   border-left: 4px solid var(--toastui-editor-blockquote-left-border-color);
   border-radius: var(--toastui-editor-border-radius);
   padding: .5rem;
+  padding-right: 2.25rem;
   background-color: var(--toastui-editor-blockquote-bg-color);
   color: var(--toastui-editor-blockquote-color);
 }
