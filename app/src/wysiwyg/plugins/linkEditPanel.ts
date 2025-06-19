@@ -30,7 +30,6 @@ class LinkEditPanelView extends EditPanel {
         tempChanges: {},
     };
     private lastShowTime = 0;
-    private currentMousePosition: { x: number; y: number } | null = null;
 
     constructor(view: EditorView, eventEmitter: Emitter) {
         super(view, eventEmitter);
@@ -40,14 +39,8 @@ class LinkEditPanelView extends EditPanel {
         // Listen for clicks on the document
         document.addEventListener('click', this.handleDocumentClick);
 
-        // Track mouse position globally
-        document.addEventListener('mousemove', (event) => {
-            this.currentMousePosition = { x: event.clientX, y: event.clientY };
-        });
-
-        // Listen for link hover events
-        this.view.dom.addEventListener('mouseenter', this.handleLinkHover, true);
-        this.view.dom.addEventListener('mouseleave', this.handleLinkLeave, true);
+        // Listen for link click events
+        this.view.dom.addEventListener('click', this.handleLinkClick, true);
     }
 
     private handleDocumentClick = (event: MouseEvent) => {
@@ -65,23 +58,28 @@ class LinkEditPanelView extends EditPanel {
     };
 
     protected preparePanel(): void {
-        this.handleDocumentClick = this.handleDocumentClick.bind(this);
-        this.handleLinkHover = this.handleLinkHover.bind(this);
-        this.handleLinkLeave = this.handleLinkLeave.bind(this);
+        this.handleLinkClick = this.handleLinkClick.bind(this);
         this.init();
     }
 
-    private handleLinkHover = (event: MouseEvent) => {
+    private handleLinkClick = (event: MouseEvent) => {
         const target = event.target as HTMLElement;
         const linkElement = target.closest('a[href]') as HTMLElement;
 
         if (!linkElement) {
             return;
         }
-        // If we're hovering over a different link than the one currently being edited
-        if (this.state.linkElement === linkElement) {
+
+        // Prevent the link from being followed
+        event.preventDefault();
+
+        // If clicking on the same link that's already being edited, don't re-show
+        if (this.state.linkElement === linkElement && this.state.isVisible) {
+            // Prevent event from bubbling only when we're not doing anything
+            event.stopPropagation();
             return;
         }
+
         const pos = this.view.posAtDOM(linkElement, 0);
         if (pos === null) {
             return;
@@ -94,48 +92,9 @@ class LinkEditPanelView extends EditPanel {
         const linkMark = node?.marks.find(mark => mark.type.name === 'link');
 
         if (linkMark && pos !== null) {
+            // Only prevent bubbling when we're actually showing a new panel
+            event.stopPropagation();
             this.showPanel(linkElement, linkMark, pos);
-        }
-    };
-
-    private handleLinkLeave = (event: MouseEvent) => {
-        const target = event.target as HTMLElement;
-        const relatedTarget = event.relatedTarget as HTMLElement;
-
-        // Don't hide if moving to panel or its elements
-        if (relatedTarget && this.isLinkOrPanelElement(relatedTarget)) {
-            return;
-        }
-
-        // Check if we're actually leaving the link area
-        const linkElement = target.closest('a[href]') as HTMLElement;
-
-        if (linkElement && this.state.linkElement === linkElement) {
-            // Add a delay to prevent flickering when moving between elements
-            setTimeout(() => {
-                // Check if we're still working with the same link
-                if (this.state.linkElement !== linkElement) {
-                    // We've moved to a different link, don't hide the panel
-                    return;
-                }
-
-                // Check the current mouse position to see if we're over a valid element
-                const currentMousePosition = this.getCurrentMousePosition();
-
-                if (currentMousePosition) {
-                    const hoveredElement = document.elementFromPoint(
-                        currentMousePosition.x,
-                        currentMousePosition.y
-                    ) as HTMLElement;
-
-                    if (hoveredElement && !this.isLinkOrPanelElement(hoveredElement)) {
-                        this.hide();
-                    }
-                } else {
-                    // If we can't get mouse position, hide the panel
-                    this.hide();
-                }
-            }, 100); // 100ms delay to allow for mouse movement to dialog
         }
     };
 
@@ -514,20 +473,12 @@ class LinkEditPanelView extends EditPanel {
 
     destroy() {
         document.removeEventListener('click', this.handleDocumentClick);
-        this.view.dom.removeEventListener('mouseenter', this.handleLinkHover, true);
-        this.view.dom.removeEventListener('mouseleave', this.handleLinkLeave, true);
-
-        // Clean up mouse position tracking
-        this.currentMousePosition = null;
+        this.view.dom.removeEventListener('click', this.handleLinkClick, true);
 
         this.hide();
 
         // Ensure we unregister as active panel
         this.unsetAsActivePanel();
-    }
-
-    private getCurrentMousePosition(): { x: number; y: number } | null {
-        return this.currentMousePosition;
     }
 
     private isLinkVisible(): boolean {

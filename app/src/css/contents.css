@@ -331,6 +331,7 @@ table.ProseMirror-selectednode {
 .toastui-editor-contents a {
   text-decoration: underline;
   color: var(--toastui-editor-content-link-color);
+  cursor: pointer;
 }
 
 .toastui-editor-contents a:hover {
