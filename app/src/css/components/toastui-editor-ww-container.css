@@ -66,29 +66,44 @@
     box-shadow: var(--toastui-editor-box-shadow);
     z-index: 1000;
     font-size: 12px;
-    padding: .25rem;
+    padding: .5rem 0;
     pointer-events: auto;
 }
 
 .toastui-editor-ww-block-quote-type button {
     display: block;
-    width: 100%;
-    padding: 8px 12px;
+    position: relative;
+    padding: 0 12px;
+    width: 90px;
+    margin: .5rem;
     cursor: pointer;
     color: var(--toastui-editor-color);
     transition: all 0.15s ease;
-    margin-bottom: .25rem;
+    margin-bottom: .5rem;
     cursor: pointer;
     border: 1px solid var(--toastui-editor-border-color);
     border-left: 4px solid transparent;
     border-radius: var(--toastui-editor-border-radius);
-    height: unset;
+    height: 36px;
+    line-height: 36px;
     text-align: left;
 }
 
-.toastui-editor-ww-block-quote-type button.active,
-.toastui-editor-ww-block-quote-type button:hover {
-    background-color: var(--toastui-editor-primary-bg-subtle) !important;
+.toastui-editor-ww-block-quote-type button::after {
+    content: '';
+    width: calc(100% + 1rem + 5px);
+    height: calc(100% + 9px);
+    position: absolute;
+    top: -5px;
+    left: calc(-0.5rem - 4px);
+    background-color: transparent;
+    border-left: 4px solid transparent;
+    z-index: -1;
+}
+.toastui-editor-ww-block-quote-type button:hover:after,
+.toastui-editor-ww-block-quote-type button.active::after {
+    background-color: var(--toastui-editor-primary-bg-subtle);
+    border-left-color: var(--toastui-editor-primary-border-subtle);
 }
 
 
