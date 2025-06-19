@@ -31,8 +31,6 @@ class ImageEditPanelView extends EditPanel {
     imagePos: null,
     tempChanges: {},
   };
-  private lastShowTime = 0;
-  private currentMousePosition: { x: number; y: number } | null = null;
 
   constructor(view: EditorView, eventEmitter: Emitter) {
     super(view, eventEmitter);
@@ -42,24 +40,12 @@ class ImageEditPanelView extends EditPanel {
     // Listen for clicks on the document
     document.addEventListener('click', this.handleDocumentClick);
 
-    // Track mouse position globally
-    document.addEventListener('mousemove', (event) => {
-      this.currentMousePosition = { x: event.clientX, y: event.clientY };
-    });
-
-    // Listen for image hover events
-    this.view.dom.addEventListener('mouseenter', this.handleImageHover, true);
-    this.view.dom.addEventListener('mouseleave', this.handleImageLeave, true);
+    // Listen for image click events
+    this.view.dom.addEventListener('click', this.handleImageClick, true);
   }
 
-  private handleDocumentClick(event: MouseEvent) {
+  private handleDocumentClick = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    const now = Date.now();
-
-    // Don't hide panel immediately after showing it (prevents event bubbling issues)
-    if (now - this.lastShowTime < 100) {
-      return;
-    }
     // If clicking outside image or panel, hide the panel
     if (!this.isImageOrPanelElement(target)) {
       this.hide();
@@ -67,23 +53,26 @@ class ImageEditPanelView extends EditPanel {
   }
 
   protected preparePanel(): void {
-    this.handleDocumentClick = this.handleDocumentClick.bind(this);
-    this.handleImageHover = this.handleImageHover.bind(this);
-    this.handleImageLeave = this.handleImageLeave.bind(this);
+    this.handleImageClick = this.handleImageClick.bind(this);
     this.init();
   }
 
-  private handleImageHover(event: MouseEvent) {
+  private handleImageClick = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     const imageElement = target.closest('img');
 
     if (!imageElement) {
       return;
     }
-    // If we're hovering over a different image than the one currently being edited
-    if (this.state.imageElement === imageElement) {
+
+    // Prevent event from bubbling to document click handler
+    event.stopPropagation();
+
+    // If clicking on the same image that's already being edited, don't do anything
+    if (this.state.imageElement === imageElement && this.state.isVisible) {
       return;
     }
+
     // Find the image node in the ProseMirror document
     const pos = this.view.posAtDOM(imageElement, 0);
     if (pos === null) {
@@ -94,47 +83,6 @@ class ImageEditPanelView extends EditPanel {
     // Make sure we have a valid image node with attrs
     if (node && node.type.name === 'image' && node.attrs) {
       this.showPanel(imageElement, node, pos);
-    }
-  }
-
-  private handleImageLeave(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    const relatedTarget = event.relatedTarget as HTMLElement;
-
-    // Don't hide if moving to panel or its elements
-    if (relatedTarget && this.isImageOrPanelElement(relatedTarget)) {
-      return;
-    }
-
-    // Check if we're actually leaving the image area
-    const imageElement = target.closest('img');
-
-    if (imageElement && this.state.imageElement === imageElement) {
-      // Add a delay to prevent flickering when moving between elements
-      setTimeout(() => {
-        // Check if we're still working with the same image
-        if (this.state.imageElement !== imageElement) {
-          // We've moved to a different image, don't hide the panel
-          return;
-        }
-
-        // Check the current mouse position to see if we're over a valid element
-        const currentMousePosition = this.getCurrentMousePosition();
-
-        if (currentMousePosition) {
-          const hoveredElement = document.elementFromPoint(
-            currentMousePosition.x,
-            currentMousePosition.y
-          ) as HTMLElement;
-
-          if (hoveredElement && !this.isImageOrPanelElement(hoveredElement)) {
-            this.hide();
-          }
-        } else {
-          // If we can't get mouse position, hide the panel
-          this.hide();
-        }
-      }, 100); // 100ms delay to allow for mouse movement to dialog
     }
   }
 
@@ -150,7 +98,6 @@ class ImageEditPanelView extends EditPanel {
     this.state.imageNode = imageNode;
     this.state.imagePos = imagePos;
     this.state.tempChanges = {};
-    this.lastShowTime = Date.now();
     this.createImageDialog();
     this.state.isVisible = true;
   }
@@ -624,20 +571,12 @@ class ImageEditPanelView extends EditPanel {
   destroy() {
 
     document.removeEventListener('click', this.handleDocumentClick);
-    this.view.dom.removeEventListener('mouseenter', this.handleImageHover, true);
-    this.view.dom.removeEventListener('mouseleave', this.handleImageLeave, true);
-
-    // Clean up mouse position tracking
-    this.currentMousePosition = null;
+    this.view.dom.removeEventListener('click', this.handleImageClick, true);
 
     this.hide();
 
     // Ensure we unregister as active panel
     this.unsetAsActivePanel();
-  }
-
-  private getCurrentMousePosition(): { x: number; y: number } | null {
-    return this.currentMousePosition;
   }
 }
 

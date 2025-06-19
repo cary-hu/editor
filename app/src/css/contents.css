@@ -209,10 +209,16 @@ table.ProseMirror-selectednode {
 }
 
 .toastui-editor-contents img {
-  margin: 4px 0 10px;
+  padding: 4px 0 10px;
   box-sizing: border-box;
   vertical-align: top;
   max-width: 100%;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.toastui-editor-contents img:hover {
+  border-color: var(--toastui-editor-border-color);
 }
 
 .toastui-editor-contents table {
