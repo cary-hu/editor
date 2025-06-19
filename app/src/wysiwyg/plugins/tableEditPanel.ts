@@ -40,53 +40,38 @@ class TableEditPanelView extends EditPanel {
   }
 
   protected preparePanel(): void {
-    this.handleTableHover = this.handleTableHover.bind(this);
-    this.handleTableLeave = this.handleTableLeave.bind(this);
+    this.handleTableClick = this.handleTableClick.bind(this);
     this.handleDocumentClick = this.handleDocumentClick.bind(this);
     this.init();
   }
 
   private init() {
-    this.view.dom.addEventListener('mouseenter', this.handleTableHover, true);
-    this.view.dom.addEventListener('mouseleave', this.handleTableLeave, true);
+    this.view.dom.addEventListener('click', this.handleTableClick, true);
     // Listen for clicks on the document to hide panel when clicking outside
     document.addEventListener('click', this.handleDocumentClick, true);
   }
 
-  private handleTableHover(event: MouseEvent) {
+  private handleTableClick = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     const tableElement = target.closest('table');
+    
     if (!tableElement) {
       return;
     }
-    if (this.state.activeEditType !== null) {
+    
+    // If already in edit mode for this table, let the document click handler deal with it
+    if (this.state.activeEditType !== null && this.state.tableElement === tableElement) {
       return;
     }
-    if (this.state.tableElement !== tableElement) {
-      this.showPanel(tableElement);
-    }
-  }
-
-  private handleTableLeave(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    const relatedTarget = event.relatedTarget as HTMLElement;
-
-    // Don't hide if moving to panel or its elements
-    if (relatedTarget && this.isTableOrPanelElement(relatedTarget)) {
+    
+    // If clicking on the same table that's already shown, don't re-show
+    if (this.state.tableElement === tableElement && this.state.isVisible) {
       return;
     }
-
-    // Check if we're actually leaving the table area
-    const tableElement = target.closest('table');
-
-    if (tableElement && this.state.tableElement === tableElement) {
-      // Double check we're still not hovering over table or panel
-      const hoveredElement = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement;
-
-      if (hoveredElement && !this.isTableOrPanelElement(hoveredElement)) {
-        this.hideIfNotEditing();
-      }
-    }
+    
+    // Show panel for new table
+    this.showPanel(tableElement);
+    // Don't stopPropagation here to allow contextMenu to handle closing
   }
 
   private isTableOrPanelElement(element: HTMLElement): boolean {
@@ -178,20 +163,6 @@ class TableEditPanelView extends EditPanel {
     panel.style.top = `${tableRect.top - containerRect.top + viewportOffset.top}px`;
     panel.style.width = `${tableRect.width + 10}px`;
     panel.style.height = `${tableRect.height + 10}px`;
-
-    // Add hover event listeners to keep panel visible when hovering over it
-    panel.addEventListener('mouseenter', () => {
-      // Cancel any pending hide operation
-    });
-
-    panel.addEventListener('mouseleave', (event) => {
-      const relatedTarget = event.relatedTarget as HTMLElement;
-
-      // Hide panel if not moving to the table or other panel elements
-      if (!relatedTarget || !this.isTableOrPanelElement(relatedTarget)) {
-        this.hideIfNotEditing();
-      }
-    });
 
     this.editPanelContainer.appendChild(panel);
     this.state.panel = panel;
@@ -748,8 +719,7 @@ class TableEditPanelView extends EditPanel {
   }
 
   destroy() {
-    this.view.dom.removeEventListener('mouseenter', this.handleTableHover, true);
-    this.view.dom.removeEventListener('mouseleave', this.handleTableLeave, true);
+    this.view.dom.removeEventListener('click', this.handleTableClick, true);
     document.removeEventListener('click', this.handleDocumentClick, true);
     this.hideIfNotEditing();
     // Ensure we unregister as active panel
@@ -1103,8 +1073,21 @@ class TableEditPanelView extends EditPanel {
     this.eventEmitter.emit('command', 'alignColumn', { align: alignment });
   }
 
-  private handleDocumentClick(event: MouseEvent) {
+  private handleDocumentClick = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
+    const now = Date.now();
+
+    // Don't hide panel immediately after showing it (prevents event bubbling issues)
+    if (now - this.lastShowTime < 100) {
+      return;
+    }
+
+    // Check if contextMenu is visible - if so, don't interfere with its closing
+    const contextMenu = document.querySelector(`.${cls('context-menu')}`);
+    if (contextMenu && (contextMenu as HTMLElement).style.display !== 'none') {
+      // Let contextMenu handle its own closing
+      return;
+    }
 
     // Check if clicking on specific panel elements that should not trigger any action
     const isClickingOnToolbar = target.closest(`.${cls('table-edit-toolbar')}`);
@@ -1115,15 +1098,19 @@ class TableEditPanelView extends EditPanel {
       return;
     }
 
-
-    // If clicking outside table entirely, hide the whole panel
-    // First hide toolbar if active, then hide panel
+    // If we're in edit mode (toolbar is visible), hide it regardless of where we click
     if (this.state.activeEditType !== null) {
       this.hideToolbar();
       return;
     }
 
-    this.hideIfNotEditing();
+    // Check if clicking on table or panel elements
+    const isClickingOnTableOrPanel = this.isTableOrPanelElement(target);
+
+    // If clicking outside table or panel, hide the panel
+    if (!isClickingOnTableOrPanel) {
+      this.hideIfNotEditing();
+    }
   }
 
   /**
