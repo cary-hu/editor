@@ -6,6 +6,7 @@ import css from 'tui-code-snippet/domUtil/css';
 
 import { cls, setAttributes } from '@/utils/dom';
 import { getCustomAttrs } from '@/wysiwyg/helper/node';
+import i18n from '@/i18n/i18n';
 
 import { Emitter } from '@t/event';
 
@@ -91,7 +92,7 @@ export class BlockQuoteView implements NodeView {
 
       button.type = 'button';
       button.value = type;
-      button.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+      button.textContent = i18n.get(`Blockquote ${type}`);
 
       if (type === this.node.attrs.bqType) {
         button.classList.add('active');
