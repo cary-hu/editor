@@ -115,7 +115,7 @@ class ToastUIEditorViewer {
     }
     this.eventEmitter.listen('changeTheme', (newTheme: string) => {
       if (this.options.theme !== newTheme) {
-        el.classList.remove(cls(theme));
+        el.classList.remove(cls(this.options.theme));
         el.classList.add(cls(newTheme));
         this.options.theme = newTheme;
       }
