@@ -1,7 +1,7 @@
 {
   "name": "@caryhu/tui.editor",
   "version": "3.2.12",
-  "description": "GFM  Markdown Wysiwyg Editor - Productive and Extensible",
+  "description": "GFM  Markdown Wysiwyg Editor - Productive and Extensible(CaryHu Forked version)",
   "keywords": [
     "nhn",
     "nhn cloud",
@@ -52,11 +52,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nhn/tui.editor.git",
+    "url": "https://github.com/cary-hu/editor.git",
     "directory": "apps/editor"
   },
   "bugs": {
-    "url": "https://github.com/nhn/tui.editor/issues"
+    "url": "https://github.com/cary-hu/editor/issues"
   },
   "homepage": "https://ui.toast.com",
   "browserslist": "last 2 versions, not ie <= 10",

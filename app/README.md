@@ -1,6 +1,6 @@
 # ![TOAST UI Editor](https://uicdn.toast.com/toastui/img/tui-editor-bi.png)
 
-[![npm](https://img.shields.io/npm/v/@caryhu/tui.editor.svg)](https://www.npmjs.com/package/@caryhu/tui.editor)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/cary-hu/editor) [![npm version](https://img.shields.io/npm/v/@caryhu/tui.editor.svg)](https://www.npmjs.com/package/@toast-ui/editor)
 
 ## 🚩 Table of Contents
 
