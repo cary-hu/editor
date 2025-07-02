@@ -19,6 +19,7 @@
     border: 1px solid var(--toastui-editor-border-color);
     z-index: 20;
     padding: 1rem;
+    max-width: 600px;
 }
 
 .toastui-edit-panel-container .toastui-editor-edit-dialog .dialog-section {
@@ -323,7 +324,10 @@
     font-size: 11px;
     color: var(--toastui-editor-color);
     margin-bottom: 4px;
-    font-style: italic;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     user-select: none;
 }
 

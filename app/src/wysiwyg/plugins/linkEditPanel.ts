@@ -265,7 +265,7 @@ class LinkEditPanelView extends EditPanel {
       
       <div class="dialog-section">
         <label class="dialog-label">${i18n.get('Link URL')}</label>
-        <div class="current-value">${i18n.get('Current value')}: ${currentUrl || i18n.get('Not set')}</div>
+        <div class="current-value" title="${currentUrl || ""}">${i18n.get('Current value')}: ${currentUrl || i18n.get('Not set')}</div>
         <input type="url" class="url-input" id="url-input" value="${currentUrl}" placeholder="${i18n.get('Enter URL')}...">
       </div>
 
