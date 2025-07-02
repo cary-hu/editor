@@ -87,12 +87,19 @@ export class ImageView implements NodeView {
       // Set figure styles to prevent interference with image styles
       figure.style.margin = '0';
       figure.style.padding = '0';
-      figure.style.display = 'inline-block';
-
-      // 有caption时，vertical-align应用在figure元素上
-      if (verticalAlign) {
-        figure.style.verticalAlign = verticalAlign;
+      figure.style.display = 'block';
+      
+      // Figure should match the image width
+      if (width !== null) {
+        const widthValue = width.toString();
+        const widthWithUnit = widthValue.includes('px') ? widthValue : `${widthValue}px`;
+        figure.style.width = widthWithUnit;
+      } else {
+        figure.style.width = 'fit-content';
       }
+
+      // 有caption时，禁用vertical-align设置
+      // verticalAlign is disabled when caption is present
 
       captionElement.textContent = caption;
       captionElement.style.fontSize = '14px';
