@@ -78,6 +78,7 @@ table.ProseMirror-selectednode {
   font-size: 24px;
   line-height: 28px;
   margin-bottom: 1rem;
+  margin-top: .75rem;
   padding-bottom: 7px;
 }
 
@@ -85,17 +86,20 @@ table.ProseMirror-selectednode {
   font-size: 22px;
   line-height: 23px;
   margin-bottom: .75rem;
+  margin-top: .75rem;
   padding-bottom: 7px;
 }
 
 .toastui-editor-contents h3 {
   font-size: 20px;
   margin-bottom: .5rem;
+  margin-top: .5rem;
 }
 
 .toastui-editor-contents h4 {
   font-size: 18px;
   margin-bottom: .25rem;
+  margin-top: .25rem;
 }
 
 .toastui-editor-contents h3,
