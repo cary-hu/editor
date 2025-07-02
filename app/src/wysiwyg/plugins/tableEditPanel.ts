@@ -112,6 +112,9 @@ class TableEditPanelView extends EditPanel {
     this.state.panel.style.top = `${tableRect.top - containerRect.top + viewportOffset.top}px`;
     this.state.panel.style.width = `${tableRect.width + 10}px`;
     this.state.panel.style.height = `${tableRect.height + 10}px`;
+
+    // Update CellEditControl positions and dimensions
+    this.updateCellEditControlsPosition();
   }
 
   /**
@@ -730,19 +733,12 @@ class TableEditPanelView extends EditPanel {
     if (!this.state.panel || !this.state.tableElement) return;
 
     const rows = this.state.tableElement.querySelectorAll('tr');
-    const panelRect = this.state.tableElement.getBoundingClientRect();
 
     // First, create all row edit controls and hover areas
     rows.forEach((row, rowIndex) => {
-      const rowRect = row.getBoundingClientRect();
-      const rowTop = rowRect.top - panelRect.top + 10;
-      const rowHeight = rowRect.height;
-
       // Row hover area - covers the row but leaves space for column controls
       const rowHoverArea = document.createElement('div');
       rowHoverArea.className = cls('row-hover-area');
-      rowHoverArea.style.top = `${rowTop}px`;
-      rowHoverArea.style.height = `${rowHeight}px`;
 
       // Click events
       const handleRowClick = (event: Event) => {
@@ -762,15 +758,9 @@ class TableEditPanelView extends EditPanel {
       const cells = firstRow.querySelectorAll('th, td');
 
       cells.forEach((cell, colIndex) => {
-        const cellRect = cell.getBoundingClientRect();
-        const cellLeft = cellRect.left - panelRect.left + 10;
-        const cellWidth = cellRect.width;
-
         // Column hover area - covers the entire column
         const colHoverArea = document.createElement('div');
         colHoverArea.className = cls('col-hover-area');
-        colHoverArea.style.left = `${cellLeft}px`;
-        colHoverArea.style.width = `${cellWidth}px`;
 
         // Click events
         const handleColClick = (event: Event) => {
@@ -784,6 +774,9 @@ class TableEditPanelView extends EditPanel {
         this.state.panel!.appendChild(colHoverArea);
       });
     }
+
+    // Set initial positions and dimensions using the reusable method
+    this.updateCellEditControlsPosition();
   }
 
   private showToolbar(rowIndex: number, toolBarType: 'row' | 'column', controlElement: HTMLElement) {
@@ -1178,6 +1171,49 @@ class TableEditPanelView extends EditPanel {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.warn('Failed to auto-select row/column:', error);
+    }
+  }
+
+  /**
+   * Update positions and dimensions of cell edit controls (row and column hover areas)
+   */
+  private updateCellEditControlsPosition() {
+    if (!this.state.panel || !this.state.tableElement) return;
+
+    const rows = this.state.tableElement.querySelectorAll('tr');
+    const panelRect = this.state.tableElement.getBoundingClientRect();
+
+    // Update row hover areas
+    const rowHoverAreas = this.state.panel.querySelectorAll(`.${cls('row-hover-area')}`);
+    rows.forEach((row, rowIndex) => {
+      if (rowIndex < rowHoverAreas.length) {
+        const rowRect = row.getBoundingClientRect();
+        const rowTop = rowRect.top - panelRect.top + 10;
+        const rowHeight = rowRect.height;
+
+        const rowHoverArea = rowHoverAreas[rowIndex] as HTMLElement;
+        rowHoverArea.style.top = `${rowTop}px`;
+        rowHoverArea.style.height = `${rowHeight}px`;
+      }
+    });
+
+    // Update column hover areas
+    if (rows.length > 0) {
+      const firstRow = rows[0];
+      const cells = firstRow.querySelectorAll('th, td');
+      const colHoverAreas = this.state.panel.querySelectorAll(`.${cls('col-hover-area')}`);
+
+      cells.forEach((cell, colIndex) => {
+        if (colIndex < colHoverAreas.length) {
+          const cellRect = cell.getBoundingClientRect();
+          const cellLeft = cellRect.left - panelRect.left + 10;
+          const cellWidth = cellRect.width;
+
+          const colHoverArea = colHoverAreas[colIndex] as HTMLElement;
+          colHoverArea.style.left = `${cellLeft}px`;
+          colHoverArea.style.width = `${cellWidth}px`;
+        }
+      });
     }
   }
 }
