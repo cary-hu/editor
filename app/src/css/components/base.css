@@ -124,7 +124,7 @@
 .toastui-editor-context-menu::-webkit-scrollbar-thumb {
     background: #c1c8d4;
     border-radius: .25rem;
-    cursor: pointer;
+    cursor: default;
 }
 
 .toastui-editor-md-preview::-webkit-scrollbar-thumb:hover,
@@ -133,7 +133,7 @@
 .toastui-editor-popup::-webkit-scrollbar-thumb:hover,
 .toastui-editor-context-menu::-webkit-scrollbar-thumb:hover {
     background: #a8b2c1;
-    cursor: pointer;
+    cursor: default;
 }
 
 .toastui-editor-md-preview::-webkit-scrollbar-corner,
