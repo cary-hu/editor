@@ -239,8 +239,9 @@
 }
 
 .toastui-editor-popup-body button {
-    width: 64px;
+    min-width: 64px;
     margin: 0 .25rem;
+    padding: 0 .25rem;
     background-color: var(--toastui-editor-secondary-bg-color);
     border: 1px solid var(--toastui-editor-border-color);
     border-radius: var(--toastui-editor-border-radius);
