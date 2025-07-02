@@ -298,8 +298,8 @@ table.ProseMirror-selectednode {
 
 .toastui-editor-contents ol>li::before {
   content: '.' counter(li);
-  margin-left: -28px;
-  width: 24px;
+  margin-left: -32px;
+  min-width: 24px;
   text-align: right;
   direction: rtl;
   color: var(--toastui-editor-color);

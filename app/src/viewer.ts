@@ -13,6 +13,10 @@ import EventEmitter from './event/eventEmitter';
 import { cls, isPositionInBox, toggleClass } from './utils/dom';
 import { registerTagWhitelistIfPossible, sanitizeHTML } from './sanitizer/htmlSanitizer';
 import { tableMarkdownParsers } from './plugins/table/markdown-parser';
+import addClass from 'tui-code-snippet/domUtil/addClass';
+import css from 'tui-code-snippet/domUtil/css';
+import removeClass from 'tui-code-snippet/domUtil/removeClass';
+import isString from 'tui-code-snippet/type/isString';
 
 const TASK_ATTR_NAME = 'data-task';
 const DISABLED_TASK_ATTR_NAME = 'data-task-disabled';
@@ -56,6 +60,9 @@ class ToastUIEditorViewer {
 
   private preview: MarkdownPreview;
   private themeObserver!: MutationObserver;
+  private height!: string;
+
+  private minHeight!: string;
 
   constructor(options: ViewerOptions) {
     this.options = extend(
@@ -68,6 +75,8 @@ class ToastUIEditorViewer {
         frontMatter: false,
         usageStatistics: true,
         theme: 'light',
+        height: '300px',
+        minHeight: '200px',
       },
       options
     );
@@ -109,6 +118,8 @@ class ToastUIEditorViewer {
     const { el, initialValue, theme } = this.options;
     const existingHTML = el.innerHTML;
     el.classList.add(cls('container'));
+    el.classList.add(cls('viewer-container'));
+    this.setHeight(this.options.height);
 
     if (theme !== 'light') {
       el.classList.add(cls(theme));
@@ -281,6 +292,53 @@ class ToastUIEditorViewer {
    */
   isWysiwygMode() {
     return false;
+  }
+
+  /**
+   * Set editor height
+   * @param {string} height - editor height in pixel
+   */
+  setHeight(height: string) {
+    const { el } = this.options;
+
+    if (isString(height)) {
+      if (height === 'auto') {
+        addClass(el, 'auto-height');
+      } else {
+        removeClass(el, 'auto-height');
+      }
+      this.setMinHeight(this.getMinHeight());
+    }
+
+    css(el, { height });
+    this.height = height;
+  }
+  /**
+   * Set minimum height to editor content
+   * @param {string} minHeight - min content height in pixel
+   */
+  setMinHeight(minHeight: string) {
+    if (minHeight !== this.minHeight) {
+      const height = this.height || this.options.height;
+
+      if (height !== 'auto' && this.options.el.querySelector(`.${cls('main')}`)) {
+        // 75px equals default editor ui height - the editing area height
+        minHeight = `${Math.min(parseInt(minHeight, 10), parseInt(height, 10) - 75)}px`;
+      }
+
+      const minHeightNum = parseInt(minHeight, 10);
+
+      this.minHeight = minHeight;
+
+      this.preview.setMinHeight(minHeightNum);
+    }
+  }
+  /**
+   * Get minimum height of editor content
+   * @returns {string} min height in pixel
+   */
+  getMinHeight() {
+    return this.minHeight;
   }
 }
 

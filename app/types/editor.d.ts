@@ -88,6 +88,8 @@ export interface ViewerOptions {
   frontMatter?: boolean;
   usageStatistics?: boolean;
   theme?: string;
+  height?: string;
+  minHeight?: string;
 }
 
 export class Viewer {

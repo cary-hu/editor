@@ -7,12 +7,18 @@
     color: var(--toastui-editor-color);
 }
 
+.toastui-editor-viewer-container {
+    height: inherit;
+    overflow: hidden;
+    position: relative;
+}
+
 .toastui-editor-ww-container>.toastui-editor {
     height: inherit;
     position: relative;
     width: 100%;
 }
-
+.toastui-editor-viewer-container .toastui-editor-contents,
 .toastui-editor-ww-container .toastui-editor-contents {
     overflow: auto;
     box-sizing: border-box;
