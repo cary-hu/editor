@@ -28,7 +28,7 @@ import { createSpecs } from './specCreator';
 
 import { Emitter } from '@t/event';
 import { ToDOMAdaptor } from '@t/convertor';
-import { HTMLSchemaMap, LinkAttributes, WidgetStyle } from '@t/editor';
+import { EditPanelOptions, HTMLSchemaMap, LinkAttributes, WidgetStyle } from '@t/editor';
 import { NodeViewPropMap, PluginProp } from '@t/plugin';
 import { createNodesWithWidget } from '@/widget/rules';
 import { widgetNodeView } from '@/widget/widgetNode';
@@ -43,6 +43,7 @@ interface WindowWithClipboard extends Window {
 interface WysiwygOptions {
   toDOMAdaptor: ToDOMAdaptor;
   useCommandShortcut?: boolean;
+  editPanel?: EditPanelOptions;
   htmlSchemaMap?: HTMLSchemaMap;
   linkAttributes?: LinkAttributes | null;
   wwPlugins?: PluginProp[];
@@ -64,6 +65,8 @@ export default class WysiwygEditor extends EditorBase {
 
   private pluginNodeViews: NodeViewPropMap;
 
+  private editPanelOptions: EditPanelOptions;
+
   constructor(eventEmitter: Emitter, options: WysiwygOptions) {
     super(eventEmitter);
 
@@ -74,8 +77,10 @@ export default class WysiwygEditor extends EditorBase {
       useCommandShortcut = true,
       wwPlugins = [],
       wwNodeViews = {},
+      editPanel,
     } = options;
 
+    this.editPanelOptions = editPanel!;
     this.editorType = 'wysiwyg';
     this.el.classList.add('ww-mode');
     this.toDOMAdaptor = toDOMAdaptor;
@@ -111,16 +116,25 @@ export default class WysiwygEditor extends EditorBase {
   }
 
   createPlugins() {
+    const editPanelPlugins = []
+    if (this.editPanelOptions.useImageEditPanel) {
+      editPanelPlugins.push(imageEditPanel(this.eventEmitter));
+    }
+    if (this.editPanelOptions.useLinkEditPanel) {
+      editPanelPlugins.push(linkEditPanel(this.eventEmitter));
+    }
+    if (this.editPanelOptions.useTableEditPanel) {
+      editPanelPlugins.push(tableEditPanel(this.eventEmitter));
+    }
     return [
       tableSelection(),
       tableContextMenu(this.eventEmitter),
-      tableEditPanel(this.eventEmitter),
-      imageEditPanel(this.eventEmitter),
-      linkEditPanel(this.eventEmitter),
       task(),
       toolbarStateHighlight(this.eventEmitter),
       ...this.createPluginProps(),
-    ].concat(this.defaultPlugins);
+    ]
+      .concat(editPanelPlugins)
+      .concat(this.defaultPlugins);
   }
 
   createPluginNodeViews() {

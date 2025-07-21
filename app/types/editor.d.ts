@@ -191,6 +191,13 @@ export interface EditorOptions {
   theme?: string;
   autofocus?: boolean;
   viewer?: boolean;
+  editPanel?: EditPanelOptions;
+}
+
+export interface EditPanelOptions {
+  useImageEditPanel?: boolean;
+  useLinkEditPanel?: boolean;
+  useTableEditPanel?: boolean;
 }
 
 interface Slots {

@@ -158,6 +158,11 @@ class ToastUIEditorCore {
         widgetRules: [],
         theme: 'light',
         autofocus: true,
+        editPanel: {
+          useImageEditPanel: true,
+          useLinkEditPanel: true,
+          useTableEditPanel: true,
+        },
       },
       options
     );
@@ -172,6 +177,7 @@ class ToastUIEditorCore {
       initialEditType,
       widgetRules,
       customHTMLSanitizer,
+      editPanel,
     } = this.options;
 
     this.mode = initialEditType || 'markdown';
@@ -244,6 +250,7 @@ class ToastUIEditorCore {
       linkAttributes,
       wwPlugins,
       wwNodeViews,
+      editPanel,
     });
 
     this.convertor = new Convertor(
