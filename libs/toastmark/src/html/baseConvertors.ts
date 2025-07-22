@@ -66,6 +66,17 @@ export const baseConvertors: HTMLConvertorMap = {
       }
     }
 
+    // Check if paragraph contains only an image with caption that would be converted to figure
+    // In this case, we should not render the paragraph wrapper to avoid invalid HTML structure
+    if (node.firstChild && !node.firstChild.next && node.firstChild.type === 'image') {
+      const imageNode = node.firstChild as ImageNode;
+
+      if (imageNode.caption) {
+        // This image will be converted to a figure element, so skip the paragraph wrapper
+        return null;
+      }
+    }
+
     return {
       type: entering ? 'openTag' : 'closeTag',
       tagName: 'p',
@@ -194,20 +205,36 @@ export const baseConvertors: HTMLConvertorMap = {
 
     skipChildren();
 
-    return {
-      type: 'openTag',
+    const imgAttributes: Record<string, string> = {
+      src: escapeXml(destination!),
+      alt: getChildrenText(node),
+      ...(title && { title: escapeXml(title) }),
+      ...(width && { style: `width: ${width}px` }),
+      ...(verticalAlign && { 'data-verticalAlign': verticalAlign }),
+      ...(verticalAlign && { style: `vertical-align: ${verticalAlign}` }),
+    };
+
+    const imgTag = {
+      type: 'openTag' as const,
       tagName: 'img',
       selfClose: true,
-      attributes: {
-        src: escapeXml(destination!),
-        alt: getChildrenText(node),
-        ...(title && { title: escapeXml(title) }),
-        ...(width && { style: `width: ${width}px` }),
-        ...(caption && { 'data-caption': decodeImageCaption(caption) }),
-        ...(verticalAlign && { 'data-verticalAlign': verticalAlign }),
-        ...(verticalAlign && { style: `vertical-align: ${verticalAlign}` }),
-      },
+      attributes: imgAttributes,
     };
+
+    // If there's a caption, wrap in figure with figcaption
+    if (caption) {
+      const decodedCaption = decodeImageCaption(caption);
+      return [
+        { type: 'openTag', tagName: 'figure', outerNewLine: true },
+        imgTag,
+        { type: 'openTag', tagName: 'figcaption' },
+        { type: 'text', content: decodedCaption },
+        { type: 'closeTag', tagName: 'figcaption' },
+        { type: 'closeTag', tagName: 'figure', outerNewLine: true },
+      ];
+    }
+
+    return imgTag;
   },
 
   customBlock(node, context, convertors) {

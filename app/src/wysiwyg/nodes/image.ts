@@ -150,7 +150,6 @@ export class Image extends NodeSchema {
       ],
       toDOM({ attrs }: ProsemirrorNode): DOMOutputSpec {
         let imgStyle = '';
-        let figureStyle = 'margin: 0; padding: 0; display: inline-block;';
 
         if (attrs.width) {
           // 确保宽度值包含正确的单位
@@ -158,18 +157,6 @@ export class Image extends NodeSchema {
           const width = widthValue.includes('px') ? widthValue : `${widthValue}px`;
 
           imgStyle += `width: ${width}`;
-        }
-
-        // 当有caption时，vertical-align应该应用在figure上，否则应用在img上
-        if (attrs.verticalAlign) {
-          if (attrs.caption) {
-            // 有caption时，vertical-align应用在figure元素上
-            figureStyle += `; vertical-align: ${attrs.verticalAlign}`;
-          } else {
-            // 没有caption时，vertical-align应用在img元素上
-            if (imgStyle) imgStyle += '; ';
-            imgStyle += `vertical-align: ${attrs.verticalAlign}`;
-          }
         }
 
         const imgAttrs: Record<string, any> = {
@@ -184,11 +171,9 @@ export class Image extends NodeSchema {
         if (attrs.caption) {
           return [
             'figure',
-            { style: figureStyle },
             [attrs.rawHTML || 'img', imgAttrs],
             [
               'figcaption',
-              { style: 'font-size: 14px; color: #666; text-align: center; margin-top: 5px;' },
               attrs.caption,
             ],
           ];

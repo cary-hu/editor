@@ -221,6 +221,20 @@ table.ProseMirror-selectednode {
   border: 1px solid transparent;
 }
 
+.toastui-editor-contents figure {
+  margin: 0;
+  padding: 0;
+  display: block;
+  width: fit-content;
+}
+
+.toastui-editor-contents figure figcaption {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  margin-top: 5px;
+}
+
 .toastui-editor-contents img:hover {
   border-color: var(--toastui-editor-border-color);
 }

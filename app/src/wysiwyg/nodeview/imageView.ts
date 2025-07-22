@@ -65,14 +65,12 @@ export class ImageView implements NodeView {
       image.alt = altText;
     }
     if (width !== null) {
-      // 确保宽度值包含正确的单位
       const widthValue = width.toString();
       const widthWithUnit = widthValue.includes('px') ? widthValue : `${widthValue}px`;
 
       image.style.width = widthWithUnit;
     }
 
-    // 当有caption时，vertical-align应该应用在figure上，否则应用在img上
     if (verticalAlign && !caption) {
       image.style.verticalAlign = verticalAlign;
     }
@@ -84,29 +82,14 @@ export class ImageView implements NodeView {
       const figure = document.createElement('figure');
       const captionElement = document.createElement('figcaption');
 
-      // Set figure styles to prevent interference with image styles
-      figure.style.margin = '0';
-      figure.style.padding = '0';
-      figure.style.display = 'block';
-      
       // Figure should match the image width
       if (width !== null) {
         const widthValue = width.toString();
         const widthWithUnit = widthValue.includes('px') ? widthValue : `${widthValue}px`;
         figure.style.width = widthWithUnit;
-      } else {
-        figure.style.width = 'fit-content';
       }
 
-      // 有caption时，禁用vertical-align设置
-      // verticalAlign is disabled when caption is present
-
       captionElement.textContent = caption;
-      captionElement.style.fontSize = '14px';
-      captionElement.style.color = '#666';
-      captionElement.style.textAlign = 'center';
-      captionElement.style.marginTop = '5px';
-
       figure.appendChild(image);
       figure.appendChild(captionElement);
 
