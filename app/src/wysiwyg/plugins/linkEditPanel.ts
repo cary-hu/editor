@@ -139,7 +139,7 @@ class LinkEditPanelView extends EditPanel {
 
         const containerRect = this.editPanelContainer.getBoundingClientRect();
         let topBoundary = 0; // Relative to panel container
-        let bottomBoundary = containerRect.height; // Relative to panel container
+        let bottomBoundary = containerRect.height - 30; // Relative to panel container
 
         // Find toolbar boundary (relative to panel container)
         if (this.editorToolbar) {
