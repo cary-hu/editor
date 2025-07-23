@@ -1,16 +1,6 @@
-import { InlineNodeType, Sourcepos, CustomBlockMdNode } from '@t/node';
+import { InlineNodeType, Sourcepos, CustomBlockMdNode, ImageVerticalAlign } from '@t/node';
 import { RefMap, RefLinkCandidateMap, RefDefCandidateMap, ParserOptions } from '@t/parser';
-import {
-  Node,
-  BlockNode,
-  isHeading,
-  LinkNode,
-  createNode,
-  text,
-  CustomInlineNode,
-  ImageNode,
-  ImageVerticalAlign,
-} from './node';
+import { Node, BlockNode, isHeading, LinkNode, createNode, text, CustomInlineNode, ImageNode } from './node';
 import { repeat, normalizeURI, unescapeString, ESCAPABLE, ENTITY } from './common';
 import { reHtmlTag } from './rawHtml';
 import fromCodePoint from './from-code-point';
@@ -657,7 +647,13 @@ export class InlineParser {
       result.rel = relMatch[1];
     }
 
-    return Object.keys(result).length > 0 ? result : null;
+    // If no valid attributes found, restore position
+    if (Object.keys(result).length === 0) {
+      return null;
+    }
+    this.pos += attrs.length;
+
+    return result;
   }
 
   // Attempt to parse a link label, returning number of characters parsed.
@@ -709,7 +705,7 @@ export class InlineParser {
   parseCloseBracket(block: BlockNode) {
     let dest: string | null = null;
     let title: string | null = null;
-    let enhancedAttrs: { target?: string; rel?: string } | null = null;
+    
     let matched = false;
 
     this.pos += 1;
@@ -752,11 +748,6 @@ export class InlineParser {
         this.peek() === C_CLOSE_PAREN
       ) {
         this.pos += 1;
-
-        // Check for enhanced attributes after the closing parenthesis
-        this.spnl();
-        enhancedAttrs = this.parseEnhancedAttrs();
-
         matched = true;
       } else {
         this.pos = savepos;
@@ -797,8 +788,7 @@ export class InlineParser {
       const node = createNode(isImage ? 'image' : 'link') as LinkNode;
       node.destination = dest;
       node.title = title || '';
-
-      // Set enhanced attributes if they exist
+      let enhancedAttrs = this.parseEnhancedAttrs();
       if (enhancedAttrs) {
         if (enhancedAttrs.target) {
           node.target = enhancedAttrs.target;
@@ -1207,7 +1197,7 @@ export class InlineParser {
       this.lineOffsets[0] += block.level + 1;
     }
 
-    while (this.parseInline(block)) {}
+    while (this.parseInline(block)) { }
     block.stringContent = null; // allow raw string to be garbage collected
     this.processEmphasis(null);
     this.mergeTextNodes(block.walker());
