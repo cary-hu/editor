@@ -221,19 +221,6 @@ export const baseConvertors: HTMLConvertorMap = {
       attributes: imgAttributes,
     };
 
-    // If there's a caption, wrap in figure with figcaption
-    if (caption) {
-      const decodedCaption = decodeImageCaption(caption);
-      return [
-        { type: 'openTag', tagName: 'figure', outerNewLine: true },
-        imgTag,
-        { type: 'openTag', tagName: 'figcaption' },
-        { type: 'text', content: decodedCaption },
-        { type: 'closeTag', tagName: 'figcaption' },
-        { type: 'closeTag', tagName: 'figure', outerNewLine: true },
-      ];
-    }
-
     return imgTag;
   },
 

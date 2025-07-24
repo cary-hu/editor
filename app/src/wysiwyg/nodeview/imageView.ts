@@ -77,25 +77,6 @@ export class ImageView implements NodeView {
 
     setAttributes(attrs, image);
 
-    // If there's a caption, wrap image in a figure element
-    if (caption) {
-      const figure = document.createElement('figure');
-      const captionElement = document.createElement('figcaption');
-
-      // Figure should match the image width
-      if (width !== null) {
-        const widthValue = width.toString();
-        const widthWithUnit = widthValue.includes('px') ? widthValue : `${widthValue}px`;
-        figure.style.width = widthWithUnit;
-      }
-
-      captionElement.textContent = caption;
-      figure.appendChild(image);
-      figure.appendChild(captionElement);
-
-      return figure;
-    }
-
     return image;
   }
 
