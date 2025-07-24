@@ -88,6 +88,7 @@
   border-bottom-right-radius: var(--toastui-editor-border-radius);
 }
 
+.toastui-editor-md-custom-block-line-background,
 .toastui-editor-md-code-block-line-background {
   background-color: var(--toastui-editor-secondary-bg-color);
   border-right: 1px solid var(--toastui-editor-border-color);
@@ -96,6 +97,7 @@
 }
 
 .toastui-editor-md-code-block-line-background.end,
+.toastui-editor-md-custom-block-line-background.end,
 .toastui-editor-md-custom-code-block-line-background.end {
   border-bottom: 1px solid var(--toastui-editor-border-color);
   border-bottom-left-radius: var(--toastui-editor-border-radius);
@@ -118,18 +120,15 @@
   font-family: var(--toastui-editor-font-family-monospace);
 }
 
-.toastui-editor-md-custom-block {
-  color: #452d6b;
-}
-
 .toastui-editor-md-custom-block-line-background {
-  background-color: #f9f7fd;
+  background-color: var(--toastui-editor-secondary-bg-color);
+  padding: 0 1rem;
 }
 
 .toastui-editor-md-custom-block .toastui-editor-md-delimiter {
-  color: #b8b3c0;
+  color: #ccc;
 }
 
 .toastui-editor-md-custom-block .toastui-editor-md-meta {
-  color: #5200d0;
+  color: #569cd6;
 }
