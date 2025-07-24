@@ -125,7 +125,12 @@ const contextMenuGroups: ContextMenuInfo[][] = [
 function getContextMenuGroups(eventEmitter: Emitter, inTableHead: boolean, tableCell: Element) {
   const mergedTableContextMenu = createMergedTableContextMenu(tableCell);
 
-  return contextMenuGroups.concat([mergedTableContextMenu])
+  // Only add mergedTableContextMenu if it has items to avoid empty menu groups
+  const menuGroups = mergedTableContextMenu.length > 0 
+    ? contextMenuGroups.concat([mergedTableContextMenu])
+    : contextMenuGroups;
+
+  return menuGroups
     .map((contextMenuGroup) =>
       contextMenuGroup.map(({ action, command, payload, disableInThead, icon }) => {
         return {
