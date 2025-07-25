@@ -651,7 +651,6 @@ export class InlineParser {
     if (Object.keys(result).length === 0) {
       return null;
     }
-    this.pos += attrs.length;
 
     return result;
   }
