@@ -71,8 +71,12 @@ export class ImageView implements NodeView {
       image.style.width = widthWithUnit;
     }
 
-    if (verticalAlign && !caption) {
-      image.style.verticalAlign = verticalAlign;
+    if (verticalAlign) {
+      image.setAttribute('data-vertical-align', verticalAlign);
+    }
+
+    if (caption) {
+      image.setAttribute('data-caption', caption);
     }
 
     setAttributes(attrs, image);

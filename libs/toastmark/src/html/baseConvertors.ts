@@ -210,8 +210,8 @@ export const baseConvertors: HTMLConvertorMap = {
       alt: getChildrenText(node),
       ...(title && { title: escapeXml(title) }),
       ...(width && { style: `width: ${width}px` }),
+      ...(caption && { 'data-caption': decodeImageCaption(caption) }),
       ...(verticalAlign && { 'data-verticalAlign': verticalAlign }),
-      ...(verticalAlign && { style: `vertical-align: ${verticalAlign}` }),
     };
 
     const imgTag = {

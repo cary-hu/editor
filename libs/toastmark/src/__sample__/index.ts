@@ -133,8 +133,7 @@ const markdownHighlightPlugin = ViewPlugin.fromClass(class {
 });
 
 const cm = new EditorView({
-  doc: `>type=danger
->123`,
+  doc: `![image](https://uicdn.toast.com/toastui/img/tui-editor-bi.png?caption=123)`,
   extensions: [
     basicSetup,
     markdownDecorations,
