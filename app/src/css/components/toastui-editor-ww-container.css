@@ -147,3 +147,10 @@
     color: var(--toastui-editor-success-text-emphasis);
     background-color: var(--toastui-editor-success-bg-subtle);
 }
+
+.toastui-editor-ww-block-quote-type button[value="note"] {
+    border-color: var(--toastui-editor-primary-border-subtle);
+    border-left-color: var(--toastui-editor-primary-border-subtle);
+    color: var(--toastui-editor-primary-text-emphasis);
+    background-color: var(--toastui-editor-primary-bg-subtle);
+}

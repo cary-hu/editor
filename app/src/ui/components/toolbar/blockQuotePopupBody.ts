@@ -14,6 +14,7 @@ interface Props {
 const BLOCK_QUOTE_TYPES = [
   { type: 'default', label: 'Blockquote default' },
   { type: 'danger', label: 'Blockquote danger' },
+  { type: 'note', label: 'Blockquote note' },
   { type: 'info', label: 'Blockquote info' },
   { type: 'warning', label: 'Blockquote warning' },
   { type: 'success', label: 'Blockquote success' },

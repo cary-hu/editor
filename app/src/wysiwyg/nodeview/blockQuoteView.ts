@@ -20,7 +20,7 @@ type InputPos = {
 const WRAPPER_CLASS_NAME = cls('ww-block-quote');
 const BLOCK_QUOTE_TYPE_CLASS_NAME = cls('ww-block-quote-type');
 
-const BLOCK_QUOTE_TYPES = ['default', 'danger', 'info', 'warning', 'success'];
+const BLOCK_QUOTE_TYPES = ['default', 'danger', 'note', 'info', 'warning', 'success'];
 
 export class BlockQuoteView implements NodeView {
   dom!: HTMLElement;

@@ -21,6 +21,7 @@ Editor.setLanguage(['en', 'en-US'], {
   'Blockquote default': 'Default',
   'Blockquote danger': 'Danger',
   'Blockquote info': 'Info',
+  'Blockquote note': 'Note',
   'Blockquote warning': 'Warning',
   'Blockquote success': 'Success',
   'Unordered list': 'Unordered list',

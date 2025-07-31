@@ -134,6 +134,10 @@ table.ProseMirror-selectednode {
   padding-right: 2.25rem;
   background-color: var(--toastui-editor-blockquote-bg-color);
   color: var(--toastui-editor-blockquote-color);
+
+  --toastui-editor-blockquote-left-border-color: var(--toastui-editor-light-border-subtle);
+  --toastui-editor-blockquote-bg-color: var(--toastui-editor-light-bg-subtle);
+  --toastui-editor-blockquote-color: var(--toastui-editor-light-text-emphasis);
 }
 
 .toastui-editor-contents blockquote[data-block-quote-type="default"] {
@@ -164,6 +168,12 @@ table.ProseMirror-selectednode {
   --toastui-editor-blockquote-left-border-color: var(--toastui-editor-success-border-subtle);
   --toastui-editor-blockquote-bg-color: var(--toastui-editor-success-bg-subtle);
   --toastui-editor-blockquote-color: var(--toastui-editor-success-text-emphasis);
+}
+
+.toastui-editor-contents blockquote[data-block-quote-type="note"] {
+  --toastui-editor-blockquote-left-border-color: var(--toastui-editor-primary-border-subtle);
+  --toastui-editor-blockquote-bg-color: var(--toastui-editor-primary-bg-subtle);
+  --toastui-editor-blockquote-color: var(--toastui-editor-primary-text-emphasis);
 }
 
 .toastui-editor-contents blockquote> :first-child {

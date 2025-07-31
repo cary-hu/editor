@@ -500,6 +500,13 @@
     background-color: var(--toastui-editor-success-bg-subtle);
 }
 
+.toastui-editor-popup-add-blockquote ul li[data-type="note"] div {
+    border-color: var(--toastui-editor-primary-border-subtle);
+    border-left-color: var(--toastui-editor-primary-border-subtle);
+    color: var(--toastui-editor-primary-text-emphasis);
+    background-color: var(--toastui-editor-primary-bg-subtle);
+}
+
 @media only screen and (max-width: 480px) {
     .toastui-editor-popup {
         max-width: 300px;
