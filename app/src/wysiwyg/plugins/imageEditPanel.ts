@@ -246,7 +246,7 @@ class ImageEditPanelView extends EditPanel {
       caption = '',
     } = this.state.imageNode.attrs;
 
-    const currentWidth = this.state.tempChanges.width ?? width ?? '';
+    const currentWidth = this.state.tempChanges.width ?? width ?? this.state.imageElement?.clientWidth ?? '';
     const currentVerticalAlign = this.state.tempChanges.verticalAlign ?? verticalAlign;
     const currentAltText = this.state.tempChanges.altText ?? altText ?? '';
     const currentCaption = this.state.tempChanges.caption ?? caption ?? '';
