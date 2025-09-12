@@ -25,9 +25,10 @@ export class Link extends Mark {
       attrs: {
         url: { default: false },
         desc: { default: false },
+        conf: { default: false }
       },
       toDOM({ attrs }: ProsemirrorMark): DOMOutputSpec {
-        const { url, desc } = attrs;
+        const { url, desc, conf } = attrs;
         let classNames = 'link';
 
         if (url) {
@@ -35,6 +36,9 @@ export class Link extends Mark {
         }
         if (desc) {
           classNames += '|link-desc|marked-text';
+        }
+        if (conf) {
+          classNames += '|link-conf|marked-text';
         }
 
         return ['span', { class: clsWithMdPrefix(...classNames.split('|')) }, 0];

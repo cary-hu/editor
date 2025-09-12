@@ -45,6 +45,7 @@
 
 .toastui-editor-md-meta,
 .toastui-editor-md-html,
+.toastui-editor-md-link.toastui-editor-md-link-conf.toastui-editor-md-marked-text,
 .toastui-editor-md-link.toastui-editor-md-link-url.toastui-editor-md-marked-text {
   color: #999;
 }
@@ -61,7 +62,6 @@
 .toastui-editor-md-list-item-style.toastui-editor-md-list-item-even {
   color: #cb4848;
 }
-
 .toastui-editor-md-code.toastui-editor-md-marked-text {
   color: var(--toastui-editor-color);
 }

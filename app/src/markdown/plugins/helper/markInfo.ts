@@ -90,29 +90,62 @@ function emphasisAndStrikethrough(
   ];
 }
 
-function markLink(start: MdPos, end: MdPos, linkTextStart: MdPos, lastChildCh: number) {
-  return [
-    markInfo(start, end, LINK),
-    markInfo(setOffsetPos(start, linkTextStart[1] + 1), setOffsetPos(end, lastChildCh), LINK, {
-      desc: true,
-    }),
-    markInfo(setOffsetPos(end, lastChildCh + 2), addOffsetPos(end, -1), LINK, { url: true }),
-  ];
+function markLink(start: MdPos, end: MdPos, linkTextStart: MdPos, lastChildCh: number, target?: string | null, rel?: string | null) {
+  // For [text](url){:attr="value"} structure:
+  // - linkTextStart[1] is position after '['
+  // - lastChildCh is position after text content (end of ']')
+  const linkTextEnd: MdPos = [start[0], lastChildCh];
+  const urlStart: MdPos = [start[0], lastChildCh + 2]; // Position after ']('
+
+  // Check if this is an extended link by examining if it has target or rel attributes
+  const hasExtendedAttrs = target || rel;
+
+  if (hasExtendedAttrs) {
+    // Extended link format: [text](url){:target="_self" rel="nofollow"}
+    // We need to calculate the URL end position and conf start position
+
+    // Calculate the approximate length of the attributes section
+    let attrsLength = 3; // Basic "{:}"
+    if (target) attrsLength += `target="${target}"`.length + 1; // +1 for space
+    if (rel) attrsLength += `rel="${rel}"`.length + 1; // +1 for space
+
+    // Calculate positions
+    const urlEndPos = end[1] - attrsLength; // Position before ')'
+    const urlEnd: MdPos = [start[0], urlEndPos];
+    const confStart: MdPos = [start[0], urlEndPos + 3]; // Position after '){:'
+    const confEnd: MdPos = [end[0], end[1] - 1]; // Position before final '}'
+
+    return [
+      markInfo(start, end, LINK),
+      markInfo(linkTextStart, linkTextEnd, LINK, { desc: true }),
+      markInfo(urlStart, urlEnd, LINK, { url: true }),
+      markInfo(confStart, confEnd, LINK, { conf: true }),
+    ];
+  } else {
+    // Standard [text](url) format
+    const urlEnd: MdPos = [end[0], end[1] - 1]; // Position before ')'
+
+    return [
+      markInfo(start, end, LINK),
+      markInfo(linkTextStart, linkTextEnd, LINK, { desc: true }),
+      markInfo(urlStart, urlEnd, LINK, { url: true }),
+    ];
+  }
 }
 
-function image({ lastChild }: LinkMdNode, start: MdPos, end: MdPos) {
+function image({ lastChild, target, rel }: LinkMdNode, start: MdPos, end: MdPos) {
   const lastChildCh = lastChild ? getMdEndCh(lastChild) + 1 : 3; // 3: length of '![]'
   const linkTextEnd = addOffsetPos(start, 1);
 
-  return [markInfo(start, linkTextEnd, META), ...markLink(start, end, linkTextEnd, lastChildCh)];
+  return [markInfo(start, linkTextEnd, META), ...markLink(start, end, linkTextEnd, lastChildCh, target, rel)];
 }
 
-function link({ lastChild, extendedAutolink }: LinkMdNode, start: MdPos, end: MdPos) {
+function link({ lastChild, extendedAutolink, target, rel }: LinkMdNode, start: MdPos, end: MdPos) {
   const lastChildCh = lastChild ? getMdEndCh(lastChild) + 1 : 2; // 2: length of '[]'
 
   return extendedAutolink
     ? [markInfo(start, end, LINK, { desc: true })]
-    : markLink(start, end, start, lastChildCh);
+    : markLink(start, end, [start[0], start[1] + 1], lastChildCh, target, rel); // Pass target and rel to markLink
 }
 
 function code({ tickCount }: CodeMdNode, start: MdPos, end: MdPos) {
