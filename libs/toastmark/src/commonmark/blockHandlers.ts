@@ -101,7 +101,7 @@ const blockQuote: BlockHandler = {
       // Check if this line defines a blockquote type (>type=danger)
       // We need to check from the nextNonspace position, not from the beginning of the line
       const lineFromNonspace = ln.slice(parser.nextNonspace);
-      const typeMatch = lineFromNonspace.match(/^>\s*type\s*=\s*(\w+)\s*$/);
+      const typeMatch = lineFromNonspace.match(/^>\s*!?type\s*=\s*(\w+)\s*$/);
       if (typeMatch) {
         // This is a type definition line, consume the entire line
         parser.advanceOffset(ln.length - parser.offset, false);
