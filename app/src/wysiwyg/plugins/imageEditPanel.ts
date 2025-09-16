@@ -46,10 +46,32 @@ class ImageEditPanelView extends EditPanel {
 
   private handleDocumentClick = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    // If clicking outside image or panel, hide the panel
-    if (!this.isImageOrPanelElement(target)) {
-      this.hide();
+    
+    // Check if we're currently showing the image edit panel
+    if (!this.state.isVisible) {
+      return;
     }
+    
+    // Check if the click is on the image editing dialog itself
+    const isImageDialog = !!target.closest(`.${cls('image-edit-dialog')}`);
+    if (isImageDialog) {
+      return; // Don't close if clicking within the dialog
+    }
+    
+    // Check if the click is on the currently edited image
+    const clickedImage = target.closest('img');
+    if (clickedImage && clickedImage === this.state.imageElement) {
+      return; // Don't close if clicking on the same image
+    }
+    
+    // Check if the click is on a different image
+    if (clickedImage) {
+      // Let the image click handler deal with switching to the new image
+      return;
+    }
+    
+    // For any other click (including on table elements, text, etc.), close the panel
+    this.hide();
   }
 
   protected preparePanel(): void {
@@ -65,8 +87,17 @@ class ImageEditPanelView extends EditPanel {
       return;
     }
 
+    // Check if the image is inside a table
+    const tableElement = imageElement.closest('table');
+    const isInTable = !!tableElement;
+
     // Prevent event from bubbling to document click handler
     event.stopPropagation();
+
+    // If the image is in a table, also prevent the table click handler from interfering
+    if (isInTable) {
+      event.preventDefault();
+    }
 
     // If clicking on the same image that's already being edited, don't do anything
     if (this.state.imageElement === imageElement && this.state.isVisible) {
@@ -87,13 +118,33 @@ class ImageEditPanelView extends EditPanel {
   }
 
   private isImageOrPanelElement(element: HTMLElement): boolean {
-    return !!(element.closest('img') || element.closest(`.${cls('image-edit-dialog')}`));
+    const isImageElement = !!element.closest('img');
+    const isImageDialog = !!element.closest(`.${cls('image-edit-dialog')}`);
+    
+    // If it's an image dialog, always return true
+    if (isImageDialog) {
+      return true;
+    }
+    
+    // If it's an image element, return true
+    if (isImageElement) {
+      return true;
+    }
+    
+    // Don't consider table elements as related to image editing
+    // The image editing panel should close when clicking elsewhere,
+    // even if the image is inside a table
+    return false;
   }
 
   private showPanel(imageElement: HTMLElement, imageNode: any, imagePos: number) {
     // Hide existing dialog if any
     this.hide();
+    
+    // Always set this panel as active to close other edit panels (including table edit panel)
+    // When user clicks on an image, they want to edit the image, so other panels should close
     this.setAsActivePanel();
+    
     this.state.imageElement = imageElement;
     this.state.imageNode = imageNode;
     this.state.imagePos = imagePos;

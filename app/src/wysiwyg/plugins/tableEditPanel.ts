@@ -59,6 +59,14 @@ class TableEditPanelView extends EditPanel {
       return;
     }
     
+    // Check if the click target is an image
+    const imageElement = target.closest('img');
+    if (imageElement) {
+      // If clicking on an image within the table, let the image edit panel handle it
+      // Don't show or interfere with table panel in this case
+      return;
+    }
+    
     // If already in edit mode for this table, let the document click handler deal with it
     if (this.state.activeEditType !== null && this.state.tableElement === tableElement) {
       return;
@@ -75,7 +83,16 @@ class TableEditPanelView extends EditPanel {
   }
 
   private isTableOrPanelElement(element: HTMLElement): boolean {
-    return !!(element.closest('table') || element.closest(`.${cls('table-edit-panel')}`));
+    const isTableElement = !!element.closest('table');
+    const isTablePanel = !!element.closest(`.${cls('table-edit-panel')}`);
+    const isImageDialog = !!element.closest(`.${cls('image-edit-dialog')}`);
+    
+    // If it's an image dialog, don't consider it as table-related
+    if (isImageDialog) {
+      return false;
+    }
+    
+    return isTableElement || isTablePanel;
   }
 
   private showPanel(tableElement: HTMLElement) {
@@ -1079,6 +1096,13 @@ class TableEditPanelView extends EditPanel {
     const contextMenu = document.querySelector(`.${cls('context-menu')}`);
     if (contextMenu && (contextMenu as HTMLElement).style.display !== 'none') {
       // Let contextMenu handle its own closing
+      return;
+    }
+
+    // Check if clicking on image or image edit dialog - don't interfere with image editing
+    const isClickingOnImage = target.closest('img');
+    const isClickingOnImageDialog = target.closest(`.${cls('image-edit-dialog')}`);
+    if (isClickingOnImage || isClickingOnImageDialog) {
       return;
     }
 
