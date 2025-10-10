@@ -110,7 +110,7 @@ export class ImageView implements NodeView {
 
         tr.setSelection(createTextSelection(tr, pos, pos + 1));
         this.view.dispatch(tr);
-        this.eventEmitter.emit('openPopup', 'link', this.imageLink.attrs);
+        this.eventEmitter.emit('openEditPanel', 'link', this.imageLink.attrs);
       }
     }
   };

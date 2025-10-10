@@ -41,6 +41,9 @@ class LinkEditPanelView extends EditPanel {
 
         // Listen for link click events
         this.view.dom.addEventListener('click', this.handleLinkClick, true);
+
+        // Listen for openEditPanel events (e.g., from image links)
+        this.eventEmitter.listen('openEditPanel', this.handleOpenEditPanel);
     }
 
     private handleDocumentClick = (event: MouseEvent) => {
@@ -57,6 +60,64 @@ class LinkEditPanelView extends EditPanel {
         }
     };
 
+    private handleOpenEditPanel = (panelType: string, linkAttrs?: any) => {
+        // Only handle link panel requests
+        if (panelType !== 'link' || !linkAttrs) {
+            return;
+        }
+
+        // Get the current selection to find the node with link mark
+        const { state } = this.view;
+        const { selection } = state;
+        
+        // Try to get the node at the selection position
+        const pos = selection.from;
+        const node = state.doc.nodeAt(pos);
+        
+        if (node) {
+            // Find the link mark on this node
+            const linkMark = node.marks?.find(mark => mark.type.name === 'link');
+            
+            if (linkMark) {
+                // Try to find the actual DOM element for positioning
+                let linkElement: HTMLElement | null = null;
+                
+                try {
+                    // Get the DOM position for this ProseMirror position
+                    const domPos = this.view.domAtPos(pos);
+                    const domNode = domPos.node;
+                    
+                    // Look for existing DOM elements we can use for positioning
+                    if (domNode.nodeType === Node.ELEMENT_NODE) {
+                        const element = domNode as HTMLElement;
+                        // Check if it's an image link wrapper or find the closest one
+                        linkElement = element.closest('.image-link') as HTMLElement || 
+                                    element.querySelector('.image-link') as HTMLElement ||
+                                    (element.closest('img')?.parentElement as HTMLElement) ||
+                                    null;
+                    } else if (domNode.parentElement) {
+                        // If it's a text node, check its parent
+                        linkElement = (domNode.parentElement.closest('.image-link') as HTMLElement) ||
+                                    (domNode.parentElement.querySelector('.image-link') as HTMLElement) ||
+                                    null;
+                    }
+                    
+                    // If we still don't have a link element, create a positioned element
+                    if (!linkElement) {
+                        linkElement = this.createTempLinkElement(pos);
+                    }
+                } catch (error) {
+                    console.warn('Error finding DOM element for link panel:', error);
+                    linkElement = this.createTempLinkElement(pos);
+                }
+                
+                if (linkElement) {
+                    this.showPanel(linkElement, linkMark, pos);
+                }
+            }
+        }
+    };
+
     protected preparePanel(): void {
         this.handleLinkClick = this.handleLinkClick.bind(this);
         this.init();
@@ -67,6 +128,14 @@ class LinkEditPanelView extends EditPanel {
         const linkElement = target.closest('a[href]') as HTMLElement;
 
         if (!linkElement) {
+            return;
+        }
+
+        // Check if the clicked element is an image or is within an image link
+        const isImageLink = this.isImageLink(target, linkElement);
+        
+        // If it's an image link, don't open the link edit panel
+        if (isImageLink) {
             return;
         }
 
@@ -102,6 +171,66 @@ class LinkEditPanelView extends EditPanel {
         return !!(element.closest('a[href]') || element.closest(`.${cls('link-edit-dialog')}`));
     }
 
+    private isImageLink(target: HTMLElement, linkElement: HTMLElement): boolean {
+        // Check if the target is an image element
+        if (target.tagName.toLowerCase() === 'img') {
+            return true;
+        }
+        
+        // Check if the target is within an image link container (.image-link class)
+        if (target.closest('.image-link')) {
+            return true;
+        }
+        
+        // Check if the link element contains an image
+        if (linkElement.querySelector('img')) {
+            return true;
+        }
+        
+        // Additional check: Get the ProseMirror position and check if it's an image node
+        try {
+            const pos = this.view.posAtDOM(linkElement, 0);
+            if (pos !== null) {
+                const node = this.view.state.doc.nodeAt(pos);
+                if (node && node.type.name === 'image') {
+                    return true;
+                }
+            }
+        } catch (error) {
+            // If there's any error getting the position, we'll fall back to DOM-based checks
+        }
+        
+        return false;
+    }
+
+    private createTempLinkElement(pos: number): HTMLElement | null {
+        // Create a temporary element positioned relative to the editor's viewport
+        try {
+            // Get the coordinate information for this position
+            const coords = this.view.coordsAtPos(pos);
+            
+            // Create a temporary span element for positioning
+            const tempLink = document.createElement('span');
+            tempLink.style.position = 'fixed';
+            tempLink.style.left = `${coords.left}px`;
+            tempLink.style.top = `${coords.top}px`;
+            tempLink.style.width = '1px';
+            tempLink.style.height = `${coords.bottom - coords.top}px`;
+            tempLink.style.visibility = 'hidden';
+            tempLink.style.pointerEvents = 'none';
+            tempLink.style.zIndex = '-1';
+            
+            // Mark it as temporary for cleanup
+            tempLink.setAttribute('data-temp-link', 'true');
+            
+            document.body.appendChild(tempLink);
+            return tempLink;
+        } catch (error) {
+            console.warn('Error creating temp link element:', error);
+            return null;
+        }
+    }
+
     private showPanel(linkElement: HTMLElement, linkMark: Mark, linkPos: number) {
         // Hide existing dialog if any
         this.hide();
@@ -120,6 +249,12 @@ class LinkEditPanelView extends EditPanel {
             this.state.dialog.remove();
             this.state.dialog = null;
         }
+        
+        // Clean up any temporary link elements
+        if (this.state.linkElement && this.state.linkElement.hasAttribute('data-temp-link')) {
+            this.state.linkElement.remove();
+        }
+        
         this.state.isVisible = false;
         this.state.linkElement = null;
         this.state.linkNode = null;
@@ -474,6 +609,9 @@ class LinkEditPanelView extends EditPanel {
     destroy() {
         document.removeEventListener('click', this.handleDocumentClick);
         this.view.dom.removeEventListener('click', this.handleLinkClick, true);
+        
+        // Remove event listener for openEditPanel
+        this.eventEmitter.removeEventHandler('openEditPanel', this.handleOpenEditPanel);
 
         this.hide();
 

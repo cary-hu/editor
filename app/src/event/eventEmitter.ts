@@ -25,6 +25,8 @@ const eventTypeList: EventTypes[] = [
   'removePopupWidget',
   'query',
   // provide event for user
+  'openEditPanel',
+  'closeEditPanel',
   'openPopup',
   'closePopup',
   'addImageBlobHook',

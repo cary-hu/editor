@@ -40,6 +40,7 @@ export abstract class EditPanel {
      * Register this panel as the active one and hide any other active panels
      */
     protected setAsActivePanel(): void {
+        this.eventEmitter.emit('closeEditPanel');
         if (EditPanel.activePanel && EditPanel.activePanel !== this) {
             EditPanel.activePanel.hide();
         }
