@@ -241,6 +241,8 @@ export class EditorCore {
 
   moveCursorTo(line: number, focus?: boolean): void;
 
+  getCursorLine(): number;
+
   setMarkdown(markdown: string, cursorToEnd?: boolean): void;
 
   setHTML(html: string, cursorToEnd?: boolean): void;
@@ -365,6 +367,8 @@ export interface Base {
   moveCursorToEnd(focus: boolean): void;
 
   moveCursorTo(line: number, focus?: boolean): void;
+
+  getCursorLine(): number;
 
   setScrollTop(top: number): void;
 

@@ -58,6 +58,11 @@ interface PluginNodeViews {
 
 const CONTENTS_CLASS_NAME = cls('contents');
 
+interface LineInfo {
+  line: number;
+  start: number;
+}
+
 export default class WysiwygEditor extends EditorBase {
   private toDOMAdaptor: ToDOMAdaptor;
 
@@ -301,70 +306,16 @@ export default class WysiwygEditor extends EditorBase {
   }
 
   moveCursorTo(line: number, focus = true) {
-    const { doc } = this.view.state;
-
-    let currentLine = 0;
     let targetPos = -1;
 
-    // Recursively traverse document tree to find the line start position
-    const traverse = (node: ProsemirrorNode, pos: number): boolean => {
-      const nodeName = node.type.name;
-
-      // tableRow: each row is a line
-      if (nodeName === 'tableRow') {
-        currentLine++;
-        if (currentLine === line) {
-          // Position at first cell start
-          if (node.childCount > 0) {
-            targetPos = pos + 1; // row start + 1 = first cell start
-          }
-          return true;
-        }
-        return false;
-      }
-
-      // codeBlock: each text line is a line
-      if (nodeName === 'codeBlock') {
-        const text = node.textContent;
-        const lines = text.split('\n');
-        let textOffset = 0;
-        for (let i = 0; i < lines.length; i++) {
-          currentLine++;
-          if (currentLine === line) {
-            targetPos = pos + textOffset;
-            return true;
-          }
-          textOffset += lines[i].length + 1;
-        }
-        return false;
-      }
-
-      // Textblock (paragraph, heading, etc.): one node = one line
-      if (node.isTextblock) {
-        currentLine++;
-        if (currentLine === line) {
-          targetPos = pos; // line start position
-          return true;
-        }
-        return false;
-      }
-
-      // Container nodes (doc, table, blockquote, listItem, etc.): traverse children
-      if (node.childCount > 0) {
-        let childPos = pos + 1;
-        for (let i = 0; i < node.childCount; i++) {
-          const child = node.child(i);
-          if (traverse(child, childPos)) {
-            return true;
-          }
-          childPos += child.nodeSize;
-        }
+    this.iterateLines((info) => {
+      if (info.line === line) {
+        targetPos = info.start;
+        return true;
       }
 
       return false;
-    };
-
-    traverse(doc, 0);
+    });
 
     if (targetPos >= 0) {
       this.setSelection(targetPos, targetPos);
@@ -372,6 +323,27 @@ export default class WysiwygEditor extends EditorBase {
         this.focus();
       }
     }
+  }
+
+  getCursorLine() {
+    const targetPos = this.view.state.selection.from;
+    let resolvedLine = 1;
+
+    this.iterateLines((info) => {
+      if (targetPos < info.start) {
+        return true;
+      }
+
+      resolvedLine = info.line;
+
+      if (targetPos === info.start) {
+        return true;
+      }
+
+      return false;
+    });
+
+    return resolvedLine;
   }
 
   addWidget(node: Node, style: WidgetStyle, pos?: number) {
@@ -385,6 +357,64 @@ export default class WysiwygEditor extends EditorBase {
     const nodes = createNodesWithWidget(text, schema);
 
     this.view.dispatch(tr.replaceWith(start, end, nodes));
+  }
+
+  private iterateLines(visitor: (info: LineInfo) => boolean) {
+    const { doc } = this.view.state;
+    let currentLine = 0;
+
+    const traverse = (node: ProsemirrorNode, pos: number): boolean => {
+      const nodeName = node.type.name;
+
+      if (nodeName === 'tableRow') {
+        currentLine += 1;
+        const start = node.childCount > 0 ? pos + 1 : pos;
+
+        return visitor({ line: currentLine, start });
+      }
+
+      if (nodeName === 'codeBlock') {
+        const text = node.textContent;
+        const lines = text.split('\n');
+        let textOffset = 0;
+
+        for (let i = 0; i < lines.length; i += 1) {
+          const start = pos + textOffset;
+          currentLine += 1;
+
+          if (visitor({ line: currentLine, start })) {
+            return true;
+          }
+
+          textOffset += lines[i].length + 1;
+        }
+
+        return false;
+      }
+
+      if (node.isTextblock) {
+        currentLine += 1;
+        return visitor({ line: currentLine, start: pos });
+      }
+
+      if (node.childCount > 0) {
+        let childPos = pos + 1;
+
+        for (let i = 0; i < node.childCount; i += 1) {
+          const child = node.child(i);
+
+          if (traverse(child, childPos)) {
+            return true;
+          }
+
+          childPos += child.nodeSize;
+        }
+      }
+
+      return false;
+    };
+
+    traverse(doc, 0);
   }
 
   getRangeInfoOfNode(pos?: number) {

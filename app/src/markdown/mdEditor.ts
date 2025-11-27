@@ -348,6 +348,13 @@ export default class MdEditor extends EditorBase {
     return getEditorToMdPos(this.view.state.tr.doc, from, to);
   }
 
+  getCursorLine() {
+    const { doc, selection } = this.view.state;
+    const [cursorPos] = getEditorToMdPos(doc, selection.from, selection.from);
+
+    return cursorPos[0];
+  }
+
   setMarkdown(markdown: string, cursorToEnd = true) {
     const lineTexts = markdown.split(reLineEnding);
     const { tr, doc, schema } = this.view.state;

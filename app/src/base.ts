@@ -249,4 +249,6 @@ export default abstract class EditorBase implements Base {
   abstract getRangeInfoOfNode(pos?: EditorPos): NodeRangeInfo;
 
   abstract moveCursorTo(line: number, focus?: boolean): void;
+
+  abstract getCursorLine(): number;
 }

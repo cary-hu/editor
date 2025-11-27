@@ -475,6 +475,14 @@ class ToastUIEditorCore {
   }
 
   /**
+   * Get current cursor line number (1-based)
+   * @returns {number} Current cursor line
+   */
+  getCursorLine() {
+    return this.getCurrentModeEditor().getCursorLine();
+  }
+
+  /**
    * Set markdown syntax text.
    * @param {string} markdown - markdown syntax text.
    * @param {boolean} [cursorToEnd=true] - move cursor to contents end
