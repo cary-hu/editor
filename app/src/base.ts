@@ -247,4 +247,6 @@ export default abstract class EditorBase implements Base {
   abstract getSelection(): Sourcepos | [number, number];
 
   abstract getRangeInfoOfNode(pos?: EditorPos): NodeRangeInfo;
+
+  abstract moveCursorTo(line: number, focus?: boolean): void;
 }

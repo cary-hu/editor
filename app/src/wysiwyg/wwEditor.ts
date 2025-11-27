@@ -300,6 +300,80 @@ export default class WysiwygEditor extends EditorBase {
     this.view.dispatch(tr.setSelection(selection).scrollIntoView());
   }
 
+  moveCursorTo(line: number, focus = true) {
+    const { doc } = this.view.state;
+
+    let currentLine = 0;
+    let targetPos = -1;
+
+    // Recursively traverse document tree to find the line start position
+    const traverse = (node: ProsemirrorNode, pos: number): boolean => {
+      const nodeName = node.type.name;
+
+      // tableRow: each row is a line
+      if (nodeName === 'tableRow') {
+        currentLine++;
+        if (currentLine === line) {
+          // Position at first cell start
+          if (node.childCount > 0) {
+            targetPos = pos + 1; // row start + 1 = first cell start
+          }
+          return true;
+        }
+        return false;
+      }
+
+      // codeBlock: each text line is a line
+      if (nodeName === 'codeBlock') {
+        const text = node.textContent;
+        const lines = text.split('\n');
+        let textOffset = 0;
+        for (let i = 0; i < lines.length; i++) {
+          currentLine++;
+          if (currentLine === line) {
+            targetPos = pos + textOffset;
+            return true;
+          }
+          textOffset += lines[i].length + 1;
+        }
+        return false;
+      }
+
+      // Textblock (paragraph, heading, etc.): one node = one line
+      if (node.isTextblock) {
+        currentLine++;
+        if (currentLine === line) {
+          targetPos = pos; // line start position
+          return true;
+        }
+        return false;
+      }
+
+      // Container nodes (doc, table, blockquote, listItem, etc.): traverse children
+      if (node.childCount > 0) {
+        let childPos = pos + 1;
+        for (let i = 0; i < node.childCount; i++) {
+          const child = node.child(i);
+          if (traverse(child, childPos)) {
+            return true;
+          }
+          childPos += child.nodeSize;
+        }
+      }
+
+      return false;
+    };
+
+    traverse(doc, 0);
+
+    if (targetPos >= 0) {
+      this.setSelection(targetPos, targetPos);
+      if (focus) {
+        this.focus();
+      }
+    }
+  }
+
   addWidget(node: Node, style: WidgetStyle, pos?: number) {
     const { dispatch, state } = this.view;
 

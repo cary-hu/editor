@@ -283,6 +283,16 @@ export default class MdEditor extends EditorBase {
     this.view.dispatch(tr.setSelection(createTextSelection(tr, from, to)).scrollIntoView());
   }
 
+  moveCursorTo(line: number, focus = true) {
+    const mdPos: MdPos = [line, 1];
+
+    this.setSelection(mdPos, mdPos);
+
+    if (focus) {
+      this.focus();
+    }
+  }
+
   replaceSelection(text: string, start?: MdPos, end?: MdPos) {
     let newTr;
     const { tr, schema, doc } = this.view.state;

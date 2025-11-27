@@ -466,6 +466,15 @@ class ToastUIEditorCore {
   }
 
   /**
+   * Set cursor position to the start of the specified line
+   * @param {number} line - Line number (1-based)
+   * @param {boolean} [focus=true] - Whether to automatically focus the editor
+   */
+  moveCursorTo(line: number, focus = true) {
+    this.getCurrentModeEditor().moveCursorTo(line, focus);
+  }
+
+  /**
    * Set markdown syntax text.
    * @param {string} markdown - markdown syntax text.
    * @param {boolean} [cursorToEnd=true] - move cursor to contents end
