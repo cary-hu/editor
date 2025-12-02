@@ -122,3 +122,9 @@
   background-color: var(--toastui-editor-mode-switch-bg-color-active);
   color: var(--toastui-editor-color);
 }
+
+/* Cursor line highlight */
+.toastui-editor-md-container .toastui-editor-md-cursor-line {
+  background-color: var(--toastui-editor-cursor-line-bg-color, rgba(0, 0, 0, 0.04));
+  border-radius: 2px;
+}

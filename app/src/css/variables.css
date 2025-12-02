@@ -48,6 +48,9 @@
     --toastui-editor-content-link-color: #0d6efd;
     --toastui-editor-content-link-hover-color: #0a58ca;
 
+    /* Define the cursor line highlight color */
+    --toastui-editor-cursor-line-bg-color: rgba(0, 0, 0, 0.04);
+
 
     --toastui-editor-primary-text-emphasis: #052c65;
     --toastui-editor-secondary-text-emphasis: #2b2f32;

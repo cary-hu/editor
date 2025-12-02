@@ -16,6 +16,7 @@ import { emitImageBlobHook, pasteImageOnly } from '@/helper/image';
 import { createParagraph, createTextSelection } from '@/helper/manipulation';
 import { syntaxHighlight } from './plugins/syntaxHighlight';
 import { previewHighlight } from './plugins/previewHighlight';
+import { cursorLineHighlight } from './plugins/cursorLineHighlight';
 import { Doc } from './nodes/doc';
 import { Paragraph } from './nodes/paragraph';
 import { Text } from './nodes/text';
@@ -170,6 +171,7 @@ export default class MdEditor extends EditorBase {
     return [
       syntaxHighlight(this.context),
       previewHighlight(this.context),
+      cursorLineHighlight(this.context),
       smartTask(this.context),
       ...this.createPluginProps(),
     ].concat(this.defaultPlugins);
