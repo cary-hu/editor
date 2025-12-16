@@ -28,7 +28,7 @@ class ToastUIEditor extends EditorCore {
           hideModeSwitch=${this.options.hideModeSwitch}
           toolbarItems=${this.options.toolbarItems}
           previewStyle=${this.options.previewStyle}
-          editorType=${this.options.initialEditType}
+          editorType=${this.options.initialEditType || 'markdown'}
           theme=${this.options.theme}
         />
       ` as VNode
