@@ -5,6 +5,7 @@ import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { InputRule, inputRules } from 'prosemirror-inputrules';
 import { history } from 'prosemirror-history';
+import { gapCursor } from 'prosemirror-gapcursor';
 import { Sourcepos } from '@toast-ui/toastmark';
 import css from 'tui-code-snippet/domUtil/css';
 import { WidgetStyle, EditorType, EditorPos, Base, NodeRangeInfo } from '@t/editor';
@@ -90,6 +91,7 @@ export default abstract class EditorBase implements Base {
         ...baseKeymap,
       }),
       history(),
+      gapCursor(),
       placeholder(this.placeholder),
       addWidget(this.eventEmitter),
       dropImage(this.context),

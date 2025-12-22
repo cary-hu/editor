@@ -1,5 +1,5 @@
 import isArray from 'tui-code-snippet/type/isArray';
-import { Plugin, PluginKey, Selection, TextSelection } from 'prosemirror-state';
+import { Plugin, PluginKey, Selection, TextSelection, NodeSelection } from 'prosemirror-state';
 import { inputRules, InputRule, undoInputRule } from 'prosemirror-inputrules';
 import { Decoration, DecorationSet } from 'prosemirror-view';
 import { keymap } from 'prosemirror-keymap';
@@ -14,7 +14,7 @@ import { mixinTableOffsetMapPrototype } from '@/wysiwyg/helper/tableOffsetMap';
 function execPlugin(pluginInfo: EditorPluginInfo) {
   const { plugin, eventEmitter, usageStatistics, instance } = pluginInfo;
 
-  const pmState = { Plugin, PluginKey, Selection, TextSelection };
+  const pmState = { Plugin, PluginKey, Selection, TextSelection, NodeSelection };
   const pmView = { Decoration, DecorationSet };
   const pmModel = { Fragment };
   const pmRules = { InputRule, inputRules, undoInputRule };

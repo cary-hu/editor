@@ -16,6 +16,8 @@ const content = [
     '',
     '## Features',
     '',
+    '<video src="https://developer.mozilla.org/shared-assets/videos/flower.mp4"></video>',
+    '',
     '* CommonMark + GFM Specifications',
     '   * Live Preview',
     '   * Scroll Sync',
@@ -45,7 +47,7 @@ const content = [
     '>    3. [ ] Ember',
 ].join('\n');
 
-const editor = new Editor({
+new Editor({
     el: document.querySelector('#editor')!,
     previewStyle: 'vertical',
     height: '100vh',
@@ -55,5 +57,20 @@ const editor = new Editor({
     frontMatter: true,
     initialValue: content,
     usageStatistics: false,
+    plugins: [
+        () => {
+            return {
+                toHTMLRenderers: {
+                    htmlInline: {
+                        video(node: any, { entering }: any) {
+                            return entering
+                                ? { type: 'openTag', tagName: 'video', attributes: node.attrs! }
+                                : { type: 'closeTag', tagName: 'video' };
+                        },
+                    },
+                },
+            }
+        }
+    ],
 });
 

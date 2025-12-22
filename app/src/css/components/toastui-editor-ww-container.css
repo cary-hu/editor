@@ -154,3 +154,30 @@
     color: var(--toastui-editor-primary-text-emphasis);
     background-color: var(--toastui-editor-primary-bg-subtle);
 }
+
+/* Gap Cursor Styles - for navigating around atom nodes (video, iframe, etc.) */
+.ProseMirror-gapcursor {
+    display: none;
+    pointer-events: none;
+    position: absolute;
+}
+
+.ProseMirror-gapcursor:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -2px;
+    width: 20px;
+    border-top: 1px solid var(--toastui-editor-color, #000);
+    animation: ProseMirror-cursor-blink 1.1s steps(2, start) infinite;
+}
+
+@keyframes ProseMirror-cursor-blink {
+    to {
+        visibility: hidden;
+    }
+}
+
+.ProseMirror-focused .ProseMirror-gapcursor {
+    display: block;
+}

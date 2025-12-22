@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
 import { includes } from '@/utils/common';
 
-const CAN_BE_WHITE_TAG_LIST = ['iframe', 'embed'];
+const CAN_BE_WHITE_TAG_LIST = ['iframe', 'embed', 'video'];
 const whiteTagList: string[] = [];
 
 export function registerTagWhitelistIfPossible(tagName: string) {

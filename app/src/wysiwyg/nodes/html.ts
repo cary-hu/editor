@@ -60,6 +60,10 @@ export function sanitizeDOM(
   return { dom, htmlAttrs };
 }
 
+// Tags that should be treated as inline atom nodes instead of marks
+// These are empty/self-closing tags that don't wrap text content
+const INLINE_ATOM_TAGS = ['video', 'audio', 'source', 'track'];
+
 const schemaFactory = {
   htmlBlock(typeName: string, sanitizeHTML: Sanitizer, wwToDOMAdaptor: ToDOMAdaptor): NodeSpec {
     return {
@@ -91,6 +95,34 @@ const schemaFactory = {
       },
     };
   },
+  // For inline atom nodes like video, audio - they are inline but don't wrap text
+  htmlInlineNode(typeName: string, sanitizeHTML: Sanitizer, wwToDOMAdaptor: ToDOMAdaptor): NodeSpec {
+    return {
+      inline: true,
+      atom: true,
+      selectable: true,
+      group: 'inline',
+      attrs: {
+        htmlAttrs: { default: {} },
+        htmlInline: { default: true },
+      },
+      parseDOM: [
+        {
+          tag: typeName,
+          getAttrs(dom: Node | string) {
+            return {
+              htmlAttrs: getHTMLAttrs(dom as HTMLElement),
+            };
+          },
+        },
+      ],
+      toDOM(node: ProsemirrorNode): DOMOutputSpec {
+        const { htmlAttrs } = sanitizeDOM(node, typeName, sanitizeHTML, wwToDOMAdaptor);
+
+        return [typeName, htmlAttrs];
+      },
+    };
+  },
   htmlInline(typeName: string, sanitizeHTML: Sanitizer, wwToDOMAdaptor: ToDOMAdaptor): MarkSpec {
     return {
       attrs: {
@@ -116,6 +148,10 @@ const schemaFactory = {
   },
 };
 
+export function isInlineAtomTag(tagName: string): boolean {
+  return INLINE_ATOM_TAGS.includes(tagName.toLowerCase());
+}
+
 export function createHTMLSchemaMap(
   convertorMap: CustomHTMLRenderer,
   sanitizeHTML: Sanitizer,
@@ -126,15 +162,20 @@ export function createHTMLSchemaMap(
   (['htmlBlock', 'htmlInline'] as const).forEach((htmlType) => {
     if (convertorMap[htmlType]) {
       Object.keys(convertorMap[htmlType]!).forEach((type) => {
-        const targetType = htmlType === 'htmlBlock' ? 'nodes' : 'marks';
-
         // register tag white list for preventing to remove the html in sanitizer
         registerTagWhitelistIfPossible(type);
-        htmlSchemaMap[targetType][type] = schemaFactory[htmlType](
-          type,
-          sanitizeHTML,
-          wwToDOMAdaptor
-        );
+
+        if (htmlType === 'htmlBlock') {
+          // Block level HTML elements -> nodes
+          htmlSchemaMap.nodes[type] = schemaFactory.htmlBlock(type, sanitizeHTML, wwToDOMAdaptor);
+        } else if (isInlineAtomTag(type)) {
+          // Inline atom tags (video, audio, etc.) -> nodes (not marks)
+          // These are inline but don't wrap text content
+          htmlSchemaMap.nodes[type] = schemaFactory.htmlInlineNode(type, sanitizeHTML, wwToDOMAdaptor);
+        } else {
+          // Regular inline HTML elements -> marks
+          htmlSchemaMap.marks[type] = schemaFactory.htmlInline(type, sanitizeHTML, wwToDOMAdaptor);
+        }
       });
     }
   });

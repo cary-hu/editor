@@ -231,6 +231,22 @@ table.ProseMirror-selectednode {
   border: 1px solid transparent;
 }
 
+.toastui-editor-contents video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 10px 0;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.toastui-editor-contents video:focus,
+.toastui-editor-contents video.ProseMirror-selectednode {
+  border-color: var(--toastui-editor-selection-color, #4b96e6);
+  outline: none;
+}
+
 .toastui-editor-contents figure {
   margin: 0;
   padding: 0;

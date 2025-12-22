@@ -26,7 +26,7 @@ import {
 
 import { ToWwConvertorMap } from '@t/convertor';
 import { createWidgetContent, getWidgetContent } from '@/widget/rules';
-import { getChildrenHTML, getHTMLAttrsByHTMLString } from '@/wysiwyg/nodes/html';
+import { getChildrenHTML, getHTMLAttrsByHTMLString, isInlineAtomTag } from '@/wysiwyg/nodes/html';
 import { includes } from '@/utils/common';
 import { reBR, reHTMLTag, reHTMLComment } from '@/utils/constants';
 import { sanitizeHTML } from '@/sanitizer/htmlSanitizer';
@@ -321,9 +321,20 @@ const toWwConvertors: ToWwConvertorMap = {
     const [, openTagName, , closeTagName] = matched;
     const typeName = (openTagName || closeTagName).toLowerCase();
     const markType = state.schema.marks[typeName];
+    const nodeType = state.schema.nodes[typeName];
     const sanitizedHTML = sanitizeHTML(html);
 
-    // for user defined html schema
+    // Handle inline atom nodes (video, audio, etc.) - they are nodes, not marks
+    if (isInlineAtomTag(typeName) && nodeType?.spec.attrs?.htmlInline) {
+      // Only process on opening tag, skip closing tag
+      if (openTagName) {
+        const htmlAttrs = getHTMLAttrsByHTMLString(sanitizedHTML);
+        state.addNode(nodeType, { htmlAttrs });
+      }
+      return;
+    }
+
+    // for user defined html schema (marks)
     if (markType?.spec.attrs!.htmlInline) {
       if (openTagName) {
         const htmlAttrs = getHTMLAttrsByHTMLString(sanitizedHTML);
