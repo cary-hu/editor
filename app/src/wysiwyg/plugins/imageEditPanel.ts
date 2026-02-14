@@ -320,6 +320,8 @@ class ImageEditPanelView extends EditPanel {
           <button type="button" class="preset-btn" data-size="150">150px</button>
           <button type="button" class="preset-btn" data-size="250">250px</button>
           <button type="button" class="preset-btn" data-size="400">400px</button>
+          <button type="button" class="preset-btn" data-size="600">600px</button>
+          <button type="button" class="preset-btn" data-size="800">800px</button>
         </div>
       </div>
       <div class="dialog-section">
