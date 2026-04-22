@@ -9,7 +9,7 @@ describe('image processor', () => {
   });
 
   function mockReadAsDataURL() {
-    jest
+    vi
       .spyOn(FileReader.prototype, 'readAsDataURL')
       .mockImplementation(function (this: FileReader) {
         const ev = { target: { result: '/file.jpg' } } as ProgressEvent<FileReader>;
@@ -19,7 +19,7 @@ describe('image processor', () => {
   }
 
   it('should call addImageBlobHook hook on calling emitImageBlobHook function', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
     const file = new File([new ArrayBuffer(1)], 'file.jpg');
 
     em.listen('addImageBlobHook', spy);
@@ -32,7 +32,7 @@ describe('image processor', () => {
     addDefaultImageBlobHook(em);
     mockReadAsDataURL();
 
-    const spy = jest.fn();
+    const spy = vi.fn();
     const file = new File([new ArrayBuffer(1)], 'file.jpg');
 
     em.listen('command', spy);

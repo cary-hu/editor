@@ -44,15 +44,22 @@ if (!pkg) {
 
 const spawnConfiguration = {
   stdio: 'inherit',
-  shell: process.env.SHELL || 'bash.exe',
-}
+};
 
 let childProcess;
 
 if (script === 'test') {
-  childProcess = spawn('jest', ['--watch', '--projects', path], spawnConfiguration);
+  childProcess = spawn(
+    process.execPath,
+    [require.resolve('vitest/vitest.mjs'), '--config', `${path}/vitest.config.ts`, '--watch'],
+    spawnConfiguration
+  );
 } else {
-  childProcess = spawn('lerna', ['run', '--stream', '--scope', pkg, script], spawnConfiguration);
+  childProcess = spawn(
+    process.execPath,
+    [require.resolve('lerna/dist/cli.js'), 'run', '--stream', '--scope', pkg, script],
+    spawnConfiguration
+  );
 }
 
 childProcess

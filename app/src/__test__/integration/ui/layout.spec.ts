@@ -115,7 +115,7 @@ describe('layout component', () => {
 
   describe('changing editor mode', () => {
     it('should trigger needChangeMode when clicking the switch button', () => {
-      const spy = jest.fn();
+      const spy = vi.fn();
 
       em.listen('needChangeMode', spy);
 
@@ -235,8 +235,8 @@ describe('layout component', () => {
     });
 
     it('should emit changePreviewTabWrite, changePreviewTabPreview events by clicking markdown tab', () => {
-      const spy1 = jest.fn();
-      const spy2 = jest.fn();
+      const spy1 = vi.fn();
+      const spy2 = vi.fn();
 
       em.listen('changePreviewTabWrite', spy1);
       em.listen('changePreviewTabPreview', spy2);

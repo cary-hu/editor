@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 import { oneLineTrim } from 'common-tags';
 import { render } from '@/ui/vdom/renderer';
 import { Component } from '@/ui/vdom/component';
@@ -5,10 +6,10 @@ import { VNode } from '@/ui/vdom/vnode';
 import html from '@/ui/vdom/template';
 
 interface Props {
-  mounted?: jest.Mock;
-  updated?: jest.Mock;
-  beforeDestroy?: jest.Mock;
-  refDOM?: jest.Mock<any, [HTMLElement]>;
+  mounted?: Mock;
+  updated?: Mock;
+  beforeDestroy?: Mock;
+  refDOM?: Mock;
 }
 
 interface State {
@@ -179,7 +180,7 @@ describe('Class Component', () => {
     container.querySelectorAll('button')[2].click();
   }
 
-  function renderComponent(spies?: Record<string, jest.Mock>) {
+  function renderComponent(spies?: Record<string, Mock>) {
     container = document.createElement('div');
 
     destroy = render(container, html`<${TestComponent} ...${spies} />` as VNode);
@@ -254,7 +255,7 @@ describe('Class Component', () => {
   });
 
   it('should call ref function with DOM after rendering the component', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
 
     renderComponent({ refDOM: spy });
 
@@ -262,7 +263,7 @@ describe('Class Component', () => {
   });
 
   it('should call ref function with component after rendering the component', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
 
     renderComponent({ ref: spy });
 
@@ -270,7 +271,7 @@ describe('Class Component', () => {
   });
 
   it('should call mounted life cycle method ', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
 
     renderComponent({ mounted: spy });
 
@@ -278,7 +279,7 @@ describe('Class Component', () => {
   });
 
   it('should call mounted life cycle method once', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
 
     renderComponent({ mounted: spy });
     clickHideBtn();
@@ -287,7 +288,7 @@ describe('Class Component', () => {
   });
 
   it('should call updated life cycle method after component is updated', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
 
     renderComponent({ updated: spy });
 
@@ -297,7 +298,7 @@ describe('Class Component', () => {
   });
 
   it('should call beforeDestroy life cycle method after component is destroyed', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
 
     renderComponent({ beforeDestroy: spy });
 

@@ -170,7 +170,7 @@ describe('video html compatibility', () => {
     const range = requireVideoRange();
     const before = requireTextblockRange('before');
     const after = requireTextblockRange('after');
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     try {
       wwe.view.dispatch(
@@ -219,7 +219,7 @@ describe('video html compatibility', () => {
     const features = requireTextblockRange('Features');
     const commonMark = requireTextblockRange('CommonMark + GFM Specifications');
     const video = wwe.view.dom.querySelector('video') as HTMLVideoElement;
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     try {
       wwe.view.dispatch(
@@ -263,7 +263,7 @@ describe('video html compatibility', () => {
     const features = requireTextblockRange('Features');
     const commonMark = requireTextblockRange('CommonMark + GFM Specifications');
     const video = wwe.view.dom.querySelector('video') as HTMLVideoElement;
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     try {
       wwe.view.dispatch(
@@ -296,7 +296,7 @@ describe('video html compatibility', () => {
     const range = requireVideoRange();
     const features = requireTextblockRange('Features');
     const video = wwe.view.dom.querySelector('video') as HTMLVideoElement;
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     try {
       wwe.view.dispatch(
@@ -334,7 +334,7 @@ describe('video html compatibility', () => {
     const range = requireVideoRange();
     const after = requireTextblockRange('after');
     const video = wwe.view.dom.querySelector('video') as HTMLVideoElement;
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     try {
       wwe.view.dispatch(

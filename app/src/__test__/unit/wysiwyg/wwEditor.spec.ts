@@ -9,7 +9,7 @@ import { createHTMLSchemaMap } from '@/wysiwyg/nodes/html';
 import { sanitizeHTML } from '@/sanitizer/htmlSanitizer';
 import { createHTMLrenderer } from '../markdown/util';
 
-jest.useFakeTimers();
+vi.useFakeTimers();
 
 describe('WysiwygEditor', () => {
   let wwe: WysiwygEditor, em: EventEmitter, el: HTMLElement;
@@ -48,7 +48,7 @@ describe('WysiwygEditor', () => {
   });
 
   afterEach(() => {
-    jest.clearAllTimers();
+    vi.clearAllTimers();
     if (Object.keys(wwe).length) {
       wwe.destroy();
     }
@@ -66,7 +66,7 @@ describe('WysiwygEditor', () => {
       wwe.focus();
 
       // run setTimeout function when focusing the editor
-      jest.runAllTimers();
+      vi.runAllTimers();
 
       expect(document.activeElement).toEqual(wwe.view.dom);
     });
@@ -168,7 +168,7 @@ describe('WysiwygEditor', () => {
       <p>bar</p>
     `);
 
-    const spy = jest.fn();
+    const spy = vi.fn();
 
     em.listen('changeToolbarState', spy);
 

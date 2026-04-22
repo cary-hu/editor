@@ -9,13 +9,13 @@ function getHTML(preview: MarkdownPreview) {
   return removeDataAttr(preview.getHTML());
 }
 
-jest.useFakeTimers();
+vi.useFakeTimers();
 
 describe('Preview', () => {
   let eventEmitter: EventEmitter, preview: MarkdownPreview;
 
   beforeEach(() => {
-    jest.spyOn(sanitizer, 'sanitizeHTML');
+    vi.spyOn(sanitizer, 'sanitizeHTML');
 
     const options = {
       linkAttributes: null,
@@ -31,7 +31,7 @@ describe('Preview', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
     preview.destroy();
   });
 
@@ -106,7 +106,7 @@ describe('preview highlight', () => {
   }
 
   afterEach(() => {
-    jest.clearAllTimers();
+    vi.clearAllTimers();
     document.body.removeChild(editorEl);
     editor.destroy();
     preview.destroy();
@@ -207,7 +207,7 @@ describe('preview highlight', () => {
     setCursor([1, 1]);
 
     // run setTimeout function when focusing the editor
-    jest.runAllTimers();
+    vi.runAllTimers();
 
     expect(getHighlightedCount()).toBe(1);
 

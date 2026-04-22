@@ -82,6 +82,7 @@ describe('lit-html syntax', () => {
   });
 
   it('should be not converted with null, undefined, false value', () => {
+    const invalidValues: Array<VNode | null | undefined | false> = [null, undefined, false];
     const expected = {
       type: 'div',
       props: {
@@ -98,12 +99,7 @@ describe('lit-html syntax', () => {
 
     const vnode = html`
       <div class="my-class">
-        ${null && html`<span>123</span>`}
-        ${
-          // eslint-disable-next-line no-undefined
-          undefined && html`<span>123</span>`
-        }
-        ${false && html`<span>123</span>`}test
+        ${invalidValues.map((value) => (value ? html`<span>123</span>` : value))}test
       </div>
     ` as VNode;
 

@@ -79,7 +79,7 @@ describe('Default toolbar', () => {
   });
 
   it('should trigger command event when clicking toolbar button', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
 
     editor.eventEmitter.listen('command', spy);
     screen.getByLabelText('Bold').click();
@@ -109,7 +109,7 @@ describe('Default toolbar', () => {
     });
 
     it('should trigger command event with state', () => {
-      const spy = jest.fn();
+      const spy = vi.fn();
 
       editor.eventEmitter.listen('command', spy);
 
@@ -482,6 +482,11 @@ describe('API', () => {
     });
 
     document.body.appendChild(el);
+
+    Object.defineProperty(getElement(`.${cls('defaultUI-toolbar')}`), 'clientWidth', {
+      configurable: true,
+      value: 1024,
+    });
   });
 
   afterEach(() => {

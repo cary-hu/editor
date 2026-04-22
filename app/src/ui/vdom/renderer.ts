@@ -10,7 +10,9 @@ function destroy(vnode: VNode) {
   VNode.removalNodes = [];
 }
 
-export function rerender(comp: Component) {
+export function rerender<T extends Record<string, any>, R extends Record<string, any>>(
+  comp: Component<T, R>
+) {
   const root = comp.vnode;
 
   root.effect = 'U';

@@ -109,7 +109,7 @@ describe('editor', () => {
       });
 
       it('should not trigger change event when the mode is wysiwyg', () => {
-        const spy = jest.fn();
+        const spy = vi.fn();
 
         editor.changeMode('wysiwyg');
         editor.on('change', spy);
@@ -153,7 +153,7 @@ describe('editor', () => {
     });
 
     it('changeMode()', () => {
-      const spy = jest.fn();
+      const spy = vi.fn();
 
       expect(editor.isMarkdownMode()).toBe(true);
       expect(editor.isWysiwygMode()).toBe(false);
@@ -167,7 +167,7 @@ describe('editor', () => {
     });
 
     it('changePreviewStyle()', () => {
-      const spy = jest.fn();
+      const spy = vi.fn();
 
       expect(editor.getCurrentPreviewStyle()).toBe('tab');
 
@@ -370,7 +370,7 @@ describe('editor', () => {
 
     it('exec()', () => {
       // @ts-ignore
-      jest.spyOn(editor.commandManager, 'exec');
+      vi.spyOn(editor.commandManager, 'exec');
 
       editor.exec('bold');
 
@@ -380,7 +380,7 @@ describe('editor', () => {
     });
 
     it('addCommand()', () => {
-      const spy = jest.fn();
+      const spy = vi.fn();
       // @ts-ignore
       const { view } = editor.mdEditor;
       const { state, dispatch } = view;
@@ -393,7 +393,7 @@ describe('editor', () => {
     });
 
     it('should be triggered only once when the event registered by addHook()', () => {
-      const spy = jest.fn();
+      const spy = vi.fn();
       const { eventEmitter } = editor;
 
       eventEmitter.addEventType('custom');
@@ -632,7 +632,7 @@ describe('editor', () => {
     it('setLanguage()', () => {
       const data = {};
 
-      jest.spyOn(i18n, 'setLanguage');
+      vi.spyOn(i18n, 'setLanguage');
 
       Editor.setLanguage('ko', data);
 
@@ -664,8 +664,8 @@ describe('editor', () => {
 
     describe('plugins', () => {
       it('should invoke plugin functions', () => {
-        const fooPlugin = jest.fn().mockReturnValue({});
-        const barPlugin = jest.fn().mockReturnValue({});
+        const fooPlugin = vi.fn().mockReturnValue({});
+        const barPlugin = vi.fn().mockReturnValue({});
 
         createEditor({ el: container, plugins: [fooPlugin, barPlugin] });
 
@@ -677,7 +677,7 @@ describe('editor', () => {
       });
 
       it('should invoke plugin function with options of plugin', () => {
-        const plugin = jest.fn().mockReturnValue({});
+        const plugin = vi.fn().mockReturnValue({});
         const options = {};
 
         createEditor({ el: container, plugins: [[plugin, options]] });
@@ -692,7 +692,7 @@ describe('editor', () => {
       });
 
       it(`should add command to command manager when plugin return 'markdownCommands' value`, () => {
-        const spy = jest.fn();
+        const spy = vi.fn();
         const plugin = () => {
           return {
             markdownCommands: {
@@ -712,7 +712,7 @@ describe('editor', () => {
       });
 
       it(`should add command to command manager when plugin return 'wysiwygCommands' value`, () => {
-        const spy = jest.fn();
+        const spy = vi.fn();
         const plugin = () => {
           return {
             wysiwygCommands: {
@@ -754,11 +754,11 @@ describe('editor', () => {
 
     describe('usageStatistics', () => {
       afterEach(() => {
-        jest.restoreAllMocks();
+        vi.restoreAllMocks();
       });
 
       it('should send request hostname in payload by default', () => {
-        const sendHostNameSpy = jest.spyOn(commonUtil, 'sendHostName');
+        const sendHostNameSpy = vi.spyOn(commonUtil, 'sendHostName');
 
         createEditor({ el: container });
 
@@ -766,7 +766,7 @@ describe('editor', () => {
       });
 
       it('should not send request if the option is set to false', () => {
-        const sendHostNameSpy = jest.spyOn(commonUtil, 'sendHostName');
+        const sendHostNameSpy = vi.spyOn(commonUtil, 'sendHostName');
 
         createEditor({ el: container, usageStatistics: false });
 
@@ -889,7 +889,7 @@ describe('editor', () => {
 
     describe('customHTMLSanitizer option', () => {
       it('should replace default sanitizer with custom sanitizer', () => {
-        const customHTMLSanitizer = jest.fn();
+        const customHTMLSanitizer = vi.fn();
 
         createEditor({ el: container, customHTMLSanitizer });
 
@@ -995,12 +995,12 @@ describe('editor', () => {
     });
 
     describe('hooks option', () => {
-      const defaultImageBlobHookSpy = jest.fn();
+      const defaultImageBlobHookSpy = vi.fn();
 
       function mockDefaultImageBlobHook() {
         defaultImageBlobHookSpy.mockReset();
 
-        jest
+        vi
           .spyOn(imageHelper, 'addDefaultImageBlobHook')
           .mockImplementation((emitter: Emitter) => {
             emitter.listen('addImageBlobHook', defaultImageBlobHookSpy);
@@ -1008,7 +1008,7 @@ describe('editor', () => {
       }
 
       it('should remove default `addImageBlobHook` event handler after registering hook', () => {
-        const spy = jest.fn();
+        const spy = vi.fn();
 
         mockDefaultImageBlobHook();
 

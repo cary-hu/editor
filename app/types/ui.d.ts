@@ -30,7 +30,10 @@ export type ToolbarButtonInfo = {
   hidden?: boolean;
 } & ToolbarButtonOptions;
 
-export interface Component<T = {}, R = {}> {
+export interface Component<
+  T extends Record<string, any> = Record<string, any>,
+  R extends Record<string, any> = Record<string, any>,
+> {
   props: T;
   prevProps?: T;
   state: R;

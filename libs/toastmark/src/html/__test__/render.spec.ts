@@ -54,7 +54,7 @@ describe('nodeId options', () => {
 
 describe('convertors options', () => {
   it('should pass the context object to convertor', () => {
-    const spy = jest.fn(() => null);
+    const spy = vi.fn(() => null);
     const options = {
       gfm: true,
       softbreak: '<br />\n',
@@ -109,7 +109,7 @@ describe('convertors options', () => {
 
 describe('gfm convertors', () => {
   it('should apply custom renderer without changing node type to lower case', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
 
     const renderer = new Renderer({
       gfm: true,

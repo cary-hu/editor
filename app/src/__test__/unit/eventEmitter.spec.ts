@@ -1,4 +1,7 @@
 import EventEmitter from '@/event/eventEmitter';
+import type { Handler } from '@t/event';
+
+type HandlerSpy = Handler & ReturnType<typeof vi.fn>;
 
 /* eslint-disable @typescript-eslint/no-empty-function */
 describe('eventEmitter', () => {
@@ -37,7 +40,7 @@ describe('eventEmitter', () => {
     });
 
     it('should emit and listen event', () => {
-      const spy = jest.fn();
+      const spy = vi.fn() as HandlerSpy;
 
       emitter.listen('testEvent', spy);
       emitter.emit('testEvent');
@@ -61,7 +64,7 @@ describe('eventEmitter', () => {
     });
 
     it('should return the empty array if listener have not return value', () => {
-      emitter.listen('testEvent', jest.fn());
+      emitter.listen('testEvent', vi.fn() as HandlerSpy);
 
       const result = emitter.emit('testEvent');
 
@@ -69,7 +72,7 @@ describe('eventEmitter', () => {
     });
 
     it('should trigger the event handler added with namespace', () => {
-      const spy = jest.fn();
+      const spy = vi.fn() as HandlerSpy;
 
       emitter.listen('testEvent.ns', spy);
       emitter.emit('testEvent');
@@ -128,11 +131,11 @@ describe('eventEmitter', () => {
   });
 
   describe('remove handler', () => {
-    let handlerBeRemoved: jest.Mock, handlerBeRemained: jest.Mock;
+    let handlerBeRemoved: HandlerSpy, handlerBeRemained: HandlerSpy;
 
     beforeEach(() => {
-      handlerBeRemoved = jest.fn();
-      handlerBeRemained = jest.fn();
+      handlerBeRemoved = vi.fn() as HandlerSpy;
+      handlerBeRemained = vi.fn() as HandlerSpy;
 
       emitter.addEventType('myEvent');
       emitter.addEventType('myEvent2');
@@ -203,7 +206,7 @@ describe('eventEmitter', () => {
   });
 
   describe('hold event', () => {
-    let handler: jest.Mock;
+    let handler: HandlerSpy;
 
     function triggerEvent(apiName: 'emit' | 'emitReduce') {
       if (apiName === 'emit') {
@@ -214,7 +217,7 @@ describe('eventEmitter', () => {
     }
 
     beforeEach(() => {
-      handler = jest.fn();
+      handler = vi.fn() as HandlerSpy;
 
       emitter.addEventType('myEvent');
 

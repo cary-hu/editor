@@ -1,0 +1,14 @@
+import { defineProject, mergeConfig } from 'vitest/config';
+import shared from '../../vitest.shared';
+
+export default mergeConfig(
+  shared,
+  defineProject({
+    root: __dirname,
+    test: {
+      name: 'toastmark',
+      environment: 'node',
+      include: ['src/**/__test__/**/*.spec.ts'],
+    },
+  })
+);
