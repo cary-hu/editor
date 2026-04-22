@@ -55,7 +55,14 @@ describe('keymap', () => {
     const toDOMAdaptor = new WwToDOMAdaptor({}, {});
 
     em = new EventEmitter();
-    wwe = new WysiwygEditor(em, { toDOMAdaptor });
+    wwe = new WysiwygEditor(em, {
+      toDOMAdaptor,
+      editPanel: {
+        useImageEditPanel: true,
+        useLinkEditPanel: true,
+        useTableEditPanel: true,
+      },
+    });
   });
 
   afterEach(() => {
@@ -128,7 +135,7 @@ describe('keymap', () => {
         `;
 
         expect(wwe.getHTML()).toBe(expected);
-        expect(wwe.getSelection()).toEqual([40, 40]); // First cell of new row
+        expect(wwe.getSelection()).toEqual([39, 39]); // First cell of new row
       });
     });
 

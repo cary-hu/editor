@@ -17,10 +17,8 @@ function fireMousemoveEvent(el: HTMLElement, x: number, y: number) {
     cancelable: true,
   });
 
-  // @ts-ignore
-  event.pageX = x;
-  // @ts-ignore
-  event.pageY = y;
+  Object.defineProperty(event, 'pageX', { value: x });
+  Object.defineProperty(event, 'pageY', { value: y });
 
   fireEvent(el, event);
 }
@@ -254,7 +252,7 @@ describe('Default toolbar', () => {
       getByLabelText(imagePopup, 'URL').click();
 
       const urlText = getByText(imagePopup, 'Image URL').nextElementSibling as HTMLInputElement;
-      const descriptionText = getByText(imagePopup, 'Description')
+      const descriptionText = getByText(imagePopup, 'Alt Text')
         .nextElementSibling as HTMLInputElement;
       const OkBtn = getByText(imagePopup, 'OK');
 
@@ -267,8 +265,7 @@ describe('Default toolbar', () => {
     });
 
     it('should add wrong class when url or text are not filled out', () => {
-      const fileText = getByText(imagePopup, 'Select image file')
-        .nextElementSibling as HTMLInputElement;
+      const fileText = imagePopup.querySelector(`.${cls('file-name')}`)! as HTMLElement;
       const urlText = getByText(imagePopup, 'Image URL').nextElementSibling as HTMLInputElement;
       const OkBtn = getByText(imagePopup, 'OK');
 

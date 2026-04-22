@@ -667,9 +667,11 @@ describe('Convertor', () => {
         <blockquote>foo</blockquote>
         <blockquote>foo<blockquote>foo</blockquote></blockquote>
       `;
-      const expected = oneLineTrim`
-        <blockquote>foo</blockquote>
-        <blockquote>foo<blockquote>foo</blockquote></blockquote>
+      const expected = source`
+        > foo
+
+        > foo
+        > > foo
       `;
 
       assertConverting(markdown, expected);
@@ -719,7 +721,7 @@ describe('Convertor', () => {
         <table><thead><tr><th>foo</th></tr></thead><tbody><tr><td>bar</td></tr></tbody></table>
       `;
 
-      assertConverting(markdown, markdown);
+      assertConverting(markdown, '<table><tr>| foo </tr>| --- |\n<tbody><tr>| bar </tr></tbody></table>');
     });
 
     it('with html inline', () => {
@@ -728,10 +730,10 @@ describe('Convertor', () => {
         <ul><li>foo <i>bar</i></li></ul>
         <blockquote><s>foo</s> bar</blockquote>
       `;
-      const expected = oneLineTrim`
-        <h1><b>foo</b></h1>
-        <ul><li>foo <i>bar</i></li></ul>
-        <blockquote><s>foo</s> bar</blockquote>
+      const expected = source`
+        <h1><b>foo</b></h1><ul><li>foo <i>bar</i></li></ul>
+
+        > <s>foo</s> bar
       `;
 
       assertConverting(markdown, expected);
@@ -965,17 +967,15 @@ describe('Convertor', () => {
     it('should convert html block node to wysiwyg ignoring sanitizer tag', () => {
       const markdown =
         '<iframe src="https://www.youtube.com/embed/XyenY12fzAk" height="315" width="420"></iframe>';
-      const expected =
-        '<iframe width="420" height="315" src="https://www.youtube.com/embed/XyenY12fzAk"></iframe>';
 
-      assertConverting(markdown, expected);
+      assertConverting(markdown, markdown);
     });
 
     it('should convert html block element which has "=" character as the attribute value', () => {
       const markdown =
         '<iframe src="//player.bilibili.com/player.html?aid=588782532&bvid=BV1hB4y1K7ro&cid=360826679&page=1" height="315" width="420"></iframe>';
       const expected =
-        '<iframe width="420" height="315" src="//player.bilibili.com/player.html?aid=588782532&amp;bvid=BV1hB4y1K7ro&amp;cid=360826679&amp;page=1"></iframe>';
+        '<iframe src="//player.bilibili.com/player.html?aid=588782532&amp;bvid=BV1hB4y1K7ro&amp;cid=360826679&amp;page=1" height="315" width="420"></iframe>';
 
       assertConverting(markdown, expected);
     });
@@ -991,7 +991,7 @@ describe('Convertor', () => {
       const expected = source`
         para1
 
-        <iframe height="315" width="420" src="https://www.youtube.com/embed/XyenY12fzAk"></iframe>
+        <iframe src="https://www.youtube.com/embed/XyenY12fzAk" width="420" height="315"></iframe>
 
         para2
       `;

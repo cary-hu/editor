@@ -68,7 +68,7 @@ describe('widgetNode', () => {
       editor.replaceWithWidget([1, 1], [1, 3], '@test');
 
       const expectedEditor = oneLineTrim`
-        <div>
+        <div class="toastui-editor-md-cursor-line">
           <span class="tui-widget">
             <span><a href="www.google.com">@test</a></span>
           </span>

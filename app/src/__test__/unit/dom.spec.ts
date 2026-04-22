@@ -215,7 +215,7 @@ describe('dom utils', () => {
     });
 
     it('type selector from element node', () => {
-      const selector = 'UL';
+      const selector = 'ul';
       const target = container.querySelector('li')!;
 
       const foundNode = closest(target, selector);

@@ -50,7 +50,7 @@ describe('Viewer', () => {
     viewer.setMarkdown('> block quote\n# heading *emph*');
 
     const expected = oneLineTrim`
-      <blockquote><p>block quote</p></blockquote>
+      <blockquote data-block-quote-type="default"><p>block quote</p></blockquote>
       <h1>
         heading <em>emph</em>
       </h1>
@@ -65,7 +65,7 @@ describe('Viewer', () => {
     );
 
     const expected =
-      '<iframe width="420" height="315" src="https://www.youtube.com/embed/XyenY12fzAk"></iframe>';
+      '<iframe src="https://www.youtube.com/embed/XyenY12fzAk" height="315" width="420"></iframe>';
 
     expect(getViewerHTML()).toBe(expected);
   });

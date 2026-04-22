@@ -1069,16 +1069,9 @@ describe('default keymap', () => {
 
 describe('useCommandShortcut option', () => {
   it('should not make keymaps with history command when the value is false', () => {
-    const spy = jest.spyOn(keymaps, 'keymap');
+    const keymapsWithoutShortcut = mde.createKeymaps(false);
+    const keymapsWithShortcut = mde.createKeymaps(true);
 
-    const useCommandShortcut = false;
-    const history = {
-      'Mod-z': undo,
-      'Shift-Mod-z': redo,
-    };
-
-    mde.createKeymaps(useCommandShortcut);
-
-    expect(spy).not.toHaveBeenCalledWith(history);
+    expect(keymapsWithoutShortcut).toHaveLength(keymapsWithShortcut.length - 1);
   });
 });

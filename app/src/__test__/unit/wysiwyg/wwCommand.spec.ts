@@ -53,7 +53,14 @@ describe('wysiwyg commands', () => {
     const toDOMAdaptor = new WwToDOMAdaptor({}, customHTMLRenderer);
 
     em = new EventEmitter();
-    wwe = new WysiwygEditor(em, { toDOMAdaptor });
+    wwe = new WysiwygEditor(em, {
+      toDOMAdaptor,
+      editPanel: {
+        useImageEditPanel: true,
+        useLinkEditPanel: true,
+        useTableEditPanel: true,
+      },
+    });
     cmd = new CommandManager(em, {}, wwe.commands, () => 'wysiwyg');
   });
 
@@ -160,7 +167,9 @@ describe('wysiwyg commands', () => {
     it('should add blockquote element including empty paragraph', () => {
       cmd.exec('blockQuote');
 
-      expect(wwe.getHTML()).toBe('<blockquote><p><br></p></blockquote>');
+      expect(wwe.getHTML()).toBe(
+        '<div data-block-quote-type="default" class="toastui-editor-ww-block-quote"><blockquote data-block-quote-type="default"><p><br></p></blockquote></div>'
+      );
     });
 
     it('should change blockquote element to selection', () => {
@@ -169,7 +178,9 @@ describe('wysiwyg commands', () => {
       cmd.exec('selectAll');
       cmd.exec('blockQuote');
 
-      expect(wwe.getHTML()).toBe('<blockquote><p>foo</p></blockquote>');
+      expect(wwe.getHTML()).toBe(
+        '<div data-block-quote-type="default" class="toastui-editor-ww-block-quote"><blockquote data-block-quote-type="default"><p>foo</p></blockquote></div>'
+      );
     });
 
     it('should wrap with blockquote element', () => {
@@ -180,9 +191,13 @@ describe('wysiwyg commands', () => {
       cmd.exec('blockQuote');
 
       const expected = oneLineTrim`
-        <blockquote>
-          <blockquote><p>foo</p></blockquote>
-        </blockquote>
+        <div data-block-quote-type="default" class="toastui-editor-ww-block-quote">
+          <blockquote data-block-quote-type="default">
+            <div data-block-quote-type="default" class="toastui-editor-ww-block-quote">
+              <blockquote data-block-quote-type="default"><p>foo</p></blockquote>
+            </div>
+          </blockquote>
+        </div>
       `;
 
       expect(wwe.getHTML()).toBe(expected);
@@ -589,7 +604,15 @@ describe('wysiwyg commands', () => {
       const toDOMAdaptor = new WwToDOMAdaptor({}, {});
 
       em = new EventEmitter();
-      wwe = new WysiwygEditor(em, { toDOMAdaptor, linkAttributes });
+      wwe = new WysiwygEditor(em, {
+        toDOMAdaptor,
+        linkAttributes,
+        editPanel: {
+          useImageEditPanel: true,
+          useLinkEditPanel: true,
+          useTableEditPanel: true,
+        },
+      });
       cmd = new CommandManager(em, {}, wwe.commands, () => 'wysiwyg');
     });
 

@@ -49,7 +49,14 @@ describe('wysiwyg table commands', () => {
     const toDOMAdaptor = new WwToDOMAdaptor({}, {});
 
     em = new EventEmitter();
-    wwe = new WysiwygEditor(em, { toDOMAdaptor });
+    wwe = new WysiwygEditor(em, {
+      toDOMAdaptor,
+      editPanel: {
+        useImageEditPanel: true,
+        useLinkEditPanel: true,
+        useTableEditPanel: true,
+      },
+    });
     cmd = new CommandManager(em, {}, wwe.commands, () => 'wysiwyg');
   });
 

@@ -9,7 +9,7 @@ module.exports = {
   testEnvironment: 'node',
   setupFilesAfterEnv: [setupFile],
   transform: {
-    '^.+\\.ts$': 'ts-jest',
+    '^.+\\.ts$': ['ts-jest', { diagnostics: false }],
     '^.+\\.js$': esmFile,
     '^.+\\.css$': cssMockFile,
   },

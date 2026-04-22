@@ -1,7 +1,7 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`markdown editor syntax highlight atx heading 1`] = `
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-heading toastui-editor-md-heading1">
     <span class="toastui-editor-md-delimiter">
       #
@@ -12,9 +12,11 @@ exports[`markdown editor syntax highlight atx heading 1`] = `
 `;
 
 exports[`markdown editor syntax highlight blockQuote basic 1`] = `
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-block-quote">
-    &gt;
+    <span class="toastui-editor-md-delimiter toastui-editor-md-block-quote">
+      &gt;
+    </span>
     <span class="toastui-editor-md-marked-text">
       block quote
     </span>
@@ -23,9 +25,11 @@ exports[`markdown editor syntax highlight blockQuote basic 1`] = `
 `;
 
 exports[`markdown editor syntax highlight blockQuote with list 1`] = `
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-block-quote">
-    &gt;
+    <span class="toastui-editor-md-delimiter toastui-editor-md-block-quote">
+      &gt;
+    </span>
     <span class="toastui-editor-md-list-item toastui-editor-md-list-item-style toastui-editor-md-list-item-odd">
       *
     </span>
@@ -43,7 +47,7 @@ exports[`markdown editor syntax highlight blockQuote with list 1`] = `
 `;
 
 exports[`markdown editor syntax highlight bulletList 1`] = `
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-list-item toastui-editor-md-list-item-style toastui-editor-md-list-item-odd">
     *
     <span class="toastui-editor-md-marked-text">
@@ -71,7 +75,7 @@ exports[`markdown editor syntax highlight code block 1`] = `
     console.log("editor")
   </span>
 </div>
-<div class="toastui-editor-md-code-block-line-background">
+<div class="toastui-editor-md-code-block-line-background end toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-code-block">
     <span class="toastui-editor-md-delimiter">
       \`\`\`
@@ -114,7 +118,7 @@ exports[`markdown editor syntax highlight code block within list 1`] = `
     </span>
   </span>
 </div>
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-code-block">
     <span class="toastui-editor-md-delimiter">
       <span class="toastui-editor-md-marked-text">
@@ -141,7 +145,7 @@ exports[`markdown editor syntax highlight custom block 1`] = `
     my custom element
   </span>
 </div>
-<div class="toastui-editor-md-custom-block-line-background">
+<div class="toastui-editor-md-custom-block-line-background end toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-custom-block">
     <span class="toastui-editor-md-delimiter">
       $$
@@ -151,7 +155,7 @@ exports[`markdown editor syntax highlight custom block 1`] = `
 `;
 
 exports[`markdown editor syntax highlight emph 1`] = `
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-delimiter">
     *
   </span>
@@ -165,15 +169,14 @@ exports[`markdown editor syntax highlight emph 1`] = `
 `;
 
 exports[`markdown editor syntax highlight image 1`] = `
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-link">
     <span class="toastui-editor-md-meta">
       !
     </span>
-    [
   </span>
   <span class="toastui-editor-md-link toastui-editor-md-link-desc toastui-editor-md-marked-text">
-    Logo
+    [Logo
   </span>
   <span class="toastui-editor-md-link">
     ](
@@ -188,7 +191,7 @@ exports[`markdown editor syntax highlight image 1`] = `
 `;
 
 exports[`markdown editor syntax highlight inline code 1`] = `
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-code toastui-editor-md-delimiter toastui-editor-md-start">
     \`
   </span>
@@ -202,7 +205,7 @@ exports[`markdown editor syntax highlight inline code 1`] = `
 `;
 
 exports[`markdown editor syntax highlight link 1`] = `
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-link">
     [
   </span>
@@ -222,7 +225,7 @@ exports[`markdown editor syntax highlight link 1`] = `
 `;
 
 exports[`markdown editor syntax highlight orderedList 1`] = `
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-list-item toastui-editor-md-list-item-style toastui-editor-md-list-item-odd">
     1.
     <span class="toastui-editor-md-marked-text">
@@ -240,7 +243,7 @@ exports[`markdown editor syntax highlight seText heading 1`] = `
     heading
   </span>
 </div>
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-heading toastui-editor-md-heading1 toastui-editor-md-delimiter toastui-editor-md-setext">
     ---
   </span>
@@ -248,7 +251,7 @@ exports[`markdown editor syntax highlight seText heading 1`] = `
 `;
 
 exports[`markdown editor syntax highlight strike 1`] = `
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-delimiter">
     ~~
   </span>
@@ -262,7 +265,7 @@ exports[`markdown editor syntax highlight strike 1`] = `
 `;
 
 exports[`markdown editor syntax highlight strong 1`] = `
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-delimiter">
     **
   </span>
@@ -293,7 +296,7 @@ exports[`markdown editor syntax highlight table basic 1`] = `
     | --- | ---
   </span>
 </div>
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-table">
     |
     <span class="toastui-editor-md-table-cell">
@@ -326,7 +329,7 @@ exports[`markdown editor syntax highlight table with mark 1`] = `
     | --- | ---
   </span>
 </div>
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-table">
     |
     <span class="toastui-editor-md-table-cell">
@@ -350,7 +353,7 @@ exports[`markdown editor syntax highlight table with mark 1`] = `
 `;
 
 exports[`markdown editor syntax highlight tastkList 1`] = `
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-list-item toastui-editor-md-list-item-style toastui-editor-md-list-item-odd">
     *
   </span>
@@ -368,7 +371,7 @@ exports[`markdown editor syntax highlight tastkList 1`] = `
 `;
 
 exports[`markdown editor syntax highlight thematicBreak 1`] = `
-<div>
+<div class="toastui-editor-md-cursor-line">
   <span class="toastui-editor-md-thematic-break">
     ---
   </span>

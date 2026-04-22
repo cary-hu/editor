@@ -13,6 +13,7 @@ import * as imageHelper from '@/helper/image';
 
 const HEADING_CLS = `${cls('md-heading')} ${cls('md-heading1')}`;
 const DELIM_CLS = cls('md-delimiter');
+const CURSOR_LINE_CLS = cls('md-cursor-line');
 
 describe('editor', () => {
   let container: HTMLElement,
@@ -78,7 +79,7 @@ describe('editor', () => {
       it('should occurs error when types of parameters is not matched', () => {
         expect(() => {
           editor.convertPosToMatchEditorMode(mdPos, wwPos);
-        }).toThrowError();
+        }).toThrow();
       });
     });
 
@@ -182,7 +183,7 @@ describe('editor', () => {
         editor.setMarkdown('# heading');
 
         expect(mdEditor).toContainHTML(
-          `<div><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div>`
+          `<div class="${CURSOR_LINE_CLS}"><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div>`
         );
         expect(getPreviewHTML()).toBe('<h1>heading</h1>');
       });
@@ -191,7 +192,7 @@ describe('editor', () => {
         editor.setMarkdown('# heading\r\nCRLF');
 
         expect(mdEditor).toContainHTML(
-          `<div><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div><div>CRLF</div>`
+          `<div><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div><div class="${CURSOR_LINE_CLS}">CRLF</div>`
         );
         expect(getPreviewHTML()).toBe('<h1>heading</h1><p>CRLF</p>');
       });
@@ -202,7 +203,7 @@ describe('editor', () => {
         editor.setHTML('<h1>heading</h1>');
 
         expect(mdEditor).toContainHTML(
-          `<div><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div>`
+          `<div class="${CURSOR_LINE_CLS}"><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div>`
         );
         expect(getPreviewHTML()).toBe('<h1>heading</h1>');
       });
@@ -210,7 +211,7 @@ describe('editor', () => {
       it('should parse the br tag as the empty block to separate between blocks', () => {
         editor.setHTML('<p>a<br/>b</p>');
 
-        expect(mdEditor).toContainHTML('<div>a</div><div>b</div>');
+        expect(mdEditor).toContainHTML(`<div>a</div><div class="${CURSOR_LINE_CLS}">b</div>`);
         expect(getPreviewHTML()).toBe('<p>a<br>b</p>');
       });
 
@@ -397,8 +398,8 @@ describe('editor', () => {
 
       eventEmitter.addEventType('custom');
 
-      editor.addHook('custom', spy);
-      editor.addHook('custom', spy);
+      editor.addHook('custom' as any, spy);
+      editor.addHook('custom' as any, spy);
 
       eventEmitter.emit('custom');
 
@@ -409,7 +410,7 @@ describe('editor', () => {
       it('in markdown', () => {
         editor.insertText('test');
 
-        expect(mdEditor).toContainHTML('<div>test</div>');
+        expect(mdEditor).toContainHTML(`<div class="${CURSOR_LINE_CLS}">test</div>`);
         expect(getPreviewHTML()).toBe('<p>test</p>');
       });
 
@@ -478,7 +479,7 @@ describe('editor', () => {
       it('should replace current selection in markdown', () => {
         editor.replaceSelection('Replaced');
 
-        expect(mdEditor).toContainHTML('<div>lReplacede2</div>');
+        expect(mdEditor).toContainHTML(`<div class="${CURSOR_LINE_CLS}">lReplacede2</div>`);
         expect(getPreviewHTML()).toBe('<p>lReplacede2</p>');
       });
 
@@ -493,7 +494,7 @@ describe('editor', () => {
       it('should replace given selection in markdown', () => {
         editor.replaceSelection('Replaced', [1, 1], [2, 1]);
 
-        expect(mdEditor).toContainHTML('<div>Replacedline2</div>');
+        expect(mdEditor).toContainHTML(`<div class="${CURSOR_LINE_CLS}">Replacedline2</div>`);
         expect(getPreviewHTML()).toBe('<p>Replacedline2</p>');
       });
 
@@ -507,7 +508,9 @@ describe('editor', () => {
       it('should parse the CRLF properly in markdown', () => {
         editor.replaceSelection('text\r\nCRLF');
 
-        expect(mdEditor).toContainHTML('<div>ltext</div><div>CRLFe2</div>');
+        expect(mdEditor).toContainHTML(
+          `<div>ltext</div><div class="${CURSOR_LINE_CLS}">CRLFe2</div>`
+        );
         expect(getPreviewHTML()).toBe('<p>ltext<br>CRLFe2</p>');
       });
     });
@@ -521,7 +524,7 @@ describe('editor', () => {
       it('should delete current selection in markdown', () => {
         editor.deleteSelection();
 
-        expect(mdEditor).toContainHTML('<div>le2</div>');
+        expect(mdEditor).toContainHTML(`<div class="${CURSOR_LINE_CLS}">le2</div>`);
         expect(getPreviewHTML()).toBe('<p>le2</p>');
       });
 
@@ -536,7 +539,7 @@ describe('editor', () => {
       it('should delete given selection in markdown', () => {
         editor.deleteSelection([1, 1], [2, 1]);
 
-        expect(mdEditor).toContainHTML('<div>line2</div>');
+        expect(mdEditor).toContainHTML(`<div class="${CURSOR_LINE_CLS}">line2</div>`);
         expect(getPreviewHTML()).toBe('<p>line2</p>');
       });
 
@@ -750,20 +753,24 @@ describe('editor', () => {
     });
 
     describe('usageStatistics', () => {
+      afterEach(() => {
+        jest.restoreAllMocks();
+      });
+
       it('should send request hostname in payload by default', () => {
-        spyOn(commonUtil, 'sendHostName');
+        const sendHostNameSpy = jest.spyOn(commonUtil, 'sendHostName');
 
         createEditor({ el: container });
 
-        expect(commonUtil.sendHostName).toHaveBeenCalled();
+        expect(sendHostNameSpy).toHaveBeenCalled();
       });
 
       it('should not send request if the option is set to false', () => {
-        spyOn(commonUtil, 'sendHostName');
+        const sendHostNameSpy = jest.spyOn(commonUtil, 'sendHostName');
 
         createEditor({ el: container, usageStatistics: false });
 
-        expect(commonUtil.sendHostName).not.toHaveBeenCalled();
+        expect(sendHostNameSpy).not.toHaveBeenCalled();
       });
     });
 
@@ -798,14 +805,7 @@ describe('editor', () => {
           previewHighlight: false,
         });
 
-        const result = oneLineTrim`
-          <ul>
-            <li>
-              <p>item1<br>
-              -</p>
-            </li>
-          </ul>
-        `;
+        const result = oneLineTrim`<ul><li><h2>item1</h2></li></ul>`;
 
         expect(getPreviewHTML()).toBe(result);
       });
@@ -817,13 +817,7 @@ describe('editor', () => {
           previewHighlight: false,
         });
 
-        const result = oneLineTrim`
-          <ul>
-            <li>
-              <p># item1</p>
-            </li>
-          </ul>
-        `;
+        const result = oneLineTrim`<ul><li><h1>item1</h1></li></ul>`;
 
         expect(getPreviewHTML()).toBe(result);
       });
@@ -836,9 +830,8 @@ describe('editor', () => {
         });
 
         const result = oneLineTrim`
-          <blockquote>
-            <p>item1<br>
-            -</p>
+          <blockquote data-block-quote-type="default">
+            <h2>item1</h2>
           </blockquote>
         `;
 
@@ -853,8 +846,8 @@ describe('editor', () => {
         });
 
         const result = oneLineTrim`
-          <blockquote>
-            <p># item1</p>
+          <blockquote data-block-quote-type="default">
+            <h1>item1</h1>
           </blockquote>
         `;
 
@@ -941,7 +934,7 @@ describe('editor', () => {
           },
         });
 
-        expect(getPreviewHTML()).toBe('<p><a target="_blank" href="nhn.com">Hello</a></p>');
+        expect(getPreviewHTML()).toBe('<p><a href="nhn.com" target="_blank">Hello</a></p>');
       });
 
       it('should render html block node regardless of the sanitizer', () => {
@@ -955,7 +948,7 @@ describe('editor', () => {
         });
 
         const result = oneLineTrim`
-          <iframe src="https://www.youtube.com/embed/XyenY12fzAk" height="315" width="420"></iframe>
+          <iframe width="420" height="315" src="https://www.youtube.com/embed/XyenY12fzAk"></iframe>
           <p>test</p>
         `;
 

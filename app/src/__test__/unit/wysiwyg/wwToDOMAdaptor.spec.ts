@@ -93,7 +93,15 @@ beforeEach(() => {
 
   const htmlSchemaMap = createHTMLSchemaMap(convertors, sanitizeHTML, toDOMAdaptor);
 
-  wwe = new WysiwygEditor(em, { toDOMAdaptor, htmlSchemaMap });
+  wwe = new WysiwygEditor(em, {
+    toDOMAdaptor,
+    htmlSchemaMap,
+    editPanel: {
+      useImageEditPanel: true,
+      useLinkEditPanel: true,
+      useTableEditPanel: true,
+    },
+  });
 });
 
 afterEach(() => {

@@ -34,7 +34,14 @@ beforeEach(() => {
 
   toDOMAdaptor = new WwToDOMAdaptor({}, convertors);
   em = new EventEmitter();
-  wwe = new WysiwygEditor(em, { toDOMAdaptor });
+  wwe = new WysiwygEditor(em, {
+    toDOMAdaptor,
+    editPanel: {
+      useImageEditPanel: true,
+      useLinkEditPanel: true,
+      useTableEditPanel: true,
+    },
+  });
   wwe.setModel(createCustomBlockNode());
 });
 
