@@ -1004,6 +1004,23 @@ describe('Convertor', () => {
 
       assertConverting(markdown, markdown);
     });
+
+    it('should round-trip video html inline mark with fallback text', () => {
+      const markdown =
+        '<video src="movie.mp4">Your browser does not support the video tag.</video>';
+
+      expect(schema.marks.video).toBeDefined();
+      expect(schema.nodes.video).toBeUndefined();
+      assertConverting(markdown, markdown);
+    });
+
+    it('should round-trip empty video html inline mark', () => {
+      const markdown = '<video src="movie.mp4"></video>';
+
+      expect(schema.marks.video).toBeDefined();
+      expect(schema.nodes.video).toBeUndefined();
+      assertConverting(markdown, markdown);
+    });
   });
 
   describe('with custom convertor when converting from markdown to wysiwyg', () => {

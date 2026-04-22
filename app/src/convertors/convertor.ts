@@ -9,6 +9,7 @@ import ToWwConvertorState from './toWysiwyg/toWwConvertorState';
 
 import { createMdConvertors } from './toMarkdown/toMdConvertors';
 import ToMdConvertorState from './toMarkdown/toMdConvertorState';
+import { stripMediaBoundaryPlaceholders } from '@/utils/htmlInlineMedia';
 
 export default class Convertor {
   private readonly schema: Schema;
@@ -65,6 +66,7 @@ export default class Convertor {
     let markdownText = state.convertNode(wwNode, this.getInfoForPosSync());
 
     markdownText = this.eventEmitter.emitReduce('beforeConvertWysiwygToMarkdown', markdownText);
+    markdownText = stripMediaBoundaryPlaceholders(markdownText);
 
     return markdownText;
   }

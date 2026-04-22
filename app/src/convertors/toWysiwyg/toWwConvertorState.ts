@@ -4,6 +4,12 @@ import { MdNode } from '@toast-ui/toastmark';
 import { ToWwConvertorMap, StackItem, Attrs, InfoForPosSync } from '@t/convertor';
 import { last } from '@/utils/common';
 import { isContainer, getChildrenText } from '@/utils/markdown';
+import { ensureEmptyHtmlInlineMediaPlaceholders } from '@/utils/htmlInlineMedia';
+
+interface ActiveMarkInfo {
+  type: MarkType
+  hasText: boolean
+}
 
 export function mergeMarkText(a: Node, b: Node) {
   if (a.isText && b.isText && Mark.sameSet(a.marks, b.marks)) {
@@ -24,11 +30,14 @@ export default class ToWwConvertorState {
 
   private marks: Mark[];
 
+  private activeMarks: ActiveMarkInfo[];
+
   constructor(schema: Schema, convertors: ToWwConvertorMap) {
     this.schema = schema;
     this.convertors = convertors;
     this.stack = [{ type: this.schema.topNodeType, attrs: null, content: [] }];
     this.marks = Mark.none as Mark[];
+    this.activeMarks = [];
   }
 
   top() {
@@ -43,6 +52,10 @@ export default class ToWwConvertorState {
 
   addText(text: string) {
     if (text) {
+      this.activeMarks.forEach((activeMark) => {
+        activeMark.hasText = true;
+      });
+
       const nodes = this.top().content;
       const lastNode = last(nodes);
       const node = this.schema.text(text, this.marks);
@@ -58,10 +71,28 @@ export default class ToWwConvertorState {
 
   openMark(mark: Mark) {
     this.marks = mark.addToSet(this.marks) as Mark[];
+    this.activeMarks.push({ type: mark.type, hasText: false });
   }
 
   closeMark(mark: MarkType) {
     this.marks = mark.removeFromSet(this.marks) as Mark[];
+
+    for (let i = this.activeMarks.length - 1; i >= 0; i -= 1) {
+      if (this.activeMarks[i].type === mark) {
+        this.activeMarks.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  isCurrentMarkEmpty(mark: MarkType) {
+    for (let i = this.activeMarks.length - 1; i >= 0; i -= 1) {
+      if (this.activeMarks[i].type === mark) {
+        return !this.activeMarks[i].hasText;
+      }
+    }
+
+    return false;
   }
 
   addNode(type: NodeType, attrs: Attrs, content: Node[]) {
@@ -91,6 +122,7 @@ export default class ToWwConvertorState {
   }
 
   convertByDOMParser(root: HTMLElement) {
+    ensureEmptyHtmlInlineMediaPlaceholders(root);
     const doc = DOMParser.fromSchema(this.schema).parse(root);
 
     doc.content.forEach((node) => this.push(node));

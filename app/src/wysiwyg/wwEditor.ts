@@ -14,6 +14,8 @@ import { tableContextMenu } from './plugins/tableContextMenu';
 import { tableEditPanel } from './plugins/tableEditPanel';
 import { imageEditPanel } from './plugins/imageEditPanel';
 import { linkEditPanel } from './plugins/linkEditPanel';
+import { imageArrowSelection } from './plugins/imageArrowSelection';
+import { htmlInlineMediaSelection } from './plugins/htmlInlineMediaSelection';
 import { task } from './plugins/task';
 import { toolbarStateHighlight } from './plugins/toolbarState';
 
@@ -134,6 +136,8 @@ export default class WysiwygEditor extends EditorBase {
     return [
       tableSelection(),
       tableContextMenu(this.eventEmitter),
+      imageArrowSelection(),
+      htmlInlineMediaSelection(),
       task(),
       toolbarStateHighlight(this.eventEmitter),
       ...this.createPluginProps(),

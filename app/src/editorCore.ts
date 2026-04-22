@@ -40,6 +40,7 @@ import { addDefaultImageBlobHook } from './helper/image';
 import { setWidgetRules } from './widget/rules';
 import { cls, removeProseMirrorHackNodes, replaceBRWithEmptyBlock } from './utils/dom';
 import { sanitizeHTML } from './sanitizer/htmlSanitizer';
+import { ensureEmptyHtmlInlineMediaPlaceholders } from './utils/htmlInlineMedia';
 import { createHTMLSchemaMap } from './wysiwyg/nodes/html';
 import { getHTMLRenderConvertors } from './markdown/htmlRenderConvertors';
 import { buildQuery } from './queries/queryManager';
@@ -508,6 +509,7 @@ class ToastUIEditorCore {
 
     // the `br` tag should be replaced with empty block to separate between blocks
     container.innerHTML = replaceBRWithEmptyBlock(html);
+    ensureEmptyHtmlInlineMediaPlaceholders(container);
     const wwNode = DOMParser.fromSchema(this.wwEditor.schema).parse(container);
 
     if (this.isMarkdownMode()) {

@@ -8,6 +8,7 @@ import removeClass from 'tui-code-snippet/domUtil/removeClass';
 import matches from 'tui-code-snippet/domUtil/matches';
 import { ALTERNATIVE_TAG_FOR_BR, HTML_TAG, OPEN_TAG, reBR } from './constants';
 import { isNil } from './common';
+import { stripMediaBoundaryPlaceholders } from './htmlInlineMedia';
 
 export function isPositionInBox(style: CSSStyleDeclaration, offsetX: number, offsetY: number) {
   const left = parseInt(style.left, 10);
@@ -273,6 +274,7 @@ export function removeProseMirrorHackNodes(html: string) {
 
   resultHTML = resultHTML.replace(reProseMirrorImage, '');
   resultHTML = resultHTML.replace(reProseMirrorTrailingBreak, '');
+  resultHTML = stripMediaBoundaryPlaceholders(resultHTML);
 
   return resultHTML;
 }

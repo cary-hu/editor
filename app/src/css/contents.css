@@ -231,19 +231,41 @@ table.ProseMirror-selectednode {
   border: 1px solid transparent;
 }
 
+.toastui-editor-contents img.toastui-editor-inline-image-selected {
+  border-color: var(--toastui-editor-selection-color, #4b96e6);
+  box-shadow: 0 0 0 2px rgba(75, 150, 230, 0.35);
+  outline: none;
+}
+
 .toastui-editor-contents video {
   max-width: 100%;
   height: auto;
-  display: block;
-  margin: 10px 0;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.toastui-editor-contents audio {
+  max-width: 100%;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0;
   border: 2px solid transparent;
   box-sizing: border-box;
   cursor: pointer;
 }
 
 .toastui-editor-contents video:focus,
-.toastui-editor-contents video.ProseMirror-selectednode {
+.toastui-editor-contents video.ProseMirror-selectednode,
+.toastui-editor-contents video.toastui-editor-html-inline-media-selected,
+.toastui-editor-contents audio:focus,
+.toastui-editor-contents audio.ProseMirror-selectednode,
+.toastui-editor-contents audio.toastui-editor-html-inline-media-selected {
   border-color: var(--toastui-editor-selection-color, #4b96e6);
+  box-shadow: 0 0 0 2px rgba(75, 150, 230, 0.35);
   outline: none;
 }
 

@@ -17,6 +17,7 @@ export interface ToWwConvertorState {
   addText(text: string): void;
   openMark(mark: Mark): void;
   closeMark(mark: MarkType): void;
+  isCurrentMarkEmpty(mark: MarkType): boolean;
   addNode(type: NodeType, attrs?: Attrs, content?: ProsemirrorNode[]): ProsemirrorNode | null;
   openNode(type: NodeType, attrs?: Attrs): void;
   closeNode(): ProsemirrorNode | null;

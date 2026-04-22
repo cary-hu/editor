@@ -41,6 +41,12 @@ export function createHTMLrenderer() {
           ? { type: 'openTag', tagName: 'big', attributes: node.attrs }
           : { type: 'closeTag', tagName: 'big' };
       },
+      // @ts-ignore
+      video(node: MdLikeNode, { entering }: Context) {
+        return entering
+          ? { type: 'openTag', tagName: 'video', attributes: node.attrs }
+          : { type: 'closeTag', tagName: 'video' };
+      },
     },
   };
 

@@ -11,6 +11,7 @@ import { Sanitizer, HTMLSchemaMap, CustomHTMLRenderer } from '@t/editor';
 import { ToDOMAdaptor } from '@t/convertor';
 import { registerTagWhitelistIfPossible } from '@/sanitizer/htmlSanitizer';
 import { reHTMLTag, ATTRIBUTE } from '@/utils/constants';
+import { isHtmlInlineMediaTag } from '@/utils/htmlInlineMedia';
 
 export function getChildrenHTML(node: MdNode, typeName: string) {
   return node
@@ -60,10 +61,10 @@ export function sanitizeDOM(
   return { dom, htmlAttrs };
 }
 
-// Tags that should be treated as inline atom nodes instead of marks
-// These are empty/self-closing tags that don't wrap text content
-const INLINE_ATOM_TAGS = ['video', 'audio', 'source', 'track'];
-
+// Tags that should be treated as inline atom nodes instead of marks.
+// Keep only void-like tags here. Container tags such as video/audio can wrap
+// fallback text, so they must remain htmlInline marks for markdown round-trip.
+const INLINE_ATOM_TAGS = ['source', 'track'];
 const schemaFactory = {
   htmlBlock(typeName: string, sanitizeHTML: Sanitizer, wwToDOMAdaptor: ToDOMAdaptor): NodeSpec {
     return {
@@ -95,7 +96,7 @@ const schemaFactory = {
       },
     };
   },
-  // For inline atom nodes like video, audio - they are inline but don't wrap text
+  // For inline atom nodes like source/track - they are inline but don't wrap text
   htmlInlineNode(typeName: string, sanitizeHTML: Sanitizer, wwToDOMAdaptor: ToDOMAdaptor): NodeSpec {
     return {
       inline: true,
@@ -125,6 +126,7 @@ const schemaFactory = {
   },
   htmlInline(typeName: string, sanitizeHTML: Sanitizer, wwToDOMAdaptor: ToDOMAdaptor): MarkSpec {
     return {
+      inclusive: !isHtmlInlineMediaTag(typeName),
       attrs: {
         htmlAttrs: { default: {} },
         htmlInline: { default: true },
@@ -169,8 +171,8 @@ export function createHTMLSchemaMap(
           // Block level HTML elements -> nodes
           htmlSchemaMap.nodes[type] = schemaFactory.htmlBlock(type, sanitizeHTML, wwToDOMAdaptor);
         } else if (isInlineAtomTag(type)) {
-          // Inline atom tags (video, audio, etc.) -> nodes (not marks)
-          // These are inline but don't wrap text content
+          // Inline atom tags (source, track, etc.) -> nodes (not marks)
+          // These are inline and don't wrap text content
           htmlSchemaMap.nodes[type] = schemaFactory.htmlInlineNode(type, sanitizeHTML, wwToDOMAdaptor);
         } else {
           // Regular inline HTML elements -> marks

@@ -31,6 +31,7 @@ import { includes } from '@/utils/common';
 import { reBR, reHTMLTag, reHTMLComment } from '@/utils/constants';
 import { sanitizeHTML } from '@/sanitizer/htmlSanitizer';
 import { ImageMdNode } from '@toast-ui/toastmark/types/node';
+import { isHtmlInlineMediaTag, MEDIA_BOUNDARY_PLACEHOLDER } from '@/utils/htmlInlineMedia';
 
 function isBRTag(node: MdNode) {
   return node.type === 'htmlInline' && reBR.test(node.literal!);
@@ -324,7 +325,7 @@ const toWwConvertors: ToWwConvertorMap = {
     const nodeType = state.schema.nodes[typeName];
     const sanitizedHTML = sanitizeHTML(html);
 
-    // Handle inline atom nodes (video, audio, etc.) - they are nodes, not marks
+    // Handle inline atom nodes such as source/track - they are nodes, not marks
     if (isInlineAtomTag(typeName) && nodeType?.spec.attrs?.htmlInline) {
       // Only process on opening tag, skip closing tag
       if (openTagName) {
@@ -341,6 +342,10 @@ const toWwConvertors: ToWwConvertorMap = {
 
         state.openMark(markType.create({ htmlAttrs }));
       } else {
+        if (isHtmlInlineMediaTag(typeName) && state.isCurrentMarkEmpty(markType)) {
+          state.addText(MEDIA_BOUNDARY_PLACEHOLDER);
+        }
+
         state.closeMark(markType);
       }
     } else {
