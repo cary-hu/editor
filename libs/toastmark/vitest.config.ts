@@ -10,5 +10,5 @@ export default mergeConfig(
       environment: 'node',
       include: ['src/**/__test__/**/*.spec.ts'],
     },
-  })
+  }),
 );

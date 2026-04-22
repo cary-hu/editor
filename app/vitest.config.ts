@@ -17,5 +17,5 @@ export default mergeConfig(
       environment: 'jsdom',
       include: ['src/**/__test__/**/*.spec.ts'],
     },
-  })
+  }),
 );

@@ -5,6 +5,7 @@
   "compilerOptions": {
     "resolveJsonModule": true,
     "baseUrl": ".",
+    "types": ["node", "vitest/globals"],
     "paths": {
       "@t/*": ["types/*"]
     },

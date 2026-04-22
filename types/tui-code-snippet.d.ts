@@ -42,7 +42,7 @@ declare module 'tui-code-snippet/collection/forEachOwnProperties' {
   export default function forEachOwnProperties<T extends object>(
     obj: T,
     iteratee: (value: NonNullable<T[keyof T]>, key: keyof T, targetObj: T) => boolean | void,
-    context?: object
+    context?: object,
   ): void;
 }
 
@@ -50,7 +50,7 @@ declare module 'tui-code-snippet/collection/forEachArray' {
   export default function forEachArray<T>(
     arr: Array<T> | ArrayLike<T>,
     iteratee: (value: T, index: number, targetArr: Array<T> | ArrayLike<T>) => boolean | void,
-    context?: object
+    context?: object,
   ): void;
 }
 
@@ -70,7 +70,7 @@ declare module 'tui-code-snippet/domUtil/css' {
   export default function css(
     element: Element,
     key: string | Record<string, any>,
-    value?: string
+    value?: string,
   ): void;
 }
 
@@ -90,7 +90,7 @@ declare module 'tui-code-snippet/domEvent/on' {
   export default function on(
     element: Element,
     types: string,
-    handler: (...args: any[]) => any
+    handler: (...args: any[]) => any,
   ): void;
 }
 
@@ -98,7 +98,7 @@ declare module 'tui-code-snippet/domEvent/off' {
   export default function off(
     element: Element,
     types: string,
-    handler?: (...args: any[]) => any
+    handler?: (...args: any[]) => any,
   ): void;
 }
 

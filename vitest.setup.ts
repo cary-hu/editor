@@ -93,19 +93,18 @@ expect.extend({
       message: () =>
         failingEntry
           ? `expected ${formatElement(received)} to have style ${failingEntry[0]}: ${String(
-              failingEntry[1]
+              failingEntry[1],
             )}`
           : `expected ${formatElement(received)} not to match the provided styles`,
     };
   },
   toHaveTextContent(received: unknown, expected: string) {
-    const actual = received instanceof Node ? received.textContent ?? '' : '';
+    const actual = received instanceof Node ? (received.textContent ?? '') : '';
     const pass = actual.includes(expected);
 
     return {
       pass,
-      message: () =>
-        `expected "${actual}" ${pass ? 'not ' : ''}to contain text "${expected}"`,
+      message: () => `expected "${actual}" ${pass ? 'not ' : ''}to contain text "${expected}"`,
     };
   },
   toBeDisabled(received: unknown) {
@@ -138,7 +137,7 @@ expect.extend({
       received instanceof HTMLTextAreaElement ||
       received instanceof HTMLSelectElement
         ? received.value
-        : undefined;
+        : null;
     const pass = Array.isArray(expected)
       ? Array.isArray(actual) && actual.length === expected.length
       : actual === String(expected);

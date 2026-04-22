@@ -4,6 +4,7 @@
   "exclude": ["node_modules"],
   "compilerOptions": {
     "baseUrl": ".",
+    "types": ["node", "vitest/globals"],
     "paths": {
       "@/*": ["src/*"],
       "@t/*": ["types/*"]
