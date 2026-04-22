@@ -77,17 +77,17 @@
     "doc": "npm run ts2js && tuidoc"
   },
   "devDependencies": {
-    "cross-env": "^10.0.0"
+    "cross-env": "^10.1.0"
   },
   "dependencies": {
-    "dompurify": "^3.2.6",
+    "dompurify": "^3.4.1",
     "prosemirror-commands": "^1.7.1",
-    "prosemirror-gapcursor": "^1.4.0",
-    "prosemirror-history": "^1.4.1",
-    "prosemirror-inputrules": "^1.5.0",
+    "prosemirror-gapcursor": "^1.4.1",
+    "prosemirror-history": "^1.5.0",
+    "prosemirror-inputrules": "^1.5.1",
     "prosemirror-keymap": "^1.2.3",
-    "prosemirror-model": "^1.25.3",
-    "prosemirror-state": "^1.4.3",
-    "prosemirror-view": "^1.41.0"
+    "prosemirror-model": "^1.25.4",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.41.8"
   }
 }
