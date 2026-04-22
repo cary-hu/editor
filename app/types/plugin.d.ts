@@ -15,7 +15,7 @@ export type PluginNodeViews = (
   node: Node,
   view: EditorView,
   getPos: () => number,
-  eventEmitter: Emitter
+  eventEmitter: Emitter,
 ) => NodeView;
 
 type NodeViewPropMap = Record<string, PluginNodeViews>;
@@ -24,7 +24,7 @@ export type CommandFn<T = DefaultPayload> = (
   payload: Payload<T>,
   state: EditorState,
   dispatch: Dispatch,
-  view: EditorView
+  view: EditorView,
 ) => boolean;
 export type PluginCommandMap = Record<string, CommandFn>;
 

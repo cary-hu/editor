@@ -137,23 +137,28 @@ export class ImagePopupBody extends Component<Props, State> {
         <div style="display:${activeTab === 'file' ? 'block' : 'none'};position: relative;">
           <label for="toastuiImageFileInput">${i18n.get('Select image file')}</label>
           <div class="select-file-container">
-
-          <span
-          class="${cls('file-name')}${file ? ' has-file' : fileNameElClassName}"
-          onClick=${this.showFileSelectBox}
-            onSelectstart=${this.preventSelectStart}
+            <span
+              class="${cls('file-name')}${file ? ' has-file' : fileNameElClassName}"
+              onClick=${this.showFileSelectBox}
+              onSelectstart=${this.preventSelectStart}
             >
-            ${file ? file.name : i18n.get('No file')}
-          </span>
-          <button
-            type="button"
-            class="${cls('file-select-button')}"
-            onClick=${this.showFileSelectBox}
-          >
-          ${i18n.get('Choose a file')}
-          </button>
-          <input id="toastuiImageFileInput" type="file" accept="image/*" onChange=${this.changeFile} ref=${(el: HTMLInputElement) => (this.refs.file = el)} />
-            </div>
+              ${file ? file.name : i18n.get('No file')}
+            </span>
+            <button
+              type="button"
+              class="${cls('file-select-button')}"
+              onClick=${this.showFileSelectBox}
+            >
+              ${i18n.get('Choose a file')}
+            </button>
+            <input
+              id="toastuiImageFileInput"
+              type="file"
+              accept="image/*"
+              onChange=${this.changeFile}
+              ref=${(el: HTMLInputElement) => (this.refs.file = el)}
+            />
+          </div>
         </div>
         <label for="toastuiAltTextInput">${i18n.get('Alt Text')}</label>
         <input

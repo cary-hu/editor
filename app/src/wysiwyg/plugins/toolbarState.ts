@@ -40,7 +40,7 @@ function setMarkTypeStates(
   from: ResolvedPos,
   to: ResolvedPos,
   schema: Schema,
-  toolbarState: ToolbarStateMap
+  toolbarState: ToolbarStateMap,
 ) {
   MARK_TYPES.forEach((type) => {
     const mark = schema.marks[type];
@@ -87,10 +87,7 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
     const node = $from.node(d);
 
     // Disable blockquote in code blocks
-    if (
-      node.type.spec.code === true ||
-      node.type.name === 'codeBlock'
-    ) {
+    if (node.type.spec.code === true || node.type.name === 'codeBlock') {
       blockQuoteDisabled = true;
     }
     // Disable blockquote in table nodes and track table context
@@ -100,7 +97,8 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
       node.type.name === 'tableBody' ||
       node.type.name === 'tableRow' ||
       node.type.name === 'tableHeadCell' ||
-      node.type.name === 'tableBodyCell') {
+      node.type.name === 'tableBodyCell'
+    ) {
       blockQuoteDisabled = true;
       insideTable = true;
     }
@@ -156,6 +154,7 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
   if (insideTable) {
     // Disable heading, table, hrline, and codeblock
     const disableKeys: ToolbarStateKeys[] = ['heading', 'table', 'thematicBreak', 'codeBlock'];
+
     disableKeys.forEach((key) => {
       if (toolbarState[key]) {
         toolbarState[key] = { ...toolbarState[key], disabled: true };
@@ -169,6 +168,7 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
   if (insideList) {
     // Disable heading, table, and codeblock
     const disableKeys: ToolbarStateKeys[] = ['heading', 'table', 'codeBlock', 'thematicBreak'];
+
     disableKeys.forEach((key) => {
       if (toolbarState[key]) {
         toolbarState[key] = { ...toolbarState[key], disabled: true };

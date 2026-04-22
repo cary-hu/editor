@@ -257,9 +257,7 @@ export interface CustomInlineMdNode extends MdNode {
   info: string;
 }
 
-export type AutolinkParser = (
-  content: string
-) => {
+export type AutolinkParser = (content: string) => {
   url: string;
   text: string;
   range: [number, number];
@@ -267,7 +265,7 @@ export type AutolinkParser = (
 
 export type CustomParser = (
   node: MdNode,
-  context: { entering: boolean; options: ParserOptions }
+  context: { entering: boolean; options: ParserOptions },
 ) => void;
 export type CustomParserMap = Partial<Record<MdNodeType, CustomParser>>;
 
@@ -338,7 +336,7 @@ export class Parser {
   setRefMaps(
     refMap: RefMap,
     refLinkCandidateMap: RefLinkCandidateMap,
-    refDefCandidateMap: RefDefCandidateMap
+    refDefCandidateMap: RefDefCandidateMap,
   ): void;
 
   clearRefMaps(): void;
@@ -347,7 +345,7 @@ export class Parser {
 export type HTMLConvertor = (
   node: MdNode,
   context: Context,
-  convertors?: HTMLConvertorMap
+  convertors?: HTMLConvertorMap,
 ) => HTMLToken | HTMLToken[] | null;
 
 export type HTMLConvertorMap = Partial<Record<string, HTMLConvertor>>;

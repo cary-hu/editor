@@ -12,7 +12,7 @@ export function registerTagWhitelistIfPossible(tagName: string) {
 
 export function sanitizeHTML<T extends string | HTMLElement | DocumentFragment = string>(
   html: string | Node,
-  options?: DOMPurify.Config
+  options?: DOMPurify.Config,
 ) {
   return DOMPurify.sanitize(html, {
     ADD_TAGS: whiteTagList,

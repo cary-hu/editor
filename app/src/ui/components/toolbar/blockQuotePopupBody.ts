@@ -40,16 +40,15 @@ export class BlockQuotePopupBody extends Component<Props> {
         aria-label="${i18n.get('Blockquote')}"
       >
         ${BLOCK_QUOTE_TYPES.map(
-          ({ type, label }) =>
-            html`
-              <li
-                data-type="${type}"
-                aria-role="menuitem"
-                class="${currentBqType && type === currentBqType ? 'active' : ''}"
-              >
-                <div class="block-quote-type-${type}">${i18n.get(label)}</div>
-              </li>
-            `
+          ({ type, label }) => html`
+            <li
+              data-type="${type}"
+              aria-role="menuitem"
+              class="${currentBqType && type === currentBqType ? 'active' : ''}"
+            >
+              <div class="block-quote-type-${type}">${i18n.get(label)}</div>
+            </li>
+          `,
         )}
       </ul>
     `;

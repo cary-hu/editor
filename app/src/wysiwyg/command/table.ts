@@ -24,7 +24,7 @@ const cellOffsetFnMap: CellOffsetFnMap = {
 function isInFirstListItem(
   pos: ResolvedPos,
   doc: ProsemirrorNode,
-  [paraDepth, listDepth]: number[]
+  [paraDepth, listDepth]: number[],
 ) {
   const listItemNode = doc.resolve(pos.before(paraDepth - 1));
 
@@ -65,7 +65,7 @@ function canMoveToBeforeCell(
   [paraDepth, listDepth, curDepth]: number[],
   from: ResolvedPos,
   doc: ProsemirrorNode,
-  inList: boolean
+  inList: boolean,
 ) {
   if (direction === Direction.LEFT || direction === Direction.UP) {
     if (inList && !isInFirstListItem(from, doc, [paraDepth, listDepth])) {
@@ -88,7 +88,7 @@ function canMoveToAfterCell(
   curDepth: number,
   from: ResolvedPos,
   doc: ProsemirrorNode,
-  inList: boolean
+  inList: boolean,
 ) {
   if (direction === Direction.RIGHT || direction === Direction.DOWN) {
     if (inList && !isInLastListItem(from)) {
@@ -110,7 +110,7 @@ export function canMoveBetweenCells(
   direction: Direction,
   [cellDepth, paraDepth]: number[],
   from: ResolvedPos,
-  doc: ProsemirrorNode
+  doc: ProsemirrorNode,
 ) {
   const listDepth = cellDepth + 3; // 3 is position of <ul><li><p>
   const inList = paraDepth >= listDepth;
@@ -121,7 +121,7 @@ export function canMoveBetweenCells(
     [paraDepth, listDepth, curDepth],
     from,
     doc,
-    inList
+    inList,
   );
   const moveAfterCell = canMoveToAfterCell(direction, curDepth, from, doc, inList);
 
@@ -131,7 +131,7 @@ export function canMoveBetweenCells(
 export function canBeOutOfTable(
   direction: Direction,
   map: TableOffsetMap,
-  [rowIdx, colIdx]: CellPosition
+  [rowIdx, colIdx]: CellPosition,
 ) {
   const rowspanInfo = map.getRowSpanStartInfo(rowIdx, colIdx)!;
   const inFirstRow = direction === Direction.UP && rowIdx === 0;
@@ -155,7 +155,7 @@ export function addParagraphAfterTable(
   tr: Transaction,
   map: TableOffsetMap,
   schema: Schema,
-  forcedAddtion = false
+  forcedAddtion = false,
 ) {
   const tableEndPos = tr.doc.resolve(map.tableEndOffset);
 
@@ -245,7 +245,7 @@ export function moveToCell(
   direction: Direction,
   tr: Transaction,
   cellIndex: CellPosition,
-  map: TableOffsetMap
+  map: TableOffsetMap,
 ) {
   const cellOffsetFn = cellOffsetFnMap[direction];
   const offset = cellOffsetFn(cellIndex, map);
@@ -262,7 +262,7 @@ export function moveToCell(
 export function canSelectTableNode(
   direction: Direction,
   map: TableOffsetMap,
-  [rowIdx, colIdx]: CellPosition
+  [rowIdx, colIdx]: CellPosition,
 ) {
   if (direction === Direction.UP || direction === Direction.DOWN) {
     return false;

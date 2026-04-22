@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const webpack = require('webpack');
 const pkg = require('./package.json');
@@ -63,7 +62,7 @@ function addAnalyzerPlugin(config, type) {
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',
       reportFilename: `../../report/webpack/stats-${pkg.version}-${type}.html`,
-    })
+    }),
   );
 }
 

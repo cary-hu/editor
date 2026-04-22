@@ -9,13 +9,11 @@ describe('image processor', () => {
   });
 
   function mockReadAsDataURL() {
-    vi
-      .spyOn(FileReader.prototype, 'readAsDataURL')
-      .mockImplementation(function (this: FileReader) {
-        const ev = { target: { result: '/file.jpg' } } as ProgressEvent<FileReader>;
+    vi.spyOn(FileReader.prototype, 'readAsDataURL').mockImplementation(function (this: FileReader) {
+      const ev = { target: { result: '/file.jpg' } } as ProgressEvent<FileReader>;
 
-        this.onload!(ev);
-      });
+      this.onload!(ev);
+    });
   }
 
   it('should call addImageBlobHook hook on calling emitImageBlobHook function', () => {

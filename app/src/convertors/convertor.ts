@@ -28,7 +28,7 @@ export default class Convertor {
     schema: Schema,
     toMdConvertors: ToMdConvertorMap,
     toHTMLConvertors: HTMLConvertorMap,
-    eventEmitter: Emitter
+    eventEmitter: Emitter,
   ) {
     this.schema = schema;
     this.eventEmitter = eventEmitter;
@@ -39,7 +39,7 @@ export default class Convertor {
 
     this.eventEmitter.listen(
       'setFocusedNode',
-      (node: ProsemirrorNode | MdNode) => (this.focusedNode = node)
+      (node: ProsemirrorNode | MdNode) => (this.focusedNode = node),
     );
   }
 

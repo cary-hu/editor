@@ -45,7 +45,7 @@ function getDummyCellSize(dummyCellCount: number) {
 function createPastingCells(
   tableContent: Fragment,
   curSelectionInfo: SelectionInfo,
-  schema: Schema
+  schema: Schema,
 ) {
   const pastingRows: Fragment[] = [];
   const pastingTableRows = createRowsFromPastingTable(tableContent);
@@ -79,7 +79,7 @@ function createPastingCells(
 function getPastingRangeInfo(
   map: TableOffsetMap,
   { startRowIdx, startColIdx }: SelectionInfo,
-  pastingCells: Fragment[]
+  pastingCells: Fragment[],
 ): PastingRangeInfo {
   const pastingRowCount = pastingCells.length;
   let pastingColumnCount = 0;
@@ -121,7 +121,7 @@ function addReplacedOffsets(
     addedRowCount,
     addedColumnCount,
   }: PastingRangeInfo,
-  cellsOffsets: ReplacedCellsOffsets[]
+  cellsOffsets: ReplacedCellsOffsets[],
 ) {
   for (let rowIdx = startRowIdx; rowIdx <= endRowIdx - addedRowCount; rowIdx += 1) {
     cellsOffsets.push({
@@ -144,7 +144,7 @@ function expandColumns(
     addedRowCount,
     addedColumnCount,
   }: PastingRangeInfo,
-  cellsOffsets: ReplacedCellsOffsets[]
+  cellsOffsets: ReplacedCellsOffsets[],
 ) {
   const { totalRowCount } = map;
   let index = 0;
@@ -177,7 +177,7 @@ function expandRows(
   schema: Schema,
   map: TableOffsetMap,
   { addedRowCount, addedColumnCount, startColIdx, endColIdx }: PastingRangeInfo,
-  cellsOffsets: ReplacedCellsOffsets[]
+  cellsOffsets: ReplacedCellsOffsets[],
 ) {
   const mapStart = tr.mapping.maps.length;
   const tableEndPos = map.tableEndOffset - 2;
@@ -206,7 +206,7 @@ function replaceCells(
   tr: Transaction,
   pastingRows: Fragment[],
   cellsOffsets: ReplacedCellsOffsets[],
-  map: TableOffsetMap
+  map: TableOffsetMap,
 ) {
   const mapStart = tr.mapping.maps.length;
 
@@ -274,7 +274,7 @@ function setSelection(view: EditorView, cellsOffsets: ReplacedCellsOffsets[], po
   const { offset: endOffset } = map.getCellInfo(endRowIdx, endColIdx);
 
   view.dispatch!(
-    tr.setSelection(new CellSelection(doc.resolve(startOffset), doc.resolve(endOffset)))
+    tr.setSelection(new CellSelection(doc.resolve(startOffset), doc.resolve(endOffset))),
   );
 }
 
@@ -282,9 +282,8 @@ function canMerge(map: TableOffsetMap, pastingInfo: PastingRangeInfo) {
   const ranges = map.getSpannedOffsets(pastingInfo);
 
   const { rowCount, columnCount } = getRowAndColumnCount(ranges);
-  const { rowCount: pastingRowCount, columnCount: pastingColumnCount } = getRowAndColumnCount(
-    pastingInfo
-  );
+  const { rowCount: pastingRowCount, columnCount: pastingColumnCount } =
+    getRowAndColumnCount(pastingInfo);
 
   return rowCount === pastingRowCount && columnCount === pastingColumnCount;
 }

@@ -27,12 +27,11 @@ export class HeadingPopupBody extends Component<Props> {
         aria-label="${i18n.get('Headings')}"
       >
         ${[1, 2, 3, 4, 5, 6].map(
-          (level) =>
-            html`
-              <li data-level="${level}" data-type="Heading" aria-role="menuitem">
-                ${i18n.get('Heading')} ${level}
-              </li>
-            `
+          (level) => html`
+            <li data-level="${level}" data-type="Heading" aria-role="menuitem">
+              ${i18n.get('Heading')} ${level}
+            </li>
+          `,
         )}
         <li data-type="Paragraph" aria-role="menuitem">
           <div>${i18n.get('Paragraph')}</div>

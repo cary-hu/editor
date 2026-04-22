@@ -107,7 +107,7 @@ export function isInlineNode(mdNode: MdNode) {
 export function findClosestNode(
   mdNode: MdNode,
   condition: (targetMdNode: MdNode) => boolean,
-  includeSelf = true
+  includeSelf = true,
 ) {
   mdNode = includeSelf ? mdNode : mdNode.parent!;
 
@@ -123,7 +123,7 @@ export function findClosestNode(
 export function traverseParentNodes(
   mdNode: MdNode,
   iteratee: (targetNode: MdNode) => void,
-  includeSelf = true
+  includeSelf = true,
 ) {
   mdNode = includeSelf ? mdNode! : mdNode.parent!;
 
@@ -194,9 +194,8 @@ export function isContainer(node: MdNode) {
 export function getChildrenText(node: MdNode) {
   const buffer: string[] = [];
   const walker = node.walker();
-  let event: ReturnType<typeof walker.next> = null;
 
-  while ((event = walker.next())) {
+  for (let event = walker.next(); event; event = walker.next()) {
     const { node: childNode } = event;
 
     if (childNode.type === 'text') {

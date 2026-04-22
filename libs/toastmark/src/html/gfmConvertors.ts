@@ -96,7 +96,7 @@ export const gfmConvertors: HTMLConvertorMap = {
             type: 'closeTag',
             tagName: 'td',
             outerNewLine: true,
-          }
+          },
         );
       }
     }

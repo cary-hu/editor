@@ -1,15 +1,15 @@
-const babel = require("@babel/core");
+const babel = require('@babel/core');
 
 module.exports = {
-    process(src) {
+  process(src) {
+    const options = {
+      babelrc: false,
+      compact: false,
+      plugins: [require.resolve('@babel/plugin-transform-modules-commonjs')],
+    };
 
-        const options = {
-            babelrc: false,
-            compact: false,
-            plugins: [require.resolve("@babel/plugin-transform-modules-commonjs")]
-        };
-        return {
-            code: babel.transform(src, options).code,
-        }
-    },
+    return {
+      code: babel.transform(src, options).code,
+    };
+  },
 };

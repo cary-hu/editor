@@ -311,7 +311,7 @@ export function groupToolbarItems(toolbarItems: ToolbarItem[], hiddenScrollSync:
 export function toggleScrollSync(toolbarItems: ToolbarGroupInfo[], hiddenScrollSync: boolean) {
   toolbarItems.forEach((group) => {
     group.forEach(
-      (item: ToolbarButtonInfo) => (item.hidden = item.name === 'scrollSync' && hiddenScrollSync)
+      (item: ToolbarButtonInfo) => (item.hidden = item.name === 'scrollSync' && hiddenScrollSync),
     );
     setGroupState(group);
   });

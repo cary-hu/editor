@@ -7,7 +7,7 @@ describe('Viewer', () => {
 
   function getViewerHTML() {
     return oneLineTrim`${removeDataAttr(
-      container.querySelector('.toastui-editor-contents')!.innerHTML
+      container.querySelector('.toastui-editor-contents')!.innerHTML,
     )}`;
   }
 
@@ -61,7 +61,7 @@ describe('Viewer', () => {
 
   it('should render htmlBlock properly', () => {
     viewer.setMarkdown(
-      '<iframe src="https://www.youtube.com/embed/XyenY12fzAk" height="315" width="420"></iframe>'
+      '<iframe src="https://www.youtube.com/embed/XyenY12fzAk" height="315" width="420"></iframe>',
     );
 
     const expected =

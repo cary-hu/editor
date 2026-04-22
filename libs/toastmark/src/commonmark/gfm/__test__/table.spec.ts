@@ -218,7 +218,7 @@ describe('table', () => {
     const root = reader.parse(input);
     const html = renderer.render(root);
     expect(html).toBe(`${output}\n`);
-  })
+  });
 
   it('with empty cells', () => {
     const input = source`

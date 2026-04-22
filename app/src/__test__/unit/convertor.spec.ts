@@ -721,7 +721,10 @@ describe('Convertor', () => {
         <table><thead><tr><th>foo</th></tr></thead><tbody><tr><td>bar</td></tr></tbody></table>
       `;
 
-      assertConverting(markdown, '<table><tr>| foo </tr>| --- |\n<tbody><tr>| bar </tr></tbody></table>');
+      assertConverting(
+        markdown,
+        '<table><tr>| foo </tr>| --- |\n<tbody><tr>| bar </tr></tbody></table>',
+      );
     });
 
     it('with html inline', () => {

@@ -304,7 +304,7 @@ describe('Default toolbar', () => {
       tableSelection.click();
 
       expect(editor.getMarkdown()).toBe(
-        '\n|  |  |  |  |  |  |\n| --- | --- | --- | --- | --- | --- |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |'
+        '\n|  |  |  |  |  |  |\n| --- | --- | --- | --- | --- | --- |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |\n|  |  |  |  |  |  |',
       );
     });
   });

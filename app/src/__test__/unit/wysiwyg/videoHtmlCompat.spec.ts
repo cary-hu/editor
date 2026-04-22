@@ -12,8 +12,9 @@ import { createHTMLrenderer } from '../markdown/util';
 describe('video html compatibility', () => {
   let wwe: WysiwygEditor;
   let el: HTMLElement;
-  type VideoRange = { from: number, to: number };
-  type TextblockRange = { start: number, end: number };
+
+  type VideoRange = { from: number; to: number };
+  type TextblockRange = { start: number; end: number };
 
   function requireVideoRange(): VideoRange {
     const range = findVideoRange();
@@ -27,10 +28,12 @@ describe('video html compatibility', () => {
 
   function setContent(content: string) {
     const wrapper = document.createElement('div');
+
     wrapper.innerHTML = content;
     ensureEmptyHtmlInlineMediaPlaceholders(wrapper);
 
     const nodes = DOMParser.fromSchema(wwe.schema).parse(wrapper);
+
     wwe.setModel(nodes);
   }
 
@@ -42,7 +45,7 @@ describe('video html compatibility', () => {
         return;
       }
 
-      const hasVideoMark = node.marks.some(mark => mark.type.name === 'video');
+      const hasVideoMark = node.marks.some((mark) => mark.type.name === 'video');
 
       if (hasVideoMark) {
         range = {
@@ -77,7 +80,9 @@ describe('video html compatibility', () => {
   }
 
   function flushSelectionUpdate() {
-    return new Promise(resolve => setTimeout(resolve, 0));
+    return new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
   }
 
   beforeEach(() => {
@@ -113,7 +118,7 @@ describe('video html compatibility', () => {
     expect(wwe.schema.marks.video).toBeDefined();
     expect(wwe.schema.nodes.video).toBeUndefined();
     expect(wwe.getHTML()).toContain(
-      '<p><video src="movie.mp4">Your browser does not support the video tag.</video></p>'
+      '<p><video src="movie.mp4">Your browser does not support the video tag.</video></p>',
     );
   });
 
@@ -149,7 +154,6 @@ describe('video html compatibility', () => {
   it('selects and highlights video marks on click', async () => {
     setContent('<video src="movie.mp4">Your browser does not support the video tag.</video>');
 
-    const range = requireVideoRange();
     const video = wwe.view.dom.querySelector('video') as HTMLVideoElement;
 
     expect(video).not.toBeNull();
@@ -161,61 +165,85 @@ describe('video html compatibility', () => {
   });
 
   it('navigates into and out of video marks with arrow keys', async () => {
-    setContent([
-      '<p>before</p>',
-      '<video src="movie.mp4">Your browser does not support the video tag.</video>',
-      '<p>after</p>',
-    ].join(''));
+    setContent(
+      [
+        '<p>before</p>',
+        '<video src="movie.mp4">Your browser does not support the video tag.</video>',
+        '<p>after</p>',
+      ].join(''),
+    );
 
-    const range = requireVideoRange();
     const before = requireTextblockRange('before');
     const after = requireTextblockRange('after');
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     try {
       wwe.view.dispatch(
-        wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, before.end, before.end))
+        wwe.view.state.tr.setSelection(
+          TextSelection.create(wwe.view.state.doc, before.end, before.end),
+        ),
       );
-      wwe.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      wwe.view.dom.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+      );
       await flushSelectionUpdate();
 
       expect(wwe.view.state.selection.from).toBe(before.end);
       expect(wwe.view.state.selection.to).toBe(before.end);
-      expect((wwe.view.dom.querySelector('video') as HTMLVideoElement).classList.contains('toastui-editor-html-inline-media-selected')).toBe(true);
+      expect(
+        (wwe.view.dom.querySelector('video') as HTMLVideoElement).classList.contains(
+          'toastui-editor-html-inline-media-selected',
+        ),
+      ).toBe(true);
 
-      wwe.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      wwe.view.dom.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+      );
       await flushSelectionUpdate();
 
       expect(wwe.view.state.selection.from).toBe(after.start);
       expect(wwe.view.state.selection.to).toBe(after.start);
-      expect((wwe.view.dom.querySelector('video') as HTMLVideoElement).classList.contains('toastui-editor-html-inline-media-selected')).toBe(false);
+      expect(
+        (wwe.view.dom.querySelector('video') as HTMLVideoElement).classList.contains(
+          'toastui-editor-html-inline-media-selected',
+        ),
+      ).toBe(false);
 
       wwe.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
       await flushSelectionUpdate();
 
       expect(wwe.view.state.selection.from).toBe(after.start);
       expect(wwe.view.state.selection.to).toBe(after.start);
-      expect((wwe.view.dom.querySelector('video') as HTMLVideoElement).classList.contains('toastui-editor-html-inline-media-selected')).toBe(true);
+      expect(
+        (wwe.view.dom.querySelector('video') as HTMLVideoElement).classList.contains(
+          'toastui-editor-html-inline-media-selected',
+        ),
+      ).toBe(true);
 
       wwe.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
       await flushSelectionUpdate();
 
       expect(wwe.view.state.selection.from).toBe(before.end);
       expect(wwe.view.state.selection.to).toBe(before.end);
-      expect((wwe.view.dom.querySelector('video') as HTMLVideoElement).classList.contains('toastui-editor-html-inline-media-selected')).toBe(false);
+      expect(
+        (wwe.view.dom.querySelector('video') as HTMLVideoElement).classList.contains(
+          'toastui-editor-html-inline-media-selected',
+        ),
+      ).toBe(false);
     } finally {
       warnSpy.mockRestore();
     }
   });
 
   it('selects video when navigating across neighboring textblocks', async () => {
-    setContent([
-      '<h2>Features</h2>',
-      '<video src="movie.mp4">Your browser does not support the video tag.</video>',
-      '<ul><li><p>CommonMark + GFM Specifications</p></li></ul>',
-    ].join(''));
+    setContent(
+      [
+        '<h2>Features</h2>',
+        '<video src="movie.mp4">Your browser does not support the video tag.</video>',
+        '<ul><li><p>CommonMark + GFM Specifications</p></li></ul>',
+      ].join(''),
+    );
 
-    const range = requireVideoRange();
     const features = requireTextblockRange('Features');
     const commonMark = requireTextblockRange('CommonMark + GFM Specifications');
     const video = wwe.view.dom.querySelector('video') as HTMLVideoElement;
@@ -223,9 +251,13 @@ describe('video html compatibility', () => {
 
     try {
       wwe.view.dispatch(
-        wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, features.end, features.end))
+        wwe.view.state.tr.setSelection(
+          TextSelection.create(wwe.view.state.doc, features.end, features.end),
+        ),
       );
-      wwe.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      wwe.view.dom.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+      );
       await flushSelectionUpdate();
 
       expect(wwe.view.state.selection.from).toBe(features.end);
@@ -233,7 +265,9 @@ describe('video html compatibility', () => {
       expect(video.classList.contains('toastui-editor-html-inline-media-selected')).toBe(true);
 
       wwe.view.dispatch(
-        wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, commonMark.start, commonMark.start))
+        wwe.view.state.tr.setSelection(
+          TextSelection.create(wwe.view.state.doc, commonMark.start, commonMark.start),
+        ),
       );
       wwe.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
       await flushSelectionUpdate();
@@ -254,11 +288,13 @@ describe('video html compatibility', () => {
   });
 
   it('selects empty video when navigating across neighboring textblocks', async () => {
-    setContent([
-      '<h2>Features</h2>',
-      '<video src="movie.mp4"></video>',
-      '<ul><li><p>CommonMark + GFM Specifications</p></li></ul>',
-    ].join(''));
+    setContent(
+      [
+        '<h2>Features</h2>',
+        '<video src="movie.mp4"></video>',
+        '<ul><li><p>CommonMark + GFM Specifications</p></li></ul>',
+      ].join(''),
+    );
 
     const features = requireTextblockRange('Features');
     const commonMark = requireTextblockRange('CommonMark + GFM Specifications');
@@ -267,16 +303,22 @@ describe('video html compatibility', () => {
 
     try {
       wwe.view.dispatch(
-        wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, features.end, features.end))
+        wwe.view.state.tr.setSelection(
+          TextSelection.create(wwe.view.state.doc, features.end, features.end),
+        ),
       );
-      wwe.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      wwe.view.dom.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+      );
       await flushSelectionUpdate();
 
       expect(wwe.view.state.selection.from).toBe(features.end);
       expect(wwe.view.state.selection.to).toBe(features.end);
       expect(video.classList.contains('toastui-editor-html-inline-media-selected')).toBe(true);
 
-      wwe.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      wwe.view.dom.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+      );
       await flushSelectionUpdate();
 
       expect(wwe.view.state.selection.from).toBe(commonMark.start);
@@ -288,10 +330,12 @@ describe('video html compatibility', () => {
   });
 
   it('moves the caret to the visible paragraph edge when video is the last block', async () => {
-    setContent([
-      '<h2>Features</h2>',
-      '<video src="movie.mp4">Your browser does not support the video tag.</video>',
-    ].join(''));
+    setContent(
+      [
+        '<h2>Features</h2>',
+        '<video src="movie.mp4">Your browser does not support the video tag.</video>',
+      ].join(''),
+    );
 
     const range = requireVideoRange();
     const features = requireTextblockRange('Features');
@@ -300,14 +344,20 @@ describe('video html compatibility', () => {
 
     try {
       wwe.view.dispatch(
-        wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, features.end, features.end))
+        wwe.view.state.tr.setSelection(
+          TextSelection.create(wwe.view.state.doc, features.end, features.end),
+        ),
       );
-      wwe.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      wwe.view.dom.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+      );
       await flushSelectionUpdate();
 
       expect(video.classList.contains('toastui-editor-html-inline-media-selected')).toBe(true);
 
-      wwe.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      wwe.view.dom.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+      );
       await flushSelectionUpdate();
 
       expect(wwe.view.state.selection.from).toBe(range.to);
@@ -326,10 +376,12 @@ describe('video html compatibility', () => {
   });
 
   it('moves the caret to the visible paragraph edge when video is the first block', async () => {
-    setContent([
-      '<video src="movie.mp4">Your browser does not support the video tag.</video>',
-      '<p>after</p>',
-    ].join(''));
+    setContent(
+      [
+        '<video src="movie.mp4">Your browser does not support the video tag.</video>',
+        '<p>after</p>',
+      ].join(''),
+    );
 
     const range = requireVideoRange();
     const after = requireTextblockRange('after');
@@ -338,7 +390,9 @@ describe('video html compatibility', () => {
 
     try {
       wwe.view.dispatch(
-        wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, after.start, after.start))
+        wwe.view.state.tr.setSelection(
+          TextSelection.create(wwe.view.state.doc, after.start, after.start),
+        ),
       );
       wwe.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
       await flushSelectionUpdate();
@@ -352,7 +406,9 @@ describe('video html compatibility', () => {
       expect(wwe.view.state.selection.to).toBe(range.from);
       expect(video.classList.contains('toastui-editor-html-inline-media-selected')).toBe(false);
 
-      wwe.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      wwe.view.dom.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+      );
       await flushSelectionUpdate();
 
       expect(wwe.view.state.selection.from).toBe(range.from);
@@ -369,23 +425,27 @@ describe('video html compatibility', () => {
     const initialRange = requireVideoRange();
 
     wwe.view.dispatch(
-      wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, initialRange.from, initialRange.from))
+      wwe.view.state.tr.setSelection(
+        TextSelection.create(wwe.view.state.doc, initialRange.from, initialRange.from),
+      ),
     );
     wwe.view.dispatch(wwe.view.state.tr.insertText('before '));
 
     expect(wwe.getHTML()).toContain(
-      '<p>before <video src="movie.mp4">Your browser does not support the video tag.</video></p>'
+      '<p>before <video src="movie.mp4">Your browser does not support the video tag.</video></p>',
     );
 
     const rangeAfterBeforeText = requireVideoRange();
 
     wwe.view.dispatch(
-      wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, rangeAfterBeforeText.to, rangeAfterBeforeText.to))
+      wwe.view.state.tr.setSelection(
+        TextSelection.create(wwe.view.state.doc, rangeAfterBeforeText.to, rangeAfterBeforeText.to),
+      ),
     );
     wwe.view.dispatch(wwe.view.state.tr.insertText(' after'));
 
     expect(wwe.getHTML()).toContain(
-      '<p>before <video src="movie.mp4">Your browser does not support the video tag.</video> after</p>'
+      '<p>before <video src="movie.mp4">Your browser does not support the video tag.</video> after</p>',
     );
   });
 });

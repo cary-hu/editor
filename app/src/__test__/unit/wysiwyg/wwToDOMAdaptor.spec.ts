@@ -18,7 +18,7 @@ function createText(text: string) {
 function createNode(
   type: string,
   attrs?: { [key: string]: any } | null,
-  content?: Fragment | ProsemirrorNode | Array<ProsemirrorNode>
+  content?: Fragment | ProsemirrorNode | Array<ProsemirrorNode>,
 ) {
   return wwe.schema.nodes[type].create(attrs, content);
 }
@@ -111,7 +111,7 @@ afterEach(() => {
 describe('mdLikeNode', () => {
   it('heading node should be changed to markdown-like-node', () => {
     const headingNode = createMdLikeNode(
-      createNode('heading', { level: 2 }, createText('myHeading'))
+      createNode('heading', { level: 2 }, createText('myHeading')),
     );
 
     expect(headingNode).toEqual({ type: 'heading', literal: null, wysiwygNode: true, level: 2 });
@@ -130,7 +130,7 @@ describe('mdLikeNode', () => {
 
   it('codeBlock node should be changed to markdown-like-node', () => {
     const codeBlockNode = createMdLikeNode(
-      createNode('codeBlock', { language: 'myLang' }, createText('myCode'))
+      createNode('codeBlock', { language: 'myLang' }, createText('myCode')),
     );
 
     expect(codeBlockNode).toEqual({
@@ -200,7 +200,7 @@ describe('mdLikeNode', () => {
 
   it('customBlock node should be changed to markdown-like-node', () => {
     const customBlockNode = createMdLikeNode(
-      createNode('customBlock', { info: 'myCustom' }, createText('myCustom'))
+      createNode('customBlock', { info: 'myCustom' }, createText('myCustom')),
     );
 
     expect(customBlockNode).toEqual({
@@ -213,7 +213,7 @@ describe('mdLikeNode', () => {
 
   it('link mark should be changed to markdown-like-node', () => {
     const linkNode = createMdLikeNode(
-      createMark('link', { linkText: 'myLinkText', linkUrl: 'myLinkUrl' })
+      createMark('link', { linkText: 'myLinkText', linkUrl: 'myLinkUrl' }),
     );
 
     expect(linkNode).toEqual({
@@ -230,7 +230,7 @@ describe('mdLikeNode', () => {
       createNode('nav', {
         htmlAttrs: { class: 'my-nav', 'data-my-nav': 'my-nav' },
         childrenHTML: 'text',
-      })
+      }),
     );
 
     expect(navNode).toEqual({

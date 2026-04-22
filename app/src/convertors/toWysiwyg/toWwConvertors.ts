@@ -330,6 +330,7 @@ const toWwConvertors: ToWwConvertorMap = {
       // Only process on opening tag, skip closing tag
       if (openTagName) {
         const htmlAttrs = getHTMLAttrsByHTMLString(sanitizedHTML);
+
         state.addNode(nodeType, { htmlAttrs });
       }
       return;

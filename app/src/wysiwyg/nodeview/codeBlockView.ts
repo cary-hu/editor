@@ -16,7 +16,6 @@ type InputPos = {
   right: number;
 };
 
-
 const WRAPPER_CLASS_NAME = cls('ww-code-block');
 const CODE_BLOCK_LANG_CLASS_NAME = cls('ww-code-block-language');
 

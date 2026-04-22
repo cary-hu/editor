@@ -31,7 +31,14 @@ import { Strike } from './marks/strike';
 import { Emph } from './marks/emph';
 import { Code } from './marks/code';
 import { Link } from './marks/link';
-import { Delimiter, TaskDelimiter, MarkedText, Meta, TableCell, BlockQuoteDelimiter } from './marks/simpleMark';
+import {
+  Delimiter,
+  TaskDelimiter,
+  MarkedText,
+  Meta,
+  TableCell,
+  BlockQuoteDelimiter,
+} from './marks/simpleMark';
 import { Html } from './marks/html';
 import { CustomBlock } from './marks/customBlock';
 import { getEditorToMdPos, getMdToEditorPos } from './helper/pos';
@@ -79,7 +86,7 @@ export default class MdEditor extends EditorBase {
     this.createClipboard();
     // To prevent unnecessary focus setting during initial rendering
     this.eventEmitter.listen('changePreviewTabWrite', (isMarkdownTabMounted?: boolean) =>
-      this.toggleActive(true, isMarkdownTabMounted)
+      this.toggleActive(true, isMarkdownTabMounted),
     );
     this.eventEmitter.listen('changePreviewTabPreview', () => this.toggleActive(false));
     this.initEvent();
@@ -106,7 +113,7 @@ export default class MdEditor extends EditorBase {
 
       if (items) {
         const containRtfItem = toArray(items).some(
-          (item) => item.kind === 'string' && item.type === 'text/rtf'
+          (item) => item.kind === 'string' && item.type === 'text/rtf',
         );
 
         // if it contains rtf, it's most likely copy paste from office -> no image
@@ -171,7 +178,7 @@ export default class MdEditor extends EditorBase {
     return [
       syntaxHighlight(this.context),
       previewHighlight(this.context),
-      cursorLineHighlight(this.context),
+      cursorLineHighlight(),
       smartTask(this.context),
       ...this.createPluginProps(),
     ].concat(this.defaultPlugins);
@@ -300,7 +307,7 @@ export default class MdEditor extends EditorBase {
     const { tr, schema, doc } = this.view.state;
     const lineTexts = text.split(reLineEnding);
     const nodes = lineTexts.map((lineText) =>
-      createParagraph(schema, createNodesWithWidget(lineText, schema))
+      createParagraph(schema, createNodesWithWidget(lineText, schema)),
     );
     const slice = new Slice(Fragment.from(nodes), 1, 1);
 
@@ -361,7 +368,7 @@ export default class MdEditor extends EditorBase {
     const lineTexts = markdown.split(reLineEnding);
     const { tr, doc, schema } = this.view.state;
     const nodes = lineTexts.map((lineText) =>
-      createParagraph(schema, createNodesWithWidget(lineText, schema))
+      createParagraph(schema, createNodesWithWidget(lineText, schema)),
     );
 
     this.view.dispatch(tr.replaceWith(0, doc.content.size, nodes));

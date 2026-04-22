@@ -47,7 +47,7 @@ export function innerDiff(node: Node, prevProps: Props, nextProps: Props) {
     node,
     prevProps,
     nextProps,
-    (propName) => !shallowEqual(prevProps[propName], nextProps[propName])
+    (propName) => !shallowEqual(prevProps[propName], nextProps[propName]),
   );
 }
 

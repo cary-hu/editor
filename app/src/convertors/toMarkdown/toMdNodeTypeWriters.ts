@@ -15,7 +15,7 @@ import { WwNodeType, ColumnAlign } from '@t/wysiwyg';
 function convertToRawHTMLHavingInlines(
   state: ToMdConvertorState,
   node: ProsemirrorNode,
-  [openTag, closeTag]: string[]
+  [openTag, closeTag]: string[],
 ) {
   state.write(openTag);
   state.convertInline(node);
@@ -25,7 +25,7 @@ function convertToRawHTMLHavingInlines(
 function convertToRawHTMLHavingBlocks(
   state: ToMdConvertorState,
   { node, parent }: NodeInfo,
-  [openTag, closeTag]: string[]
+  [openTag, closeTag]: string[],
 ) {
   state.stopNewline = true;
   state.write(openTag);
@@ -136,7 +136,7 @@ export const nodeTypeWriters: ToMdNodeTypeWriterMap = {
     }
 
     state.wrapBlock(delim as string, firstDelim as string | null, node, () =>
-      state.convertNode(node)
+      state.convertNode(node),
     );
   },
 
@@ -265,7 +265,7 @@ export function write(
     state: ToMdConvertorState;
     nodeInfo: NodeInfo;
     params: ToMdConvertorReturnValues;
-  }
+  },
 ) {
   const { rawHTML } = params;
 

@@ -39,8 +39,8 @@ export class CodeBlock extends Mark {
       dispatch!(
         tr.setSelection(
           // subtract fenced syntax length and open, close tag(2)
-          createTextSelection(tr, tr.mapping.map(endToOffset) - (fencedCodeBlockSyntax.length + 2))
-        )
+          createTextSelection(tr, tr.mapping.map(endToOffset) - (fencedCodeBlockSyntax.length + 2)),
+        ),
       );
 
       return true;

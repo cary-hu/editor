@@ -79,7 +79,7 @@ export function parseUrlLink(source: string) {
 
 function baseAutolinkParser(source: string) {
   return [...parseUrlLink(source), ...parseEmailLink(source)].sort(
-    (a, b) => a.range[0] - b.range[0]
+    (a, b) => a.range[0] - b.range[0],
   );
 }
 
@@ -109,7 +109,7 @@ export function convertExtAutoLinks(walker: NodeWalker, autolinkParser: boolean 
       for (const { range, url, text: linkText } of linkInfos) {
         if (range[0] > lastIdx) {
           newNodes.push(
-            text(literal.substring(lastIdx, range[0]), sourcepos(lastIdx, range[0] - 1))
+            text(literal.substring(lastIdx, range[0]), sourcepos(lastIdx, range[0] - 1)),
           );
         }
         const linkNode = createNode('link', sourcepos(...range));

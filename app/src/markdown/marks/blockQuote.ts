@@ -2,10 +2,7 @@ import { DOMOutputSpec } from 'prosemirror-model';
 import { Command } from 'prosemirror-commands';
 import { clsWithMdPrefix } from '@/utils/dom';
 import Mark from '@/spec/mark';
-import {
-  createTextNode,
-  splitAndExtendBlock,
-} from '@/helper/manipulation';
+import { createTextNode, splitAndExtendBlock } from '@/helper/manipulation';
 import { getRangeInfo } from '../helper/pos';
 import { getTextContent } from '../helper/query';
 

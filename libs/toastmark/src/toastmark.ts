@@ -135,7 +135,7 @@ export class ToastMark implements ToastMarkParser {
   private replaceRangeNodes(
     startNode: BlockNode | null,
     endNode: BlockNode | null,
-    newNodes: BlockNode[]
+    newNodes: BlockNode[],
   ) {
     if (!startNode) {
       if (endNode) {
@@ -182,7 +182,7 @@ export class ToastMark implements ToastMarkParser {
     startNode: BlockNode | null,
     endNode: BlockNode | null,
     startLine: number,
-    endLine: number
+    endLine: number,
   ) {
     // extends starting range if the first node can be a continued list item
     if (
@@ -228,7 +228,7 @@ export class ToastMark implements ToastMarkParser {
 
   private getRemovedNodeRange(
     extStartNode: BlockNode | null,
-    extEndNode: BlockNode | null
+    extEndNode: BlockNode | null,
   ): RemovedNodeRange | null {
     if (
       !extStartNode ||
@@ -301,7 +301,7 @@ export class ToastMark implements ToastMarkParser {
     endLine: number,
     startNode: BlockNode,
     endNode: BlockNode,
-    lineDiff: number
+    lineDiff: number,
   ) {
     if (this.referenceDefinition && !isEmptyObj(this.refMap)) {
       const prevNode = findChildNodeAtLine(this.root, startLine - 1);
@@ -326,11 +326,11 @@ export class ToastMark implements ToastMarkParser {
     const [startNode, endNode] = range;
     const startLine = startNode ? Math.min(startNode.sourcepos![0][0], startPos[0]) : startPos[0];
     const endLine = this.extendEndLine(
-      (endNode ? Math.max(endNode.sourcepos![1][0], endPos[0]) : endPos[0]) + lineDiff
+      (endNode ? Math.max(endNode.sourcepos![1][0], endPos[0]) : endPos[0]) + lineDiff,
     );
 
     const parseResult = this.parseRange(
-      ...this.getRangeWithRefDef(startLine, endLine, startNode, endNode, lineDiff)
+      ...this.getRangeWithRefDef(startLine, endLine, startNode, endNode, lineDiff),
     );
     const { newNodes, extStartNode, extEndNode } = parseResult;
     const removedNodeRange = this.getRemovedNodeRange(extStartNode, extEndNode);

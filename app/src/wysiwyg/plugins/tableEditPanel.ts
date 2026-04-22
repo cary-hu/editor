@@ -1,5 +1,5 @@
 import { Plugin, PluginKey } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
+import type { EditorView } from 'prosemirror-view';
 import { Emitter } from '@t/event';
 
 import { TableOffsetMap } from '@/wysiwyg/helper/tableOffsetMap';
@@ -32,12 +32,8 @@ class TableEditPanelView extends EditPanel {
     activeEditIndex: null,
     editMask: null,
   };
+
   private lastShowTime = 0;
-
-  constructor(view: EditorView, eventEmitter: Emitter) {
-    super(view, eventEmitter);
-
-  }
 
   protected preparePanel(): void {
     this.handleTableClick = this.handleTableClick.bind(this);
@@ -54,44 +50,45 @@ class TableEditPanelView extends EditPanel {
   private handleTableClick = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     const tableElement = target.closest('table');
-    
+
     if (!tableElement) {
       return;
     }
-    
+
     // Check if the click target is an image
     const imageElement = target.closest('img');
+
     if (imageElement) {
       // If clicking on an image within the table, let the image edit panel handle it
       // Don't show or interfere with table panel in this case
       return;
     }
-    
+
     // If already in edit mode for this table, let the document click handler deal with it
     if (this.state.activeEditType !== null && this.state.tableElement === tableElement) {
       return;
     }
-    
+
     // If clicking on the same table that's already shown, don't re-show
     if (this.state.tableElement === tableElement && this.state.isVisible) {
       return;
     }
-    
+
     // Show panel for new table
     this.showPanel(tableElement);
     // Don't stopPropagation here to allow contextMenu to handle closing
-  }
+  };
 
   private isTableOrPanelElement(element: HTMLElement): boolean {
     const isTableElement = !!element.closest('table');
     const isTablePanel = !!element.closest(`.${cls('table-edit-panel')}`);
     const isImageDialog = !!element.closest(`.${cls('image-edit-dialog')}`);
-    
+
     // If it's an image dialog, don't consider it as table-related
     if (isImageDialog) {
       return false;
     }
-    
+
     return isTableElement || isTablePanel;
   }
 
@@ -116,7 +113,12 @@ class TableEditPanelView extends EditPanel {
   }
 
   protected updatePosition() {
-    if (!this.state.isVisible || !this.state.tableElement || !this.isPanelReady || !this.state.panel) {
+    if (
+      !this.state.isVisible ||
+      !this.state.tableElement ||
+      !this.isPanelReady ||
+      !this.state.panel
+    ) {
       return;
     }
 
@@ -205,7 +207,7 @@ class TableEditPanelView extends EditPanel {
     const deleteBtn = document.createElement('div');
 
     deleteBtn.className = cls('delete-table-btn');
-    deleteBtn.innerHTML = `<i class="${cls("icon")} table-remove"></i>`;
+    deleteBtn.innerHTML = `<i class="${cls('icon')} table-remove"></i>`;
     deleteBtn.title = 'Delete table';
 
     // Click event for the delete button
@@ -223,9 +225,11 @@ class TableEditPanelView extends EditPanel {
     const { state, dispatch } = this.view;
     const { doc, tr } = state;
     let tablePos: number | null = null;
+
     doc.descendants((node, pos) => {
       if (node.type.name === 'table') {
         const domNode = this.view.domAtPos(pos + 1).node;
+
         if (
           domNode === this.state.tableElement ||
           (this.state.tableElement && this.state.tableElement.contains(domNode as Node))
@@ -239,11 +243,15 @@ class TableEditPanelView extends EditPanel {
     if (tablePos === null) return;
     const cellPos = doc.resolve(tablePos);
     const map = TableOffsetMap.create(cellPos);
+
     if (!map) return;
     // Create cell selection for the table
     const startCellPos = doc.resolve(map.getCellInfo(0, 0).offset);
-    const endCellPos = doc.resolve(map.getCellInfo(map.totalRowCount - 1, map.totalColumnCount - 1).offset);
+    const endCellPos = doc.resolve(
+      map.getCellInfo(map.totalRowCount - 1, map.totalColumnCount - 1).offset,
+    );
     const cellSelection = new CellSelection(startCellPos, endCellPos);
+
     dispatch!(tr.setSelection(cellSelection));
     // Use event emitter to execute the removeTable command
     this.eventEmitter.emit('command', 'removeTable');
@@ -400,7 +408,7 @@ class TableEditPanelView extends EditPanel {
    */
   private setCellSelection(
     tablePos: number | null = null,
-    direction: 'up' | 'down' | 'left' | 'right' = 'down'
+    direction: 'up' | 'down' | 'left' | 'right' = 'down',
   ) {
     const { state, dispatch } = this.view;
     const { doc } = state;
@@ -621,6 +629,7 @@ class TableEditPanelView extends EditPanel {
     try {
       // @ts-ignore
       const map = TableOffsetMap.create(selection.startCell);
+
       if (!map) return false;
 
       // @ts-ignore
@@ -629,6 +638,7 @@ class TableEditPanelView extends EditPanel {
 
       // Check if this would be merging header and body (not allowed)
       const hasTableHead = startRowIdx === 0 && endRowIdx > startRowIdx;
+
       if (hasTableHead) return false;
 
       // Check if we're trying to merge the entire table (not allowed)
@@ -636,12 +646,40 @@ class TableEditPanelView extends EditPanel {
       const rowCount = endRowIdx - startRowIdx + 1;
       const columnCount = endColIdx - startColIdx + 1;
       const allSelected = rowCount >= totalRowCount - 1 && columnCount === totalColumnCount;
+
       if (allSelected) return false;
 
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
+  }
+
+  private hasSpanningCell(offset: number): boolean {
+    const domNode = this.view.domAtPos(offset + 1).node;
+    let cellElement: Node | null = domNode;
+
+    while (cellElement && cellElement.nodeType === Node.TEXT_NODE) {
+      cellElement = cellElement.parentNode;
+    }
+    while (cellElement && cellElement.nodeName !== 'TD' && cellElement.nodeName !== 'TH') {
+      cellElement = cellElement.parentNode;
+    }
+
+    if (!cellElement) {
+      return false;
+    }
+
+    const colspan = Number.parseInt(
+      (cellElement as HTMLElement).getAttribute('colspan') || '1',
+      10,
+    );
+    const rowspan = Number.parseInt(
+      (cellElement as HTMLElement).getAttribute('rowspan') || '1',
+      10,
+    );
+
+    return colspan > 1 || rowspan > 1;
   }
 
   /**
@@ -659,6 +697,7 @@ class TableEditPanelView extends EditPanel {
     try {
       // @ts-ignore
       const map = TableOffsetMap.create(selection.startCell);
+
       if (!map) return false;
 
       // @ts-ignore
@@ -666,38 +705,21 @@ class TableEditPanelView extends EditPanel {
       const { startRowIdx, startColIdx, endRowIdx, endColIdx } = selectionInfo;
 
       // Check if any cell in the selection has colspan or rowspan
-      for (let rowIdx = startRowIdx; rowIdx <= endRowIdx; rowIdx++) {
-        for (let colIdx = startColIdx; colIdx <= endColIdx; colIdx++) {
+      for (let rowIdx = startRowIdx; rowIdx <= endRowIdx; rowIdx += 1) {
+        for (let colIdx = startColIdx; colIdx <= endColIdx; colIdx += 1) {
           // Skip extended cells (they are part of a spanning cell but not the root)
           if (map.extendedRowSpan(rowIdx, colIdx) || map.extendedColSpan(rowIdx, colIdx)) {
             continue;
           }
 
-          // Find the DOM element for this cell
-          const cellInfo = map.getCellInfo(rowIdx, colIdx);
-          const domNode = this.view.domAtPos(cellInfo.offset + 1).node;
-          let cellElement: Node | null = domNode;
-
-          // Find the actual td/th element
-          while (cellElement && cellElement.nodeType === Node.TEXT_NODE) {
-            cellElement = cellElement.parentNode;
-          }
-          while (cellElement && cellElement.nodeName !== 'TD' && cellElement.nodeName !== 'TH') {
-            cellElement = cellElement.parentNode;
-          }
-
-          if (cellElement) {
-            const colspan = parseInt((cellElement as HTMLElement).getAttribute('colspan') || '1');
-            const rowspan = parseInt((cellElement as HTMLElement).getAttribute('rowspan') || '1');
-            if (colspan > 1 || rowspan > 1) {
-              return true;
-            }
+          if (this.hasSpanningCell(map.getCellInfo(rowIdx, colIdx).offset)) {
+            return true;
           }
         }
       }
 
       return false;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -724,11 +746,14 @@ class TableEditPanelView extends EditPanel {
     // Check if table structure has changed by comparing current row/column count
     // with the number of controls we have
     const currentRows = this.state.tableElement.querySelectorAll('tr').length;
-    const currentCols = this.state.tableElement.querySelector('tr')?.querySelectorAll('th, td').length || 0;
+    const currentCols =
+      this.state.tableElement.querySelector('tr')?.querySelectorAll('th, td').length || 0;
 
     // Count existing controls
-    const existingRowControls = this.state.panel?.querySelectorAll(`.${cls('row-hover-area')}`).length || 0;
-    const existingColControls = this.state.panel?.querySelectorAll(`.${cls('col-hover-area')}`).length || 0;
+    const existingRowControls =
+      this.state.panel?.querySelectorAll(`.${cls('row-hover-area')}`).length || 0;
+    const existingColControls =
+      this.state.panel?.querySelectorAll(`.${cls('col-hover-area')}`).length || 0;
 
     // If structure changed, recreate panel; otherwise just update position
     if (currentRows !== existingRowControls || currentCols !== existingColControls) {
@@ -755,6 +780,7 @@ class TableEditPanelView extends EditPanel {
     rows.forEach((row, rowIndex) => {
       // Row hover area - covers the row but leaves space for column controls
       const rowHoverArea = document.createElement('div');
+
       rowHoverArea.className = cls('row-hover-area');
 
       // Click events
@@ -771,12 +797,13 @@ class TableEditPanelView extends EditPanel {
 
     // Then create all column edit controls and hover areas (these will be on top)
     if (rows.length > 0) {
-      const firstRow = rows[0];
+      const firstRow = rows.item(0)!;
       const cells = firstRow.querySelectorAll('th, td');
 
       cells.forEach((cell, colIndex) => {
         // Column hover area - covers the entire column
         const colHoverArea = document.createElement('div');
+
         colHoverArea.className = cls('col-hover-area');
 
         // Click events
@@ -796,7 +823,11 @@ class TableEditPanelView extends EditPanel {
     this.updateCellEditControlsPosition();
   }
 
-  private showToolbar(rowIndex: number, toolBarType: 'row' | 'column', controlElement: HTMLElement) {
+  private showToolbar(
+    rowIndex: number,
+    toolBarType: 'row' | 'column',
+    controlElement: HTMLElement,
+  ) {
     // Hide existing toolbar
     this.hideToolbar();
 
@@ -814,59 +845,67 @@ class TableEditPanelView extends EditPanel {
 
     // Create toolbar
     const toolbar = document.createElement('div');
+
     toolbar.className = cls('table-edit-toolbar');
 
     // Position toolbar
     const controlRect = controlElement.getBoundingClientRect();
     const panelRect = this.state.panel!.getBoundingClientRect();
-    let toolbarLeft = toolBarType === 'row' ? (controlRect.right - panelRect.left) : (controlRect.left - panelRect.left);
-    let toolbarTop = toolBarType === 'row' ? (controlRect.top - panelRect.top - controlRect.height) : (controlRect.bottom - panelRect.top - 10 - 50);
+    const toolbarLeft =
+      toolBarType === 'row'
+        ? controlRect.right - panelRect.left
+        : controlRect.left - panelRect.left;
+    const toolbarTop =
+      toolBarType === 'row'
+        ? controlRect.top - panelRect.top - controlRect.height
+        : controlRect.bottom - panelRect.top - 10 - 50;
 
     toolbar.style.left = `${toolbarLeft}px`;
     toolbar.style.top = `${toolbarTop}px`;
 
     // Create toolbar buttons
-    const buttons = toolBarType === 'row' ?
-      [
-        {
-          icon: 'table-row-plus-after',
-          title: 'Add row to down',
-          action: () => this.addRow(rowIndex + 1),
-          changesStructure: true
-        },
-      ] :
-      [
-        {
-          icon: 'table-column-plus-before',
-          title: 'Add column to left',
-          action: () => this.addColumn(rowIndex),
-          changesStructure: true
-        },
-        {
-          icon: 'table-column-plus-after',
-          title: 'Add column to right',
-          action: () => this.addColumn(rowIndex + 1),
-          changesStructure: true
-        },
-        {
-          icon: 'table-align-item-left-line',
-          title: 'Align column to left',
-          action: () => this.alignColumn(rowIndex, 'left'),
-          changesStructure: false
-        },
-        {
-          icon: 'table-align-item-horizontal-center-line',
-          title: 'Align column to center',
-          action: () => this.alignColumn(rowIndex, 'center'),
-          changesStructure: false
-        },
-        {
-          icon: 'table-align-item-right-line',
-          title: 'Align column to right',
-          action: () => this.alignColumn(rowIndex, 'right'),
-          changesStructure: false
-        },
-      ];
+    const buttons =
+      toolBarType === 'row'
+        ? [
+            {
+              icon: 'table-row-plus-after',
+              title: 'Add row to down',
+              action: () => this.addRow(rowIndex + 1),
+              changesStructure: true,
+            },
+          ]
+        : [
+            {
+              icon: 'table-column-plus-before',
+              title: 'Add column to left',
+              action: () => this.addColumn(rowIndex),
+              changesStructure: true,
+            },
+            {
+              icon: 'table-column-plus-after',
+              title: 'Add column to right',
+              action: () => this.addColumn(rowIndex + 1),
+              changesStructure: true,
+            },
+            {
+              icon: 'table-align-item-left-line',
+              title: 'Align column to left',
+              action: () => this.alignColumn(rowIndex, 'left'),
+              changesStructure: false,
+            },
+            {
+              icon: 'table-align-item-horizontal-center-line',
+              title: 'Align column to center',
+              action: () => this.alignColumn(rowIndex, 'center'),
+              changesStructure: false,
+            },
+            {
+              icon: 'table-align-item-right-line',
+              title: 'Align column to right',
+              action: () => this.alignColumn(rowIndex, 'right'),
+              changesStructure: false,
+            },
+          ];
 
     // Add merge/split cell buttons to both row and column toolbars
     // Check if cells can be merged
@@ -875,7 +914,7 @@ class TableEditPanelView extends EditPanel {
         icon: 'table-merge-cells',
         title: 'Merge cells',
         action: () => this.mergeCells(),
-        changesStructure: true
+        changesStructure: true,
       });
     }
 
@@ -885,41 +924,45 @@ class TableEditPanelView extends EditPanel {
         icon: 'table-split-cell',
         title: 'Split cells',
         action: () => this.splitCells(),
-        changesStructure: true
+        changesStructure: true,
       });
     }
     if (toolBarType === 'row') {
       const totalRows = this.state.tableElement?.querySelectorAll('tbody tr').length || 0;
+
       if (rowIndex > 0) {
         buttons.push({
           icon: 'table-row-plus-before',
           title: 'Add row to up',
           action: () => this.addRow(rowIndex),
-          changesStructure: true
+          changesStructure: true,
         });
         if (totalRows > 1) {
           buttons.push({
             icon: 'table-row-remove',
             title: 'Remove row',
             action: () => this.removeRow(rowIndex),
-            changesStructure: true
+            changesStructure: true,
           });
         }
       }
     } else {
-      const totalColumns = this.state.tableElement?.querySelector('tr')?.querySelectorAll('th, td').length || 0;
+      const totalColumns =
+        this.state.tableElement?.querySelector('tr')?.querySelectorAll('th, td').length || 0;
+
       if (totalColumns > 1) {
         buttons.push({
           icon: 'table-column-remove',
           title: 'Remove column',
           action: () => this.removeColumn(rowIndex),
-          changesStructure: true
+          changesStructure: true,
         });
       }
     }
 
     buttons.forEach(({ icon, title, action, changesStructure }) => {
       const button = document.createElement('button');
+
       button.className = cls('table-toolbar-btn');
       button.innerHTML = `<i class="${cls('icon')} ${icon}"></i>`;
       button.title = i18n.get(title);
@@ -959,6 +1002,7 @@ class TableEditPanelView extends EditPanel {
     this.state.panel!.appendChild(toolbar);
     this.state.toolbar = toolbar;
   }
+
   private hideToolbar() {
     if (this.state.toolbar) {
       this.state.toolbar.remove();
@@ -986,6 +1030,7 @@ class TableEditPanelView extends EditPanel {
     }
 
     const mask = document.createElement('div');
+
     mask.className = cls('table-edit-mask');
 
     const panelRect = this.state.tableElement.getBoundingClientRect();
@@ -993,6 +1038,7 @@ class TableEditPanelView extends EditPanel {
     if (type === 'row') {
       // Create mask for the entire row
       const rows = this.state.tableElement.querySelectorAll('tr');
+
       if (index < rows.length) {
         const row = rows[index];
         const rowRect = row.getBoundingClientRect();
@@ -1007,8 +1053,10 @@ class TableEditPanelView extends EditPanel {
     } else if (type === 'column') {
       // Create mask for the entire column
       const firstRow = this.state.tableElement.querySelector('tr');
+
       if (firstRow) {
         const cells = firstRow.querySelectorAll('th, td');
+
         if (index < cells.length) {
           const cell = cells[index];
           const cellRect = cell.getBoundingClientRect();
@@ -1047,9 +1095,11 @@ class TableEditPanelView extends EditPanel {
     const { doc } = state;
 
     let tablePos: number | null = null;
+
     doc.descendants((node, pos) => {
       if (node.type.name === 'table') {
         const domNode = this.view.domAtPos(pos + 1).node;
+
         if (
           domNode === this.state.tableElement ||
           (this.state.tableElement && this.state.tableElement.contains(domNode as Node))
@@ -1065,6 +1115,7 @@ class TableEditPanelView extends EditPanel {
 
     const cellPos = doc.resolve(tablePos);
     const map = TableOffsetMap.create(cellPos);
+
     if (!map) return;
 
     // Select the column
@@ -1077,6 +1128,7 @@ class TableEditPanelView extends EditPanel {
 
     const cellSelection = new CellSelection(startCellPos, endCellPos);
     const tr = state.tr.setSelection(cellSelection);
+
     dispatch(tr);
 
     // Execute align command
@@ -1094,6 +1146,7 @@ class TableEditPanelView extends EditPanel {
 
     // Check if contextMenu is visible - if so, don't interfere with its closing
     const contextMenu = document.querySelector(`.${cls('context-menu')}`);
+
     if (contextMenu && (contextMenu as HTMLElement).style.display !== 'none') {
       // Let contextMenu handle its own closing
       return;
@@ -1102,13 +1155,15 @@ class TableEditPanelView extends EditPanel {
     // Check if clicking on image or image edit dialog - don't interfere with image editing
     const isClickingOnImage = target.closest('img');
     const isClickingOnImageDialog = target.closest(`.${cls('image-edit-dialog')}`);
+
     if (isClickingOnImage || isClickingOnImageDialog) {
       return;
     }
 
     // Check if clicking on specific panel elements that should not trigger any action
     const isClickingOnToolbar = target.closest(`.${cls('table-edit-toolbar')}`);
-    const isClickingOnHoverArea = target.closest(`.${cls('row-hover-area')}`) || target.closest(`.${cls('col-hover-area')}`);
+    const isClickingOnHoverArea =
+      target.closest(`.${cls('row-hover-area')}`) || target.closest(`.${cls('col-hover-area')}`);
 
     // Don't do anything if clicking on toolbar or hover areas
     if (isClickingOnToolbar || isClickingOnHoverArea) {
@@ -1128,7 +1183,7 @@ class TableEditPanelView extends EditPanel {
     if (!isClickingOnTableOrPanel) {
       this.hideIfNotEditing();
     }
-  }
+  };
 
   /**
    * Auto-select the entire row or column when toolbar is shown
@@ -1163,6 +1218,7 @@ class TableEditPanelView extends EditPanel {
 
     const cellPos = doc.resolve(tablePos);
     const map = TableOffsetMap.create(cellPos);
+
     if (!map) return;
 
     try {
@@ -1191,6 +1247,7 @@ class TableEditPanelView extends EditPanel {
       // Create cell selection
       const cellSelection = new CellSelection(startCellPos, endCellPos);
       const tr = state.tr.setSelection(cellSelection);
+
       dispatch(tr);
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -1209,6 +1266,7 @@ class TableEditPanelView extends EditPanel {
 
     // Update row hover areas
     const rowHoverAreas = this.state.panel.querySelectorAll(`.${cls('row-hover-area')}`);
+
     rows.forEach((row, rowIndex) => {
       if (rowIndex < rowHoverAreas.length) {
         const rowRect = row.getBoundingClientRect();
@@ -1216,6 +1274,7 @@ class TableEditPanelView extends EditPanel {
         const rowHeight = rowRect.height;
 
         const rowHoverArea = rowHoverAreas[rowIndex] as HTMLElement;
+
         rowHoverArea.style.top = `${rowTop}px`;
         rowHoverArea.style.height = `${rowHeight}px`;
       }
@@ -1223,7 +1282,7 @@ class TableEditPanelView extends EditPanel {
 
     // Update column hover areas
     if (rows.length > 0) {
-      const firstRow = rows[0];
+      const firstRow = rows.item(0)!;
       const cells = firstRow.querySelectorAll('th, td');
       const colHoverAreas = this.state.panel.querySelectorAll(`.${cls('col-hover-area')}`);
 
@@ -1234,6 +1293,7 @@ class TableEditPanelView extends EditPanel {
           const cellWidth = cellRect.width;
 
           const colHoverArea = colHoverAreas[colIndex] as HTMLElement;
+
           colHoverArea.style.left = `${cellLeft}px`;
           colHoverArea.style.width = `${cellWidth}px`;
         }

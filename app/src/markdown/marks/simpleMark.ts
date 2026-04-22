@@ -20,6 +20,7 @@ export class BlockQuoteDelimiter extends Mark {
   get name() {
     return 'blockQuoteDelimiter';
   }
+
   get schema() {
     return {
       toDOM(): DOMOutputSpec {

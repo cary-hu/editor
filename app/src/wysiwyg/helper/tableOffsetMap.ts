@@ -57,12 +57,11 @@ interface OffsetMap {
 type CreateOffsetMapMixin = (
   headOrBody: Node,
   startOffset: number,
-  startFromBody?: boolean
+  startFromBody?: boolean,
 ) => RowInfo[];
 
 const cache = new Map();
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 export class TableOffsetMap {
   private table: Node;
 
@@ -195,26 +194,31 @@ export class TableOffsetMap {
 
     return this.getSpannedOffsets({ startRowIdx, startColIdx, endRowIdx, endColIdx });
   }
+
   extendedRowSpan(rowIdx: number, colIdx: number) {
     const rowSpanInfo = this.rowInfo[rowIdx].rowSpanMap[colIdx];
 
     return !!rowSpanInfo && rowSpanInfo.startSpanIdx !== rowIdx;
   }
+
   extendedColSpan(rowIdx: number, colIdx: number) {
     const colspanInfo = this.rowInfo[rowIdx].colspanMap[colIdx];
 
     return !!colspanInfo && colspanInfo.startSpanIdx !== colIdx;
   }
+
   getRowSpanCount(rowIdx: number, colIdx: number) {
     const rowSpanInfo = this.rowInfo[rowIdx].rowSpanMap[colIdx];
 
     return rowSpanInfo ? rowSpanInfo.count : 0;
   }
+
   getColspanCount(rowIdx: number, colIdx: number) {
     const colspanInfo = this.rowInfo[rowIdx].colspanMap[colIdx];
 
     return colspanInfo ? colspanInfo.count : 0;
   }
+
   decreaseColspanCount(rowIdx: number, colIdx: number) {
     const colspanInfo = this.rowInfo[rowIdx].colspanMap[colIdx];
     const startColspanInfo = this.rowInfo[rowIdx].colspanMap[colspanInfo.startSpanIdx];
@@ -223,6 +227,7 @@ export class TableOffsetMap {
 
     return startColspanInfo.count;
   }
+
   decreaseRowSpanCount(rowIdx: number, colIdx: number) {
     const rowSpanInfo = this.rowInfo[rowIdx].rowSpanMap[colIdx];
     const startRowSpanInfo = this.rowInfo[rowSpanInfo.startSpanIdx].rowSpanMap[colIdx];
@@ -231,6 +236,7 @@ export class TableOffsetMap {
 
     return startRowSpanInfo.count;
   }
+
   getColspanStartInfo(rowIdx: number, colIdx: number) {
     const { colspanMap } = this.rowInfo[rowIdx];
     const colspanInfo = colspanMap[colIdx];
@@ -248,6 +254,7 @@ export class TableOffsetMap {
     }
     return null;
   }
+
   getRowSpanStartInfo(rowIdx: number, colIdx: number) {
     const { rowSpanMap } = this.rowInfo[rowIdx];
     const rowSpanInfo = rowSpanMap[colIdx];
@@ -265,6 +272,7 @@ export class TableOffsetMap {
     }
     return null;
   }
+
   getSpannedOffsets(selectionInfo: SelectionInfo): SelectionInfo {
     let { startRowIdx, startColIdx, endRowIdx, endColIdx } = selectionInfo;
 
@@ -332,7 +340,7 @@ function extendPrevColspan(
   colSpan: number,
   rowIdx: number,
   colIdx: number,
-  rowInfo: RowInfo
+  rowInfo: RowInfo,
 ) {
   const { rowSpanMap, colspanMap } = rowInfo;
 
@@ -395,7 +403,7 @@ let createOffsetMap = (headOrBody: Node, startOffset: number, startFromBody = fa
 
 export function mixinTableOffsetMapPrototype(
   offsetMapMixin: OffsetMap,
-  createOffsetMapMixin: CreateOffsetMapMixin
+  createOffsetMapMixin: CreateOffsetMapMixin,
 ) {
   assign(TableOffsetMap.prototype, offsetMapMixin);
   createOffsetMap = createOffsetMapMixin;

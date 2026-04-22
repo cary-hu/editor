@@ -23,7 +23,7 @@ function run(deltaScrollTop: number, { syncScrollTop, releaseEventBlock }: SyncC
 export function animate(
   curScrollTop: number,
   targetScrollTop: number,
-  syncCallbacks: SyncCallbacks
+  syncCallbacks: SyncCallbacks,
 ) {
   const diff = targetScrollTop - curScrollTop;
   const startTime = Date.now();

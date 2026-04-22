@@ -8,7 +8,8 @@ import { LinkAttributeNames, LinkAttributes } from '@t/editor';
 export const isMac = /Mac/.test(navigator.platform);
 const reSpaceMoreThanOne = /[\u0020]+/g;
 const reEscapeChars = /[>(){}[\]+-.!#|]/g;
-const reEscapeHTML = /<([a-zA-Z_][a-zA-Z0-9\-._]*)(\s|[^\\>])*\/?>|<(\/)([a-zA-Z_][a-zA-Z0-9\-._]*)\s*\/?>|<!--[^-]+-->|<([a-zA-Z_][a-zA-Z0-9\-.:/]*)>/g;
+const reEscapeHTML =
+  /<([a-zA-Z_][a-zA-Z0-9\-._]*)(\s|[^\\>])*\/?>|<(\/)([a-zA-Z_][a-zA-Z0-9\-._]*)\s*\/?>|<!--[^-]+-->|<([a-zA-Z_][a-zA-Z0-9\-.:/]*)>/g;
 const reEscapeBackSlash = /\\[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~\\]/g;
 const reEscapePairedChars = /[*_~`]/g;
 const reMdImageSyntax = /!\[.*\]\(.*\)/g;
@@ -196,7 +197,7 @@ function isObject(obj: unknown): obj is object {
 
 export function deepMergedCopy<T1 extends Record<string, any>, T2 extends Record<string, any>>(
   targetObj: T1,
-  obj: T2
+  obj: T2,
 ) {
   const resultObj = { ...targetObj } as T1 & T2;
 

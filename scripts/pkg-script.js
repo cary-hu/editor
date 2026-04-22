@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const { spawn } = require('child_process');
 const { exit } = require('process');
 const commandLineArgs = require('command-line-args');
-const optionDefinitions = [
-  { name: 'script', alias: 's', type: String, defaultOption: true },
-];
+const optionDefinitions = [{ name: 'script', alias: 's', type: String, defaultOption: true }];
 const options = commandLineArgs(optionDefinitions);
 
 const pkgMap = {
@@ -18,13 +15,14 @@ const pathMap = {
 };
 
 let scriptType = process.env.type;
+
 if (!scriptType || !['editor', 'toastmark'].includes(scriptType)) {
   scriptType = 'editor';
 }
 
 let script;
-let pkg = pkgMap[scriptType];
-let path = pathMap[scriptType];
+const pkg = pkgMap[scriptType];
+const path = pathMap[scriptType];
 
 Object.keys(options).forEach((key) => {
   const value = options[key];
@@ -35,7 +33,9 @@ Object.keys(options).forEach((key) => {
 });
 
 if (!script) {
-  throw new Error(`You should choose "lint", "test", "test:types", "serve", "build" as the type of script`);
+  throw new Error(
+    `You should choose "lint", "test", "test:types", "serve", "build" as the type of script`,
+  );
 }
 
 if (!pkg) {
@@ -52,13 +52,13 @@ if (script === 'test') {
   childProcess = spawn(
     process.execPath,
     [require.resolve('vitest/vitest.mjs'), '--config', `${path}/vitest.config.ts`, '--watch'],
-    spawnConfiguration
+    spawnConfiguration,
   );
 } else {
   childProcess = spawn(
     process.execPath,
     [require.resolve('lerna/dist/cli.js'), 'run', '--stream', '--scope', pkg, script],
-    spawnConfiguration
+    spawnConfiguration,
   );
 }
 

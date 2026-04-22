@@ -82,7 +82,8 @@ describe('lit-html syntax', () => {
   });
 
   it('should be not converted with null, undefined, false value', () => {
-    const invalidValues: Array<VNode | null | undefined | false> = [null, undefined, false];
+    const [missingValue] = [] as Array<undefined>;
+    const invalidValues: Array<VNode | null | undefined | false> = [null, missingValue, false];
     const expected = {
       type: 'div',
       props: {

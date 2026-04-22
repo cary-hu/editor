@@ -106,7 +106,7 @@ class DropdownToolbarButtonComp extends Component<Props, State> {
                     (visibleItems as ToolbarButtonInfo[])[index + 1]?.hidden}
                     ...${this.props}
                   />
-                `
+                `,
               )
             : null}
         </div>

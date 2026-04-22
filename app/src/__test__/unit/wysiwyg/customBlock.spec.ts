@@ -10,7 +10,7 @@ let wwe: WysiwygEditor, em: EventEmitter, toDOMAdaptor: ToDOMAdaptor;
 function createCustomBlockNode() {
   const customBlock = wwe.schema.nodes.customBlock.create(
     { info: 'myCustom' },
-    wwe.schema.text('myCustom Node!!')
+    wwe.schema.text('myCustom Node!!'),
   );
   const doc = wwe.schema.nodes.doc.create(null, customBlock);
 

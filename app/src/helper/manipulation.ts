@@ -57,7 +57,7 @@ export function splitAndExtendBlock(
   tr: Transaction,
   pos: number,
   text: string,
-  node: ProsemirrorNode
+  node: ProsemirrorNode,
 ) {
   const textLen = text.length;
 

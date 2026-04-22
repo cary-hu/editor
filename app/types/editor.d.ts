@@ -48,9 +48,7 @@ export type HookMap = {
   addImageBlobHook?: (blob: Blob | File, callback: HookCallback) => void;
 };
 
-export type AutolinkParser = (
-  content: string
-) => {
+export type AutolinkParser = (content: string) => {
   url: string;
   text: string;
   range: [number, number];
@@ -68,7 +66,7 @@ export type Sanitizer = (content: string) => string;
 export type HTMLMdNodeConvertor = (
   node: HTMLMdNode,
   context: MdContext,
-  convertors?: HTMLConvertorMap
+  convertors?: HTMLConvertorMap,
 ) => HTMLToken | HTMLToken[] | null;
 
 export type HTMLMdNodeConvertorMap = Record<string, HTMLMdNodeConvertor>;

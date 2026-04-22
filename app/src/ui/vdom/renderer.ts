@@ -11,7 +11,7 @@ function destroy(vnode: VNode) {
 }
 
 export function rerender<T extends Record<string, any>, R extends Record<string, any>>(
-  comp: Component<T, R>
+  comp: Component<T, R>,
 ) {
   const root = comp.vnode;
 

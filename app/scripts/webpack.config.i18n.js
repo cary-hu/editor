@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const webpack = require('webpack');
 const entry = require('webpack-glob-entry');
@@ -15,7 +14,7 @@ function getOptimizationConfig(minify) {
       new TerserPlugin({
         parallel: true,
         extractComments: false,
-      })
+      }),
     );
   }
 
@@ -77,7 +76,7 @@ module.exports = (env) => {
           `@version ${pkg.version}`,
           `@author ${pkg.author}`,
           `@license ${pkg.license}`,
-        ].join('\n')
+        ].join('\n'),
       ),
       new FileManagerPlugin({
         events: {

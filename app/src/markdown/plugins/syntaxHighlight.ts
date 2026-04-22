@@ -78,7 +78,7 @@ function addLineBackground(
   doc: ProsemirrorNode,
   paragraph: NodeType,
   blockPosInfo: BlockPosInfo,
-  attrs: Record<string, any> = {}
+  attrs: Record<string, any> = {},
 ) {
   const { startIndex, endIndex, from, to } = blockPosInfo;
   let shouldChangeBlockType = false;
@@ -134,7 +134,7 @@ function appendMarkTr(tr: Transaction, schema: Schema, marks: MarkInfo[]) {
 function removeBlockBackground(
   tr: Transaction,
   startPosListPerLine: number[],
-  paragraph: NodeType
+  paragraph: NodeType,
 ) {
   Object.keys(removingBackgroundIndexMap).forEach((index) => {
     const startIndex = Number(index);
@@ -160,17 +160,17 @@ function cacheIndexToRemoveBackground(doc: ProsemirrorNode, start: MdPos, end: M
 
   for (let i = start[0] - 1; i < end[0]; i += 1) {
     const node = doc.child(i);
-    let { codeEnd } = node.attrs as CodeBlockPos;
+    const { codeEnd } = node.attrs as CodeBlockPos;
     const { codeStart } = node.attrs as CodeBlockPos;
 
     if (codeStart && codeEnd && !includes(skipLines, codeStart)) {
       skipLines.push(codeStart);
-      codeEnd = Math.min(codeEnd, doc.childCount);
+      const codeBlockEnd = Math.min(codeEnd, doc.childCount);
 
       // should subtract '1' to markdown line position
       // because markdown parser has '1'(not zero) as the start number
       const startIndex = codeStart - 1;
-      const [endIndex] = end;
+      const endIndex = Math.min(end[0], codeBlockEnd);
 
       for (let index = startIndex; index < endIndex; index += 1) {
         removingBackgroundIndexMap[index] = true;

@@ -36,7 +36,7 @@ type ToWwConvertor = (
     getChildrenText: (mdNode: MdNode) => string;
     origin?: () => HTMLToken | HTMLToken[] | null;
   },
-  customAttrs?: { htmlAttrs?: Record<string, any>; classNames?: string[] }
+  customAttrs?: { htmlAttrs?: Record<string, any>; classNames?: string[] },
 ) => void;
 
 export type ToWwConvertorMap = Partial<Record<string, ToWwConvertor>>;
@@ -96,7 +96,7 @@ interface ToMdConvertorReturnValues {
 type ToMdNodeTypeWriter = (
   state: ToMdConvertorState,
   nodeInfo: NodeInfo,
-  params: ToMdConvertorReturnValues
+  params: ToMdConvertorReturnValues,
 ) => void;
 
 export type ToMdNodeTypeWriterMap = Partial<Record<WwNodeType, ToMdNodeTypeWriter>>;
@@ -115,7 +115,7 @@ export type ToMdNodeTypeConvertorMap = Partial<Record<WwNodeType, ToMdNodeTypeCo
 
 type ToMdMarkTypeConvertor = (
   nodeInfo?: MarkInfo,
-  entering?: boolean
+  entering?: boolean,
 ) => ToMdConvertorReturnValues & ToMdMarkTypeOption;
 
 export type ToMdMarkTypeConvertorMap = Partial<Record<WwMarkType, ToMdMarkTypeConvertor>>;
@@ -128,7 +128,7 @@ interface ToMdConvertorContext {
 
 type ToMdConvertor = (
   nodeInfo: NodeInfo | MarkInfo,
-  context: ToMdConvertorContext
+  context: ToMdConvertorContext,
 ) => ToMdConvertorReturnValues;
 
 export type ToMdConvertorMap = Partial<Record<WwNodeType | MdNodeType, ToMdConvertor>>;

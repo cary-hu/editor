@@ -72,7 +72,7 @@ function wrapInList(
   { start, end, startIndex, endIndex, parent }: NodeRange,
   wrappers: WrapperInfo[],
   joinBefore: boolean,
-  list: NodeType
+  list: NodeType,
 ) {
   let content = Fragment.empty;
 
@@ -88,8 +88,8 @@ function wrapInList(
       end,
       new Slice(content, 0, 0),
       wrappers.length,
-      true
-    )
+      true,
+    ),
   );
 
   let foundListIndex = 0;
@@ -259,7 +259,7 @@ export function sinkListItem(listItem: NodeType): Command {
     const { $from, $to } = selection;
     const range = $from.blockRange(
       $to,
-      ({ childCount, firstChild }) => !!childCount && firstChild!.type === listItem
+      ({ childCount, firstChild }) => !!childCount && firstChild!.type === listItem,
     );
 
     if (range && range.startIndex > 0) {
@@ -275,14 +275,22 @@ export function sinkListItem(listItem: NodeType): Command {
       const slice = new Slice(
         Fragment.from(listItem.create(null, Fragment.from(parent.type.create(null, inner!)))),
         nestedBefore ? 3 : 1,
-        0
+        0,
       );
 
       const before = range.start;
       const after = range.end;
 
       tr.step(
-        new ReplaceAroundStep(before - (nestedBefore ? 3 : 1), after, before, after, slice, 1, true)
+        new ReplaceAroundStep(
+          before - (nestedBefore ? 3 : 1),
+          after,
+          before,
+          after,
+          slice,
+          1,
+          true,
+        ),
       );
 
       dispatch!(tr);
@@ -309,8 +317,8 @@ function liftToOuterList(tr: Transaction, range: NodeRange, listItem: NodeType) 
         endOfList,
         new Slice(Fragment.from(listItem.create(null, parent.copy())), 1, 0),
         1,
-        true
-      )
+        true,
+      ),
     );
 
     range = new NodeRange(tr.doc.resolve($from.pos), tr.doc.resolve(endOfList), depth);
@@ -343,7 +351,7 @@ function liftOutOfList(tr: Transaction, range: NodeRange) {
   const canReplaceParent = parent.canReplace(
     indexBefore + (atStart ? 0 : 1),
     indexBefore + 1,
-    listItem?.content.append(atEnd ? Fragment.empty : Fragment.from(list))
+    listItem?.content.append(atEnd ? Fragment.empty : Fragment.from(list)),
   );
 
   if (listItem && canReplaceParent) {
@@ -361,13 +369,13 @@ function liftOutOfList(tr: Transaction, range: NodeRange) {
         end - 1,
         new Slice(
           (atStart ? Fragment.empty : Fragment.from(list.copy(Fragment.empty))).append(
-            atEnd ? Fragment.empty : Fragment.from(list.copy(Fragment.empty))
+            atEnd ? Fragment.empty : Fragment.from(list.copy(Fragment.empty)),
           ),
           atStart ? 0 : 1,
-          atEnd ? 0 : 1
+          atEnd ? 0 : 1,
         ),
-        atStart ? 0 : 1
-      )
+        atStart ? 0 : 1,
+      ),
     );
   }
 
@@ -379,7 +387,7 @@ export function liftListItem(listItem: NodeType): Command {
     const { $from, $to } = selection;
     const range = $from.blockRange(
       $to,
-      ({ childCount, firstChild }) => !!childCount && firstChild!.type === listItem
+      ({ childCount, firstChild }) => !!childCount && firstChild!.type === listItem,
     );
 
     if (range) {
@@ -437,7 +445,7 @@ export function splitListItem(listItem: NodeType): Command {
       tr.replace(
         keepItem ? $from.before() : $from.before(-1),
         $from.after(-3),
-        new Slice(wrapper, keepItem ? 3 : 2, 2)
+        new Slice(wrapper, keepItem ? 3 : 2, 2),
       );
 
       tr.setSelection(Selection.near(tr.doc.resolve($from.pos + (keepItem ? 3 : 2))));

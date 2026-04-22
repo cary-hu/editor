@@ -38,7 +38,10 @@ export class BlockQuoteView implements NodeView {
   private select: HTMLElement | null = null;
 
   private timer: NodeJS.Timeout | null = null;
-  protected editPanelContainer = document.querySelector(".toastui-edit-panel-container") as HTMLElement;
+
+  protected editPanelContainer = document.querySelector(
+    '.toastui-edit-panel-container',
+  ) as HTMLElement;
 
   constructor(node: ProsemirrorNode, view: EditorView, getPos: GetPos, eventEmitter: Emitter) {
     this.node = node;
@@ -49,10 +52,12 @@ export class BlockQuoteView implements NodeView {
     this.createElement();
     this.bindDOMEvent();
     this.bindEvent();
-    
+
     // Initialize editPanelContainer when DOM is ready
     this.eventEmitter.listen('loadUI', () => {
-      this.editPanelContainer = this.view.dom.closest(`.${cls('container')}`)!.querySelector('.toastui-edit-panel-container') as HTMLElement;
+      this.editPanelContainer = this.view.dom
+        .closest(`.${cls('container')}`)!
+        .querySelector('.toastui-edit-panel-container') as HTMLElement;
     });
   }
 
@@ -123,10 +128,14 @@ export class BlockQuoteView implements NodeView {
     const relativeRight = right - containerRect.left;
 
     // Find mode switch element and get its height relative to container
-    const modeSwitch = this.view.dom.closest(`.${cls('container')}`)!.querySelector(`.${cls('mode-switch')}`) as HTMLElement;
+    const modeSwitch = this.view.dom
+      .closest(`.${cls('container')}`)!
+      .querySelector(`.${cls('mode-switch')}`) as HTMLElement;
     let bottomBoundary = containerRect.height;
+
     if (modeSwitch) {
       const modeSwitchRect = modeSwitch.getBoundingClientRect();
+
       bottomBoundary = modeSwitchRect.top - containerRect.top - 10; // 10px padding
     }
 
@@ -139,6 +148,7 @@ export class BlockQuoteView implements NodeView {
 
     // Check bottom boundary
     const dropdownBottom = relativeTop + wrapperHeight;
+
     if (dropdownBottom > bottomBoundary) {
       // Show above the element instead
       adjustedTop = relativeTop - wrapperHeight - 10;
@@ -156,13 +166,11 @@ export class BlockQuoteView implements NodeView {
       } else if (spaceAbove >= wrapperHeight + 20) {
         // Use above if there's enough space
         adjustedTop = relativeTop - wrapperHeight - 10;
+      } else if (spaceBelow > spaceAbove) {
+        adjustedTop = relativeTop + 10;
       } else {
         // Use the larger space and clip if necessary
-        if (spaceBelow > spaceAbove) {
-          adjustedTop = relativeTop + 10;
-        } else {
-          adjustedTop = Math.max(topBoundary, relativeTop - wrapperHeight - 10);
-        }
+        adjustedTop = Math.max(topBoundary, relativeTop - wrapperHeight - 10);
       }
     }
 
@@ -208,13 +216,14 @@ export class BlockQuoteView implements NodeView {
       if (this.select) {
         this.reset();
       }
-    })
+    });
   }
 
   private handleMousedown = (ev: MouseEvent) => {
     const target = ev.target as HTMLElement;
 
     const style = getComputedStyle(target, ':after');
+
     // Only show type selector if clicking on the wrapper itself, not on content
     if (target === this.dom || target === this.contentDOM) {
       if (this.select) {

@@ -33,7 +33,7 @@ const defaultCommandShortcuts = [
 export function execCommand(
   view: EditorView,
   command: EditorCommand,
-  payload?: Record<string, any>
+  payload?: Record<string, any>,
 ) {
   view.focus();
   return command(payload)(view.state, view.dispatch, view);

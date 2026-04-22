@@ -61,17 +61,19 @@ describe('image arrow navigation compatibility', () => {
 
   it('moves into and out of images with horizontal arrows', () => {
     setContent(
-      '<p><img src="https://uicdn.toast.com/toastui/img/tui-editor-bi.png" alt="image"></p><h1>Awesome Editor!</h1>'
+      '<p><img src="https://uicdn.toast.com/toastui/img/tui-editor-bi.png" alt="image"></p><h1>Awesome Editor!</h1>',
     );
 
     const imagePos = getImagePos();
-    const imageElement = wwe.view.dom.querySelector('img:not(.ProseMirror-separator)') as HTMLImageElement;
+    const imageElement = wwe.view.dom.querySelector(
+      'img:not(.ProseMirror-separator)',
+    ) as HTMLImageElement;
 
     expect(wwe.schema.nodes.image.spec.selectable).toBe(false);
     expect(imageElement).not.toBeNull();
 
     wwe.view.dispatch(
-      wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, imagePos))
+      wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, imagePos)),
     );
     wwe.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
 

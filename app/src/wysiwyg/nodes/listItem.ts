@@ -66,14 +66,15 @@ export class ListItem extends NodeSchema {
       const { listItem } = schema.nodes;
       const { parent } = $from;
       const listItemParent = $from.node(-1);
-      
+
       // Check if the current paragraph is empty and the cursor is in an empty selection
       if (empty && !parent.childCount && listItemParent.type === listItem) {
         // Check if the entire list item is empty (only contains one empty paragraph)
-        const isListItemEmpty = listItemParent.childCount === 1 && 
+        const isListItemEmpty =
+          listItemParent.childCount === 1 &&
           listItemParent.firstChild?.type.name === 'paragraph' &&
           listItemParent.firstChild?.content.size === 0;
-        
+
         if (isListItemEmpty) {
           // move to previous sibling list item when the current list item is not top list item
           if ($from.index(-2) >= 1) {

@@ -233,7 +233,7 @@ describe('custom autolink parser', () => {
     });
 
     expect(renderer.render(root)).toBe(
-      '<p>A <a href="num:111">111</a> B <a href="num:222">222</a></p>\n'
+      '<p>A <a href="num:111">111</a> B <a href="num:222">222</a></p>\n',
     );
   });
 });
@@ -287,7 +287,7 @@ describe('GFM Examples', () => {
 
     const html = renderer.render(root);
     expect(html).toBe(
-      '<p>Visit <a href="http://www.commonmark.org/help">www.commonmark.org/help</a> for more information.</p>\n'
+      '<p>Visit <a href="http://www.commonmark.org/help">www.commonmark.org/help</a> for more information.</p>\n',
     );
   });
 

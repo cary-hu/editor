@@ -138,7 +138,11 @@ const baseConvertors: HTMLConvertorMap = {
       const lastColIdx = (node as MergedTableRowMdNode).lastChild!.endIdx;
 
       for (let i = lastColIdx + 1; i < columnLen; i += 1) {
-        if (!node.prev || !(node as MergedTableRowMdNode).prev!.rowSpanMap[i] || (node as MergedTableRowMdNode).prev!.rowSpanMap[i] <= 1) {
+        if (
+          !node.prev ||
+          !(node as MergedTableRowMdNode).prev!.rowSpanMap[i] ||
+          (node as MergedTableRowMdNode).prev!.rowSpanMap[i] <= 1
+        ) {
           result.push(
             {
               type: 'openTag',
@@ -149,7 +153,7 @@ const baseConvertors: HTMLConvertorMap = {
               type: 'closeTag',
               tagName: 'td',
               outerNewLine: true,
-            }
+            },
           );
         }
       }
@@ -184,7 +188,7 @@ const baseConvertors: HTMLConvertorMap = {
 
 export function getHTMLRenderConvertors(
   linkAttributes: LinkAttributes | null,
-  customConvertors: CustomHTMLRenderer
+  customConvertors: CustomHTMLRenderer,
 ) {
   const convertors = { ...baseConvertors };
 

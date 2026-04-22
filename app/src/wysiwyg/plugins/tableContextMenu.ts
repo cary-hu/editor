@@ -18,6 +18,7 @@ interface ContextMenuInfo {
 }
 
 const TABLE_CELL_SELECT_CLASS = '.toastui-editor-cell-selected';
+
 function hasSpanAttr(tableCell: Element) {
   return (
     Number(tableCell.getAttribute('colspan')) > 1 || Number(tableCell.getAttribute('rowspan')) > 1
@@ -39,7 +40,7 @@ function createMergedTableContextMenu(tableCell: Element) {
     mergedTableContextMenu.push({
       action: 'Merge cells',
       command: 'mergeCells',
-      icon: 'merge-cells'
+      icon: 'merge-cells',
     });
   }
 
@@ -47,7 +48,7 @@ function createMergedTableContextMenu(tableCell: Element) {
     mergedTableContextMenu.push({
       action: 'Split cells',
       command: 'splitCells',
-      icon: 'split-cell'
+      icon: 'split-cell',
     });
   }
 
@@ -72,7 +73,7 @@ const contextMenuGroups: ContextMenuInfo[][] = [
       action: 'Remove row',
       command: 'removeRow',
       disableInThead: true,
-      icon: 'row-remove'
+      icon: 'row-remove',
     },
   ],
   [
@@ -97,38 +98,38 @@ const contextMenuGroups: ContextMenuInfo[][] = [
       action: 'Align column to left',
       command: 'alignColumn',
       payload: { align: 'left' },
-      icon: 'align-item-left-line'
+      icon: 'align-item-left-line',
     },
     {
       action: 'Align column to center',
       command: 'alignColumn',
       payload: { align: 'center' },
-      icon: 'align-item-horizontal-center-line'
+      icon: 'align-item-horizontal-center-line',
     },
     {
       action: 'Align column to right',
       command: 'alignColumn',
       payload: { align: 'right' },
-      icon: 'align-item-right-line'
+      icon: 'align-item-right-line',
     },
   ],
   [
     {
       action: 'Remove table',
       command: 'removeTable',
-      icon: 'remove'
-    }
+      icon: 'remove',
+    },
   ],
-
 ];
 
 function getContextMenuGroups(eventEmitter: Emitter, inTableHead: boolean, tableCell: Element) {
   const mergedTableContextMenu = createMergedTableContextMenu(tableCell);
 
   // Only add mergedTableContextMenu if it has items to avoid empty menu groups
-  const menuGroups = mergedTableContextMenu.length > 0 
-    ? contextMenuGroups.concat([mergedTableContextMenu])
-    : contextMenuGroups;
+  const menuGroups =
+    mergedTableContextMenu.length > 0
+      ? contextMenuGroups.concat([mergedTableContextMenu])
+      : contextMenuGroups;
 
   return menuGroups
     .map((contextMenuGroup) =>
@@ -141,7 +142,7 @@ function getContextMenuGroups(eventEmitter: Emitter, inTableHead: boolean, table
           },
           disabled: inTableHead && !!disableInThead,
         };
-      })
+      }),
     )
     .concat();
 }

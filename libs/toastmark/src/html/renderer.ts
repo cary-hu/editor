@@ -27,9 +27,8 @@ const defaultOptions: RendererOptions = {
 function getChildrenText(node: Node) {
   const buffer: string[] = [];
   const walker = node.walker();
-  let event: ReturnType<typeof walker.next> = null;
 
-  while ((event = walker.next())) {
+  for (let event = walker.next(); event; event = walker.next()) {
     const { node } = event;
     if (node.type === 'text') {
       buffer.push(node.literal!);
@@ -96,9 +95,8 @@ export class Renderer implements HTMLRenderer {
     this.buffer = [];
 
     const walker = rootNode.walker();
-    let event: ReturnType<typeof walker.next> = null;
 
-    while ((event = walker.next())) {
+    for (let event = walker.next(); event; event = walker.next()) {
       const { node, entering } = event;
       const convertor = this.convertors[node.type];
       if (!convertor) {

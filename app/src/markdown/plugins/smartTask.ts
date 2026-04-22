@@ -23,7 +23,7 @@ export function smartTask({ schema, toastMark }: MdContext) {
             const mdNode = toastMark.findNodeAtPosition(mdPos)!;
             const paraNode = findClosestNode(
               mdNode,
-              (node) => node!.type === 'paragraph' && node.parent?.type === 'item'
+              (node) => node!.type === 'paragraph' && node.parent?.type === 'item',
             );
 
             if (paraNode?.firstChild?.literal) {

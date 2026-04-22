@@ -35,12 +35,13 @@ function convertMsoTableToCompletedTable(html: string) {
 
 function removeUnwantedSpans(html: string): string {
   const container = document.createElement('div');
+
   container.innerHTML = html;
 
   // Find all span elements in the pasted content
   const spans = container.querySelectorAll('span');
 
-  spans.forEach(span => {
+  spans.forEach((span) => {
     let shouldRemove = false;
 
     // Check if span has no attributes at all
@@ -54,16 +55,16 @@ function removeUnwantedSpans(html: string): string {
     // Check if span has only inline styles that don't provide semantic meaning
     else if (span.hasAttribute('style') && !hasSemanticAttributes(span)) {
       const styleAttr = span.getAttribute('style') || '';
-      const hasOnlyPresentationalStyles = styleAttr && (
-        styleAttr.includes('color:') ||
-        styleAttr.includes('font-size:') ||
-        styleAttr.includes('font-family:') ||
-        styleAttr.includes('background-color:') ||
-        styleAttr.includes('font-weight:') ||
-        styleAttr.includes('text-decoration:') ||
-        styleAttr.includes('font-style:') ||
-        styleAttr.includes('text-align:')
-      );
+      const hasOnlyPresentationalStyles =
+        styleAttr &&
+        (styleAttr.includes('color:') ||
+          styleAttr.includes('font-size:') ||
+          styleAttr.includes('font-family:') ||
+          styleAttr.includes('background-color:') ||
+          styleAttr.includes('font-weight:') ||
+          styleAttr.includes('text-decoration:') ||
+          styleAttr.includes('font-style:') ||
+          styleAttr.includes('text-align:'));
 
       if (hasOnlyPresentationalStyles) {
         shouldRemove = true;
@@ -86,12 +87,26 @@ function removeUnwantedSpans(html: string): string {
 function hasSemanticAttributes(element: Element): boolean {
   // List of attributes that provide semantic meaning or functionality
   const semanticAttributes = [
-    'class', 'id', 'data-', 'role', 'aria-', 'title', 'lang',
-    'dir', 'tabindex', 'contenteditable', 'draggable', 'hidden',
-    'spellcheck', 'translate', 'itemscope', 'itemtype', 'itemprop'
+    'class',
+    'id',
+    'data-',
+    'role',
+    'aria-',
+    'title',
+    'lang',
+    'dir',
+    'tabindex',
+    'contenteditable',
+    'draggable',
+    'hidden',
+    'spellcheck',
+    'translate',
+    'itemscope',
+    'itemtype',
+    'itemprop',
   ];
 
-  for (let i = 0; i < element.attributes.length; i++) {
+  for (let i = 0; i < element.attributes.length; i += 1) {
     const attrName = element.attributes[i].name.toLowerCase();
 
     // Skip style attribute as it's handled separately
@@ -100,7 +115,7 @@ function hasSemanticAttributes(element: Element): boolean {
     }
 
     // Check if attribute name matches any semantic attribute
-    const hasSemanticAttr = semanticAttributes.some(semanticAttr => {
+    const hasSemanticAttr = semanticAttributes.some((semanticAttr) => {
       if (semanticAttr.endsWith('-')) {
         return attrName.startsWith(semanticAttr);
       }
@@ -131,7 +146,7 @@ export function changePastedHTML(html: string) {
 
 function getMaxColumnCount(rows: Node[]) {
   const row = rows.reduce((prevRow, currentRow) =>
-    prevRow.childCount > currentRow.childCount ? prevRow : currentRow
+    prevRow.childCount > currentRow.childCount ? prevRow : currentRow,
   );
 
   return row.childCount;
@@ -209,7 +224,7 @@ function createTableHead(tableHeadRow: Node, maxColumnCount: number, schema: Sch
 
 function createTableBody(tableBodyRows: Node[], maxColumnCount: number, schema: Schema) {
   const copiedRows = tableBodyRows.map((tableBodyRow) =>
-    copyTableBodyRow(tableBodyRow, maxColumnCount, schema)
+    copyTableBodyRow(tableBodyRow, maxColumnCount, schema),
   );
 
   if (!tableBodyRows.length) {
@@ -225,7 +240,7 @@ function createTableFromPastingTable(
   rows: Node[],
   schema: Schema,
   startFromBody: boolean,
-  isInTable: boolean
+  isInTable: boolean,
 ) {
   const columnCount = getMaxColumnCount(rows);
 

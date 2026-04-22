@@ -38,8 +38,8 @@ export class CustomBlock extends Mark {
 
       dispatch!(
         tr.setSelection(
-          createTextSelection(tr, tr.mapping.map(endToOffset) - (customBlockSyntax.length + 2))
-        )
+          createTextSelection(tr, tr.mapping.map(endToOffset) - (customBlockSyntax.length + 2)),
+        ),
       );
 
       return true;

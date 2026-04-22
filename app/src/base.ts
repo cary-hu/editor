@@ -126,7 +126,7 @@ export default abstract class EditorBase implements Base {
             return tr.replaceWith(end - content.length + 1, end, nodes);
           }
           return null;
-        })
+        }),
     );
 
     return rules.length ? inputRules({ rules }) : null;
@@ -199,7 +199,7 @@ export default abstract class EditorBase implements Base {
     const { tr } = this.view.state;
 
     this.view.dispatch(
-      tr.setSelection(createTextSelection(tr, tr.doc.content.size - 1)).scrollIntoView()
+      tr.setSelection(createTextSelection(tr, tr.doc.content.size - 1)).scrollIntoView(),
     );
 
     if (focus) {

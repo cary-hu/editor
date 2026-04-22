@@ -59,7 +59,9 @@ class ToastUIEditorViewer {
   private eventEmitter: Emitter;
 
   private preview: MarkdownPreview;
+
   private themeObserver!: MutationObserver;
+
   private height!: string;
 
   private minHeight!: string;
@@ -78,7 +80,7 @@ class ToastUIEditorViewer {
         height: '300px',
         minHeight: '200px',
       },
-      options
+      options,
     );
     this.eventEmitter = new EventEmitter();
 
@@ -117,6 +119,7 @@ class ToastUIEditorViewer {
 
     const { el, initialValue, theme } = this.options;
     const existingHTML = el.innerHTML;
+
     el.classList.add(cls('container'));
     el.classList.add(cls('viewer-container'));
     this.setHeight(this.options.height);
@@ -207,15 +210,20 @@ class ToastUIEditorViewer {
   private initThemeObserver() {
     // Check if there's already a theme attribute on the document element
     const initialTheme = document.documentElement.getAttribute('data-toastui-editor-theme');
+
     if (initialTheme && initialTheme !== this.options.theme) {
       this.setTheme(initialTheme);
     }
 
     this.themeObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'data-toastui-editor-theme') {
+        if (
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'data-toastui-editor-theme'
+        ) {
           const target = mutation.target as HTMLElement;
           const newTheme = target.getAttribute('data-toastui-editor-theme');
+
           if (newTheme && newTheme !== this.options.theme) {
             this.setTheme(newTheme);
           }
@@ -225,7 +233,7 @@ class ToastUIEditorViewer {
 
     this.themeObserver.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-toastui-editor-theme']
+      attributeFilter: ['data-toastui-editor-theme'],
     });
   }
 
@@ -313,6 +321,7 @@ class ToastUIEditorViewer {
     css(el, { height });
     this.height = height;
   }
+
   /**
    * Set minimum height to editor content
    * @param {string} minHeight - min content height in pixel
@@ -333,6 +342,7 @@ class ToastUIEditorViewer {
       this.preview.setMinHeight(minHeightNum);
     }
   }
+
   /**
    * Get minimum height of editor content
    * @returns {string} min height in pixel

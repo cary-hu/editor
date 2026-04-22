@@ -80,7 +80,7 @@ describe('MarkdownEditor', () => {
     mde.setPlaceholder('Write something');
 
     expect(getEditorHTML(mde)).toContain(
-      '<span class="placeholder ProseMirror-widget">Write something</span>'
+      '<span class="placeholder ProseMirror-widget">Write something</span>',
     );
   });
 

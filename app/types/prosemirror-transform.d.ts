@@ -13,7 +13,7 @@ declare module 'prosemirror-transform' {
       pos: number,
       type: Node | null,
       attrs?: { [key: string]: any },
-      marks?: Mark[]
+      marks?: Mark[],
     ): Transform;
 
     split(
@@ -29,7 +29,7 @@ declare module 'prosemirror-transform' {
               | null
               | undefined;
           } | null)[]
-        | undefined
+        | undefined,
     ): Transform;
   }
 }

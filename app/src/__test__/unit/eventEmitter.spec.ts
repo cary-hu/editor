@@ -3,7 +3,6 @@ import type { Handler } from '@t/event';
 
 type HandlerSpy = Handler & ReturnType<typeof vi.fn>;
 
-/* eslint-disable @typescript-eslint/no-empty-function */
 describe('eventEmitter', () => {
   let emitter: EventEmitter;
 
@@ -28,7 +27,7 @@ describe('eventEmitter', () => {
       };
 
       expect(throwableListen).toThrow(
-        new Error('There is already have event type testAlreadyHaveEvent')
+        new Error('There is already have event type testAlreadyHaveEvent'),
       );
     });
   });

@@ -7,7 +7,7 @@ import { TableOffsetMap, SelectionInfo } from '@/wysiwyg/helper/tableOffsetMap';
 function getSelectionRanges(
   doc: Node,
   map: TableOffsetMap,
-  { startRowIdx, startColIdx, endRowIdx, endColIdx }: SelectionInfo
+  { startRowIdx, startColIdx, endRowIdx, endColIdx }: SelectionInfo,
 ) {
   const ranges = [];
 

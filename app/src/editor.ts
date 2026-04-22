@@ -12,6 +12,7 @@ import { render } from './ui/vdom/renderer';
  */
 class ToastUIEditor extends EditorCore {
   private defaultUI!: DefaultUI;
+
   private themeObserver!: MutationObserver;
 
   constructor(options: EditorOptions) {
@@ -31,7 +32,7 @@ class ToastUIEditor extends EditorCore {
           editorType=${this.options.initialEditType || 'markdown'}
           theme=${this.options.theme}
         />
-      ` as VNode
+      ` as VNode,
     );
 
     this.setMinHeight(this.options.minHeight);
@@ -59,15 +60,20 @@ class ToastUIEditor extends EditorCore {
   private initThemeObserver() {
     // Check if there's already a theme attribute on the document element
     const initialTheme = document.documentElement.getAttribute('data-toastui-editor-theme');
+
     if (initialTheme && initialTheme !== this.options.theme) {
       this.setTheme(initialTheme);
     }
 
     this.themeObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'data-toastui-editor-theme') {
+        if (
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'data-toastui-editor-theme'
+        ) {
           const target = mutation.target as HTMLElement;
           const newTheme = target.getAttribute('data-toastui-editor-theme');
+
           if (newTheme && newTheme !== this.options.theme) {
             this.setTheme(newTheme);
           }
@@ -77,7 +83,7 @@ class ToastUIEditor extends EditorCore {
 
     this.themeObserver.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-toastui-editor-theme']
+      attributeFilter: ['data-toastui-editor-theme'],
     });
   }
 

@@ -24,7 +24,7 @@ export function createTableBodyRows(
   rowCount: number,
   columnCount: number,
   schema: Schema,
-  data?: string[]
+  data?: string[],
 ) {
   const { tableRow, tableBodyCell, paragraph } = schema.nodes;
   const tableRows = [];
@@ -49,7 +49,7 @@ export function createDummyCells(
   columnCount: number,
   rowIdx: number,
   schema: Schema,
-  attrs: Record<string, any> | null = null
+  attrs: Record<string, any> | null = null,
 ) {
   const { tableHeadCell, tableBodyCell, paragraph } = schema.nodes;
   const cell = rowIdx === 0 ? tableHeadCell : tableBodyCell;
@@ -77,7 +77,7 @@ export function findCellElement(node: HTMLElement, root: Element) {
 export function findCell(pos: ResolvedPos) {
   return findNodeBy(
     pos,
-    ({ type }: Node) => type.name === 'tableHeadCell' || type.name === 'tableBodyCell'
+    ({ type }: Node) => type.name === 'tableHeadCell' || type.name === 'tableBodyCell',
   );
 }
 

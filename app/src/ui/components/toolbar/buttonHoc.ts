@@ -57,7 +57,7 @@ export function connectHOC(WrappedComponent: ComponentClass) {
     private getBound(el: HTMLElement) {
       const { offsetLeft, offsetTop } = getTotalOffset(
         el,
-        closest(el, `.${cls('toolbar')}`) as HTMLElement
+        closest(el, `.${cls('toolbar')}`) as HTMLElement,
       );
 
       return { left: offsetLeft, top: el.offsetHeight + offsetTop };

@@ -123,7 +123,8 @@ export default class WysiwygEditor extends EditorBase {
   }
 
   createPlugins() {
-    const editPanelPlugins = []
+    const editPanelPlugins = [];
+
     if (this.editPanelOptions.useImageEditPanel) {
       editPanelPlugins.push(imageEditPanel(this.eventEmitter));
     }
@@ -207,7 +208,7 @@ export default class WysiwygEditor extends EditorBase {
 
           if (items) {
             const containRtfItem = toArray(items).some(
-              (item) => item.kind === 'string' && item.type === 'text/rtf'
+              (item) => item.kind === 'string' && item.type === 'text/rtf',
             );
 
             // if it contains rtf, it's most likely copy paste from office -> no image
@@ -261,7 +262,7 @@ export default class WysiwygEditor extends EditorBase {
     const { schema, tr } = this.view.state;
     const lineTexts = text.split('\n');
     const paras = lineTexts.map((lineText) =>
-      createParagraph(schema, createNodesWithWidget(lineText, schema))
+      createParagraph(schema, createNodesWithWidget(lineText, schema)),
     );
     const slice = new Slice(Fragment.from(paras), 1, 1);
     const newTr =
@@ -384,6 +385,7 @@ export default class WysiwygEditor extends EditorBase {
 
         for (let i = 0; i < lines.length; i += 1) {
           const start = pos + textOffset;
+
           currentLine += 1;
 
           if (visitor({ line: currentLine, start })) {

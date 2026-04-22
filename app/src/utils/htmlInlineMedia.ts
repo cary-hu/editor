@@ -4,7 +4,9 @@ export const HTML_INLINE_MEDIA_TAGS = ['video', 'audio'] as const;
 const reMediaBoundaryPlaceholder = new RegExp(MEDIA_BOUNDARY_PLACEHOLDER, 'g');
 
 export function isHtmlInlineMediaTag(tagName: string) {
-  return HTML_INLINE_MEDIA_TAGS.includes(tagName.toLowerCase() as typeof HTML_INLINE_MEDIA_TAGS[number]);
+  return HTML_INLINE_MEDIA_TAGS.includes(
+    tagName.toLowerCase() as (typeof HTML_INLINE_MEDIA_TAGS)[number],
+  );
 }
 
 export function hasMediaBoundaryPlaceholder(text: string) {

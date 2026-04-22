@@ -2,7 +2,6 @@ import { Mark as ProsemirrorMark, DOMOutputSpec } from 'prosemirror-model';
 import { toggleMark } from 'prosemirror-commands';
 
 import Mark from '@/spec/mark';
-import { escapeXml } from '@/utils/common';
 import { sanitizeHTML } from '@/sanitizer/htmlSanitizer';
 import { createTextNode } from '@/helper/manipulation';
 import { getCustomAttrs, getDefaultCustomAttrs } from '@/wysiwyg/helper/node';
@@ -77,10 +76,10 @@ export class Link extends Mark {
 
       if (from && to && linkUrl) {
         const attrs: any = { linkUrl };
-        
+
         if (target) attrs.target = target;
         if (rel) attrs.rel = rel;
-        
+
         const mark = schema.mark('link', attrs);
 
         if (empty && linkText) {

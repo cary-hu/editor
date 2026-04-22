@@ -59,6 +59,11 @@ export interface MarkInfo {
   lineBackground?: boolean;
 }
 
+interface LinkAttrs {
+  target?: string | null;
+  rel?: string | null;
+}
+
 function markInfo(start: MdPos, end: MdPos, type: MarkType, attrs?: Record<string, any>): MarkInfo {
   return { start, end, spec: { type, attrs } };
 }
@@ -78,7 +83,7 @@ function heading({ level, headingType }: HeadingMdNode, start: MdPos, end: MdPos
 function emphasisAndStrikethrough(
   { type }: { type: keyof typeof delimSize },
   start: MdPos,
-  end: MdPos
+  end: MdPos,
 ) {
   const startDelimPos = addOffsetPos(start, delimSize[type]);
   const endDelimPos = addOffsetPos(end, -delimSize[type]);
@@ -90,7 +95,14 @@ function emphasisAndStrikethrough(
   ];
 }
 
-function markLink(start: MdPos, end: MdPos, linkTextStart: MdPos, lastChildCh: number, target?: string | null, rel?: string | null) {
+function markLink(
+  start: MdPos,
+  end: MdPos,
+  linkTextStart: MdPos,
+  lastChildCh: number,
+  attrs: LinkAttrs = {},
+) {
+  const { target, rel } = attrs;
   // For [text](url){:attr="value"} structure:
   // - linkTextStart[1] is position after '['
   // - lastChildCh is position after text content (end of ']')
@@ -106,6 +118,7 @@ function markLink(start: MdPos, end: MdPos, linkTextStart: MdPos, lastChildCh: n
 
     // Calculate the approximate length of the attributes section
     let attrsLength = 3; // Basic "{:}"
+
     if (target) attrsLength += `target="${target}"`.length + 1; // +1 for space
     if (rel) attrsLength += `rel="${rel}"`.length + 1; // +1 for space
 
@@ -121,23 +134,25 @@ function markLink(start: MdPos, end: MdPos, linkTextStart: MdPos, lastChildCh: n
       markInfo(urlStart, urlEnd, LINK, { url: true }),
       markInfo(confStart, confEnd, LINK, { conf: true }),
     ];
-  } else {
-    // Standard [text](url) format
-    const urlEnd: MdPos = [end[0], end[1] - 1]; // Position before ')'
-
-    return [
-      markInfo(start, end, LINK),
-      markInfo(linkTextStart, linkTextEnd, LINK, { desc: true }),
-      markInfo(urlStart, urlEnd, LINK, { url: true }),
-    ];
   }
+  // Standard [text](url) format
+  const urlEnd: MdPos = [end[0], end[1] - 1]; // Position before ')'
+
+  return [
+    markInfo(start, end, LINK),
+    markInfo(linkTextStart, linkTextEnd, LINK, { desc: true }),
+    markInfo(urlStart, urlEnd, LINK, { url: true }),
+  ];
 }
 
 function image({ lastChild, target, rel }: LinkMdNode, start: MdPos, end: MdPos) {
   const lastChildCh = lastChild ? getMdEndCh(lastChild) + 1 : 3; // 3: length of '![]'
   const linkTextEnd = addOffsetPos(start, 1);
 
-  return [markInfo(start, linkTextEnd, META), ...markLink(start, end, linkTextEnd, lastChildCh, target, rel)];
+  return [
+    markInfo(start, linkTextEnd, META),
+    ...markLink(start, end, linkTextEnd, lastChildCh, { target, rel }),
+  ];
 }
 
 function link({ lastChild, extendedAutolink, target, rel }: LinkMdNode, start: MdPos, end: MdPos) {
@@ -145,7 +160,7 @@ function link({ lastChild, extendedAutolink, target, rel }: LinkMdNode, start: M
 
   return extendedAutolink
     ? [markInfo(start, end, LINK, { desc: true })]
-    : markLink(start, end, [start[0], start[1] + 1], lastChildCh, target, rel); // Pass target and rel to markLink
+    : markLink(start, end, [start[0], start[1] + 1], lastChildCh, { target, rel });
 }
 
 function code({ tickCount }: CodeMdNode, start: MdPos, end: MdPos) {
@@ -172,22 +187,22 @@ function lineBackground(parent: MdNode, start: MdPos, end: MdPos, prefix: string
 
   return parent!.type !== 'item' && parent!.type !== 'blockQuote'
     ? [
-      {
-        ...defaultBackground,
-        end: start,
-        spec: { attrs: { className: `${prefix}-line-background start` } },
-      },
-      {
-        ...defaultBackground,
-        start: [Math.min(start[0] + 1, end[0]), start[1]] as MdPos,
-        end: [end[0] - 1, end[1]] as MdPos,
-      },
-      {
-        ...defaultBackground,
-        start: end,
-        spec: { attrs: { className: `${prefix}-line-background end` } },
-      },
-    ]
+        {
+          ...defaultBackground,
+          end: start,
+          spec: { attrs: { className: `${prefix}-line-background start` } },
+        },
+        {
+          ...defaultBackground,
+          start: [Math.min(start[0] + 1, end[0]), start[1]] as MdPos,
+          end: [end[0] - 1, end[1]] as MdPos,
+        },
+        {
+          ...defaultBackground,
+          start: end,
+          spec: { attrs: { className: `${prefix}-line-background end` } },
+        },
+      ]
     : null;
 }
 
@@ -205,8 +220,8 @@ function codeBlock(node: CodeBlockMdNode, start: MdPos, end: MdPos, endLine: str
       markInfo(
         addOffsetPos(start, fenceLength),
         addOffsetPos(start, fenceLength + infoPadding + info.length),
-        META
-      )
+        META,
+      ),
     );
   }
 
@@ -234,8 +249,8 @@ function customBlock(node: MdNode, start: MdPos, end: MdPos) {
       markInfo(
         addOffsetPos(start, syntaxEnd),
         addOffsetPos(start, syntaxLength + info.length),
-        META
-      )
+        META,
+      ),
     );
   }
 
@@ -257,8 +272,8 @@ function markListItemChildren(node: MdNode, markType: MarkType) {
         markInfo(
           [getMdStartLine(node), getMdStartCh(node) - 1],
           [getMdEndLine(node), getMdEndCh(node) + 1],
-          markType
-        )
+          markType,
+        ),
       );
     }
     node = node.next!;
@@ -275,8 +290,8 @@ function markParagraphInBlockQuote(node: MdNode) {
       markInfo(
         [getMdStartLine(node), getMdStartCh(node)],
         [getMdEndLine(node), getMdEndCh(node) + 1],
-        TEXT
-      )
+        TEXT,
+      ),
     );
     node = node.next!;
   }
@@ -287,6 +302,8 @@ function markParagraphInBlockQuote(node: MdNode) {
 function blockQuote(node: MdNode, start: MdPos, end: MdPos) {
   let marks =
     node.parent && node.parent.type !== 'blockQuote' ? [markInfo(start, end, BLOCK_QUOTE)] : [];
+  const [startLine, startCh] = start;
+  const [endLine] = end;
 
   if (node.firstChild) {
     let childMarks: MarkInfo[] = [];
@@ -299,13 +316,11 @@ function blockQuote(node: MdNode, start: MdPos, end: MdPos) {
 
     marks = [...marks, ...childMarks];
   }
-  for (let line = start[0]; line <= end[0]; line++) {
-    const lineStart: MdPos = addOffsetPos([line, start[1]], 1);
-    const delimEnd: MdPos = [line, start[1]];
+  for (let line = startLine; line <= endLine; line += 1) {
+    const lineStart: MdPos = addOffsetPos([line, startCh], 1);
+    const delimEnd: MdPos = [line, startCh];
 
-    marks.push(
-      markInfo(delimEnd, lineStart, BLOCK_QUOTE_DELIM)
-    );
+    marks.push(markInfo(delimEnd, lineStart, BLOCK_QUOTE_DELIM));
   }
 
   return marks;
@@ -331,7 +346,7 @@ function item(node: ListItemMdNode, start: MdPos) {
 
   if (task) {
     marks.push(
-      markInfo(addOffsetPos(start, padding), addOffsetPos(start, padding + 3), TASK_DELIM)
+      markInfo(addOffsetPos(start, padding), addOffsetPos(start, padding + 3), TASK_DELIM),
     );
     marks.push(markInfo(addOffsetPos(start, padding + 1), addOffsetPos(start, padding + 2), META));
   }

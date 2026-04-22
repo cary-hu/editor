@@ -300,7 +300,7 @@ describe('addImage command', () => {
     });
 
     expect(getTextContent(mde)).toBe(
-      '![image](https://firebasestorage.googleapis.com/images%2Fimage.png?alt=media)'
+      '![image](https://firebasestorage.googleapis.com/images%2Fimage.png?alt=media)',
     );
   });
 });
@@ -328,7 +328,7 @@ describe('addLink command', () => {
     });
 
     expect(getTextContent(mde)).toBe(
-      '[TOAST UI](https://firebasestorage.googleapis.com/links%2Fimage.png?alt=media)'
+      '[TOAST UI](https://firebasestorage.googleapis.com/links%2Fimage.png?alt=media)',
     );
   });
 });

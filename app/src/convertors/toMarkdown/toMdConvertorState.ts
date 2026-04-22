@@ -218,7 +218,6 @@ export default class ToMdConvertorState {
           }
 
           if (mark.eq(other)) {
-            // eslint-disable-next-line max-depth
             if (i > j) {
               marks = marks
                 .slice(0, j)
@@ -275,7 +274,7 @@ export default class ToMdConvertorState {
             this.markText(lastMark as Mark, true, parent, index) +
               node.text +
               this.markText(lastMark as Mark, false, parent, index + 1),
-            false
+            false,
           );
         } else {
           this.convertBlock(node, parent, index);

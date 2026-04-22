@@ -393,7 +393,7 @@ export class Parser implements BlockParser {
         }
       } else if (this.offset < ln.length && !this.blank) {
         // create paragraph container for line
-        container = this.addChild('paragraph', this.offset);
+        this.addChild('paragraph', this.offset);
         this.advanceNextNonspace();
         this.addLine();
       }
@@ -466,7 +466,7 @@ export class Parser implements BlockParser {
   setRefMaps(
     refMap: RefMap,
     refLinkCandidateMap: RefLinkCandidateMap,
-    refDefCandidateMap: RefDefCandidateMap
+    refDefCandidateMap: RefDefCandidateMap,
   ) {
     this.refMap = refMap;
     this.refLinkCandidateMap = refLinkCandidateMap;

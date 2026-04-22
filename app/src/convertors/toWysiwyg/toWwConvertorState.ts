@@ -7,8 +7,8 @@ import { isContainer, getChildrenText } from '@/utils/markdown';
 import { ensureEmptyHtmlInlineMediaPlaceholders } from '@/utils/htmlInlineMedia';
 
 interface ActiveMarkInfo {
-  type: MarkType
-  hasText: boolean
+  type: MarkType;
+  hasText: boolean;
 }
 
 export function mergeMarkText(a: Node, b: Node) {
@@ -179,7 +179,7 @@ export default class ToWwConvertorState {
               (nodeSize, stackItem) =>
                 nodeSize +
                 stackItem.content.reduce((contentSize, pmNode) => contentSize + pmNode.nodeSize, 0),
-              0
+              0,
             ) + 1;
 
           infoForPosSync.setMappedPos(pos);

@@ -118,6 +118,6 @@ export function getPluginInfo(pluginsInfo: EditorPluginsInfo) {
       wwCommands: {},
       toolbarItems: [],
       markdownParsers: {},
-    }
+    },
   );
 }

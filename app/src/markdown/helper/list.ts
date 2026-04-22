@@ -87,7 +87,7 @@ function findSameDepthList(
   toastMark: ToastMark,
   currentLine: number,
   depth: number,
-  backward: boolean
+  backward: boolean,
 ): ItemInfo[] {
   const lineTexts = toastMark.getLineTexts();
   const lineLen = lineTexts.length;
@@ -156,7 +156,7 @@ function getChangedInfo(
   doc: ProsemirrorNode,
   sameDepthItems: ItemInfo[],
   type: ListType,
-  start = 0
+  start = 0,
 ): ToListResult {
   let firstIndex = Number.MAX_VALUE;
   let lastIndex = 0;
@@ -285,7 +285,7 @@ export function getReorderedListInfo(
   schema: Schema,
   line: number,
   ordinalNum: number,
-  prevIndentLength: number
+  prevIndentLength: number,
 ) {
   let nodes: ProsemirrorNode[] = [];
   let lineText = getTextByMdLine(doc, line);

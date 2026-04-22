@@ -31,7 +31,7 @@ describe('nodeId options', () => {
         `<em data-nodeid="${emph.id}">Hello</em> `,
         `<strong data-nodeid="${strong.id}">World</strong>`,
         '</p>\n',
-      ].join('')
+      ].join(''),
     );
   });
 
@@ -47,7 +47,7 @@ describe('nodeId options', () => {
     const codeBlock = root.firstChild!;
 
     expect(renderer.render(root)).toBe(
-      `<pre data-nodeid="${codeBlock.id}"><code>Hello\n</code></pre>\n`
+      `<pre data-nodeid="${codeBlock.id}"><code>Hello\n</code></pre>\n`,
     );
   });
 });

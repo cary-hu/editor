@@ -16,7 +16,7 @@ export default class CommandManager {
     eventEmitter: Emitter,
     mdCommands: EditorAllCommandMap,
     wwCommands: EditorAllCommandMap,
-    getEditorType: GetEditorType
+    getEditorType: GetEditorType,
   ) {
     this.eventEmitter = eventEmitter;
     this.mdCommands = mdCommands;

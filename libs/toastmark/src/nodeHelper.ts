@@ -237,7 +237,6 @@ export function isUnlinked(id: number) {
   }
 
   while (node && node.type !== 'document') {
-    // eslint-disable-next-line no-loop-func
     if (!node.parent && !node.prev && !node.next) {
       return true;
     }

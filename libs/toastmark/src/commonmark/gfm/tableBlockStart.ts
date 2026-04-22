@@ -61,7 +61,7 @@ function generateTableCells(
   cellType: 'tableCell' | 'tableDelimCell',
   contents: string[],
   lineNum: number,
-  chPos: number
+  chPos: number,
 ) {
   const cells = [];
   for (const content of contents) {
@@ -180,7 +180,7 @@ export const tableHead: BlockStart = (parser, container) => {
       'tableCell',
       headerCells,
       firstLineNum,
-      firstLineStart + headerOffset
+      firstLineStart + headerOffset,
     ).forEach((cellNode) => {
       tableHeadRow.appendChild(cellNode);
     });
@@ -189,7 +189,7 @@ export const tableHead: BlockStart = (parser, container) => {
       'tableDelimCell',
       delimCells,
       parser.lineNumber,
-      parser.nextNonspace + 1 + delimOffset
+      parser.nextNonspace + 1 + delimOffset,
     );
 
     delimCellNodes.forEach((cellNode) => {
@@ -244,7 +244,7 @@ export const tableBody: BlockStart = (parser, container) => {
     'tableCell',
     cellContents,
     parser.lineNumber,
-    parser.nextNonspace + 1 + offset
+    parser.nextNonspace + 1 + offset,
   ).forEach((cellNode, idx) => {
     if (idx >= table.columns.length) {
       cellNode.ignored = true;

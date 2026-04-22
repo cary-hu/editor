@@ -10,7 +10,7 @@ interface CustomAttrs {
 
 export function findNodeBy(
   pos: ResolvedPos,
-  condition: (node: ProsemirrorNode, depth: number) => boolean
+  condition: (node: ProsemirrorNode, depth: number) => boolean,
 ) {
   let { depth } = pos;
 
@@ -39,14 +39,14 @@ export function isInListNode(pos: ResolvedPos) {
   return !!findNodeBy(
     pos,
     ({ type }: ProsemirrorNode) =>
-      type.name === 'listItem' || type.name === 'bulletList' || type.name === 'orderedList'
+      type.name === 'listItem' || type.name === 'bulletList' || type.name === 'orderedList',
   );
 }
 
 export function isInTableNode(pos: ResolvedPos) {
   return !!findNodeBy(
     pos,
-    ({ type }: ProsemirrorNode) => type.name === 'tableHeadCell' || type.name === 'tableBodyCell'
+    ({ type }: ProsemirrorNode) => type.name === 'tableHeadCell' || type.name === 'tableBodyCell',
   );
 }
 

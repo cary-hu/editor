@@ -134,7 +134,7 @@ const convertors: HTMLToWwConvertorMap = {
         link.create({
           linkUrl,
           rawHTML: openTagName,
-        })
+        }),
       );
     } else {
       state.closeMark(link);

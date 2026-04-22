@@ -166,9 +166,9 @@ export interface LinkMdNode extends MdNode {
 
 export type ImageVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';
 export interface ImageMdNode extends LinkMdNode {
-  width: number | null = null;
-  caption: string | null = null;
-  verticalAlign: ImageVerticalAlign | null = null;
+  width: number | null;
+  caption: string | null;
+  verticalAlign: ImageVerticalAlign | null;
 }
 
 export interface CodeMdNode extends MdNode {

@@ -116,7 +116,7 @@ export class BlockQuote extends NodeSchema {
             const newTr = tr.replaceWith(
               blockQuoteStart,
               blockQuoteEnd,
-              currentBlockQuoteNode.content
+              currentBlockQuoteNode.content,
             );
 
             // Calculate new cursor position
@@ -145,7 +145,7 @@ export class BlockQuote extends NodeSchema {
           // Create a new blockquote node with the new type and same content
           const newBlockQuote = blockQuoteNode.create(
             { ...currentBlockQuoteNode.attrs, bqType },
-            currentBlockQuoteNode.content
+            currentBlockQuoteNode.content,
           );
 
           // Calculate the cursor position relative to the blockquote start

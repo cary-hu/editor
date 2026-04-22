@@ -23,7 +23,7 @@ function createBannerPlugin(type) {
       `@version ${version} | ${new Date().toDateString()}`,
       `@author ${author}`,
       `@license ${license}`,
-    ].join('\n')
+    ].join('\n'),
   );
 }
 

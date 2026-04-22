@@ -20,7 +20,7 @@ describe('wysiwyg commands', () => {
     const { tr, doc } = state;
     const lines = text.split('\n');
     const node = lines.map((lineText) =>
-      wwe.schema.nodes.paragraph.create(null, wwe.schema.text(lineText))
+      wwe.schema.nodes.paragraph.create(null, wwe.schema.text(lineText)),
     );
 
     dispatch(tr.replaceWith(0, doc.content.size, node));
@@ -168,7 +168,7 @@ describe('wysiwyg commands', () => {
       cmd.exec('blockQuote');
 
       expect(wwe.getHTML()).toBe(
-        '<div data-block-quote-type="default" class="toastui-editor-ww-block-quote"><blockquote data-block-quote-type="default"><p><br></p></blockquote></div>'
+        '<div data-block-quote-type="default" class="toastui-editor-ww-block-quote"><blockquote data-block-quote-type="default"><p><br></p></blockquote></div>',
       );
     });
 
@@ -179,7 +179,7 @@ describe('wysiwyg commands', () => {
       cmd.exec('blockQuote');
 
       expect(wwe.getHTML()).toBe(
-        '<div data-block-quote-type="default" class="toastui-editor-ww-block-quote"><blockquote data-block-quote-type="default"><p>foo</p></blockquote></div>'
+        '<div data-block-quote-type="default" class="toastui-editor-ww-block-quote"><blockquote data-block-quote-type="default"><p>foo</p></blockquote></div>',
       );
     });
 
@@ -530,7 +530,7 @@ describe('wysiwyg commands', () => {
       });
 
       expect(wwe.getHTML()).toBe(
-        '<p><img src="https://firebasestorage.googleapis.com/images%2Fimage.png?alt=media" alt="foo"><br></p>'
+        '<p><img src="https://firebasestorage.googleapis.com/images%2Fimage.png?alt=media" alt="foo"><br></p>',
       );
     });
   });
@@ -590,7 +590,7 @@ describe('wysiwyg commands', () => {
       });
 
       expect(wwe.getHTML()).toBe(
-        '<p><a href="https://firebasestorage.googleapis.com/links%2Fimage.png?alt=media">foo</a></p>'
+        '<p><a href="https://firebasestorage.googleapis.com/links%2Fimage.png?alt=media">foo</a></p>',
       );
     });
   });
@@ -623,7 +623,7 @@ describe('wysiwyg commands', () => {
       });
 
       expect(wwe.getHTML()).toBe(
-        '<p><a href="#" target="_blank" rel="noopener noreferrer">foo</a></p>'
+        '<p><a href="#" target="_blank" rel="noopener noreferrer">foo</a></p>',
       );
     });
   });

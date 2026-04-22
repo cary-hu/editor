@@ -92,7 +92,8 @@ export class ToolbarButtonComp extends Component<Props> {
         onMouseout=${hideTooltip}
         disabled=${!!disabled}
         aria-label=${item.text || item.tooltip || ''}
-      ><i class=${cls("icon") + ' ' + item.className?.split(" ")[0]}></i>
+      >
+        <i class=${`${cls('icon')} ${item.className?.split(' ')[0]}`}></i>
         ${item.text || ''}
       </button>
     `;

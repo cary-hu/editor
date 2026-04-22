@@ -165,7 +165,7 @@ class ToastUIEditorCore {
           useTableEditPanel: true,
         },
       },
-      options
+      options,
     );
 
     const {
@@ -221,7 +221,7 @@ class ToastUIEditorCore {
     const htmlSchemaMap = createHTMLSchemaMap(
       rendererOptions.customHTMLRenderer,
       rendererOptions.sanitizer,
-      wwToDOMAdaptor
+      wwToDOMAdaptor,
     );
 
     this.toastMark = new ToastMark('', {
@@ -258,7 +258,7 @@ class ToastUIEditorCore {
       this.wwEditor.getSchema(),
       { ...toMarkdownRenderers, ...customMarkdownRenderer },
       getHTMLRenderConvertors(linkAttributes, rendererOptions.customHTMLRenderer),
-      this.eventEmitter
+      this.eventEmitter,
     );
 
     this.setMinHeight(this.options.minHeight);
@@ -279,7 +279,7 @@ class ToastUIEditorCore {
       this.eventEmitter,
       this.mdEditor.commands,
       this.wwEditor.commands,
-      () => this.mode
+      () => this.mode,
     );
 
     if (this.options.usageStatistics) {
@@ -310,7 +310,7 @@ class ToastUIEditorCore {
         // 75px equals default editor ui height - the editing area height
         const minHeight = `${Math.min(
           parseInt(this.minHeight, 10),
-          parseInt(this.height, 10) - 75
+          parseInt(this.height, 10) - 75,
         )}px`;
 
         this.setMinHeight(minHeight);
@@ -355,6 +355,7 @@ class ToastUIEditorCore {
   static setLanguage(code: string | string[], data: Record<string, string>) {
     i18n.setLanguage(code, data);
   }
+
   /**
    * Set theme
    * @param theme - theme name, can be 'light', 'dark', or custom theme name, will add class name toastui-editor-{theme}
@@ -549,7 +550,7 @@ class ToastUIEditorCore {
     if (this.placeholder) {
       const rePlaceholder = new RegExp(
         `<span class="placeholder[^>]+>${this.placeholder}</span>`,
-        'i'
+        'i',
       );
 
       return html.replace(rePlaceholder, '');

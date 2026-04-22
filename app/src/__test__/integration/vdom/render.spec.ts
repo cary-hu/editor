@@ -106,7 +106,7 @@ describe('html', () => {
 
     render(
       wrapper,
-      html`<div>${[1, 2, 3].map((text) => html`<span>${text}</span>`)}</div>` as VNode
+      html`<div>${[1, 2, 3].map((text) => html`<span>${text}</span>`)}</div>` as VNode,
     );
 
     expect(wrapper).toContainHTML(expected);
@@ -136,7 +136,7 @@ describe('html', () => {
             </ul>
           </nav>
         </div>
-      ` as VNode
+      ` as VNode,
     );
 
     expect(wrapper).toContainHTML(expected);

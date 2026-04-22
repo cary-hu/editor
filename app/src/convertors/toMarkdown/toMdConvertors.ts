@@ -294,27 +294,30 @@ export const toMdConvertors: ToMdConvertorMap = {
     if (entering) {
       return {
         delim: '[',
-        rawHTML: rawHTML ? `<${rawHTML} href="${escapeXml(linkUrl)}"${titleAttr}${targetAttr}${relAttr}>` : null,
+        rawHTML: rawHTML
+          ? `<${rawHTML} href="${escapeXml(linkUrl)}"${titleAttr}${targetAttr}${relAttr}>`
+          : null,
       };
     }
 
     let linkSuffix = `](${linkUrl}`;
-    
+
     if (title) {
       linkSuffix += ` ${quote(escapeTextForLink(title))}`;
     }
-    
+
     // Add enhanced attributes to markdown syntax
     if (target || rel) {
       linkSuffix += ')';
       const enhancedAttrs = [];
+
       if (target) {
         enhancedAttrs.push(`target="${escapeTextForLink(target)}"`);
       }
       if (rel) {
         enhancedAttrs.push(`rel="${escapeTextForLink(rel)}"`);
       }
-      
+
       if (enhancedAttrs.length > 0) {
         linkSuffix += `{:${enhancedAttrs.join(' ')}}`;
       }
@@ -410,8 +413,8 @@ function createNodeTypeConvertors(convertors: ToMdConvertorMap) {
         const convertor = convertors[type];
         const params = convertor
           ? convertor(nodeInfo as NodeInfo, {
-            inTable: state.inTable,
-          })
+              inTable: state.inTable,
+            })
           : {};
 
         write(type, { state, nodeInfo, params });

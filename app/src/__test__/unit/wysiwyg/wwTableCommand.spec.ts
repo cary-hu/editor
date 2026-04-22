@@ -28,7 +28,7 @@ describe('wysiwyg table commands', () => {
   function setCellSelection(
     [startRowIdx, startColIdx]: number[],
     [endRowIdx, endColIdx]: number[],
-    cellSelection = true
+    cellSelection = true,
   ) {
     const doc = wwe.getModel();
     const map = TableOffsetMap.create(doc.resolve(1))!;

@@ -13,42 +13,44 @@ const MEDIA_MARK_NAMES = ['video', 'audio'] as const;
 const MEDIA_SELECTOR = MEDIA_MARK_NAMES.join(',');
 const SELECTED_MEDIA_CLASS_NAME = cls('html-inline-media-selected');
 const pendingSelectionUpdates = new WeakMap<EditorView, ReturnType<typeof setTimeout>>();
-const htmlInlineMediaSelectionKey = new PluginKey<HtmlInlineMediaSelectionState>('htmlInlineMediaSelection');
+const htmlInlineMediaSelectionKey = new PluginKey<HtmlInlineMediaSelectionState>(
+  'htmlInlineMediaSelection',
+);
 
 interface MediaRange {
-  from: number
-  to: number
+  from: number;
+  to: number;
 }
 
 interface MediaMarkRange extends MediaRange {
-  mark: Mark
+  mark: Mark;
 }
 
 interface TextblockPosition {
-  node: ProsemirrorNode
-  pos: number
+  node: ProsemirrorNode;
+  pos: number;
 }
 
 interface HtmlInlineMediaSelectionState {
-  range: MediaRange | null
+  range: MediaRange | null;
 }
 
 interface ReplaceTextOperation {
-  from: number
-  to: number
-  text: string
+  from: number;
+  to: number;
+  text: string;
 }
 
 interface DeleteTextOperation {
-  from: number
-  to: number
-  text: null
+  from: number;
+  to: number;
+  text: null;
 }
 
 type MediaBoundaryNormalizationOperation = ReplaceTextOperation | DeleteTextOperation;
 
 function isMediaMarkType(type: MarkType | null | undefined) {
-  return !!type && MEDIA_MARK_NAMES.includes(type.name as typeof MEDIA_MARK_NAMES[number]);
+  return !!type && MEDIA_MARK_NAMES.includes(type.name as (typeof MEDIA_MARK_NAMES)[number]);
 }
 
 function findMediaMark(node: ProsemirrorNode | null | undefined) {
@@ -56,14 +58,11 @@ function findMediaMark(node: ProsemirrorNode | null | undefined) {
     return null;
   }
 
-  return node.marks.find(mark => isMediaMarkType(mark.type)) || null;
+  return node.marks.find((mark) => isMediaMarkType(mark.type)) || null;
 }
 
 function isMediaBoundaryPlaceholderNode(node: ProsemirrorNode | null | undefined) {
-  return !!node
-    && node.isText
-    && !node.marks.length
-    && node.text === MEDIA_BOUNDARY_PLACEHOLDER;
+  return !!node && node.isText && !node.marks.length && node.text === MEDIA_BOUNDARY_PLACEHOLDER;
 }
 
 function isSameRange(a: MediaRange | null, b: MediaRange | null) {
@@ -96,7 +95,10 @@ function getChildOffset(parent: ProsemirrorNode, targetIndex: number) {
   return offset;
 }
 
-function findMediaOnlyTextblockRange(node: ProsemirrorNode | null | undefined, nodePos: number): MediaMarkRange | null {
+function findMediaOnlyTextblockRange(
+  node: ProsemirrorNode | null | undefined,
+  nodePos: number,
+): MediaMarkRange | null {
   if (!node || !node.isTextblock || !node.childCount) {
     return null;
   }
@@ -134,9 +136,7 @@ function findMediaOnlyTextblockRange(node: ProsemirrorNode | null | undefined, n
     to = childFrom + child.nodeSize;
   }
 
-  return mediaMark && from >= 0 && to >= 0
-    ? { from, to, mark: mediaMark }
-    : null;
+  return mediaMark && from >= 0 && to >= 0 ? { from, to, mark: mediaMark } : null;
 }
 
 function findMediaMarkRangeAtPos(doc: ProsemirrorNode, pos: number): MediaMarkRange | null {
@@ -145,7 +145,7 @@ function findMediaMarkRangeAtPos(doc: ProsemirrorNode, pos: number): MediaMarkRa
   }
 
   const $pos = doc.resolve(pos);
-  const parent = $pos.parent;
+  const { parent } = $pos;
   const start = $pos.start();
 
   const after = parent.childAfter($pos.parentOffset);
@@ -200,7 +200,7 @@ function findMediaMarkRangeAtPos(doc: ProsemirrorNode, pos: number): MediaMarkRa
 function findMediaMarkRangeAtTextblockBoundary(
   node: ProsemirrorNode | null | undefined,
   nodePos: number,
-  side: 'start' | 'end'
+  side: 'start' | 'end',
 ): MediaMarkRange | null {
   if (!node || !node.isTextblock || !node.childCount) {
     return null;
@@ -208,7 +208,11 @@ function findMediaMarkRangeAtTextblockBoundary(
 
   let targetIndex = side === 'start' ? 0 : node.childCount - 1;
 
-  while (targetIndex >= 0 && targetIndex < node.childCount && isMediaBoundaryPlaceholderNode(node.child(targetIndex))) {
+  while (
+    targetIndex >= 0 &&
+    targetIndex < node.childCount &&
+    isMediaBoundaryPlaceholderNode(node.child(targetIndex))
+  ) {
     targetIndex += side === 'start' ? 1 : -1;
   }
 
@@ -255,9 +259,13 @@ function findMediaMarkRangeAtTextblockBoundary(
   return { from, to, mark: mediaMark };
 }
 
-function findAdjacentMediaMarkRange(doc: ProsemirrorNode, pos: number, key: string): MediaMarkRange | null {
+function findAdjacentMediaMarkRange(
+  doc: ProsemirrorNode,
+  pos: number,
+  key: string,
+): MediaMarkRange | null {
   const $pos = doc.resolve(pos);
-  const parent = $pos.parent;
+  const { parent } = $pos;
   const start = $pos.start();
 
   if (key === 'ArrowRight') {
@@ -275,14 +283,18 @@ function findAdjacentMediaMarkRange(doc: ProsemirrorNode, pos: number, key: stri
     : null;
 }
 
-function findCurrentTextblockPosition(state: EditorState): (TextblockPosition & { depth: number }) | null {
+function findCurrentTextblockPosition(
+  state: EditorState,
+): (TextblockPosition & { depth: number }) | null {
   const { $from } = state.selection;
 
   return findTextblockPositionAtResolvedPos($from);
 }
 
-function findTextblockPositionAtResolvedPos($pos: EditorState['selection']['$from']): (TextblockPosition & { depth: number }) | null {
-  for (let depth = $pos.depth; depth > 0; depth -= 1) {
+function findTextblockPositionAtResolvedPos(
+  $pos: EditorState['selection']['$from'],
+): (TextblockPosition & { depth: number }) | null {
+  for (let { depth } = $pos; depth > 0; depth -= 1) {
     const node = $pos.node(depth);
 
     if (node.isTextblock) {
@@ -297,12 +309,19 @@ function findTextblockPositionAtResolvedPos($pos: EditorState['selection']['$fro
   return null;
 }
 
-function findFirstTextblock(doc: ProsemirrorNode, from: number, to: number): TextblockPosition | null {
+function findFirstTextblock(
+  doc: ProsemirrorNode,
+  from: number,
+  to: number,
+): TextblockPosition | null {
   let result: TextblockPosition | null = null;
 
   doc.nodesBetween(from, to, (node, pos) => {
-    if (result || !node.isTextblock) {
-      return result ? false : undefined;
+    if (result) {
+      return false;
+    }
+    if (!node.isTextblock) {
+      return true;
     }
 
     result = { node, pos };
@@ -313,21 +332,26 @@ function findFirstTextblock(doc: ProsemirrorNode, from: number, to: number): Tex
   return result;
 }
 
-function findLastTextblock(doc: ProsemirrorNode, from: number, to: number): TextblockPosition | null {
+function findLastTextblock(
+  doc: ProsemirrorNode,
+  from: number,
+  to: number,
+): TextblockPosition | null {
   let result: TextblockPosition | null = null;
 
   doc.nodesBetween(from, to, (node, pos) => {
     if (node.isTextblock) {
       result = { node, pos };
     }
-
-    return undefined;
   });
 
   return result;
 }
 
-function findMediaMarkRangeAcrossTextblocks(state: EditorState, key: string): MediaMarkRange | null {
+function findMediaMarkRangeAcrossTextblocks(
+  state: EditorState,
+  key: string,
+): MediaMarkRange | null {
   const { selection, doc } = state;
   const currentTextblock = findCurrentTextblockPosition(state);
 
@@ -343,7 +367,7 @@ function findMediaMarkRangeAcrossTextblocks(state: EditorState, key: string): Me
     const nextTextblock = findFirstTextblock(
       doc,
       currentTextblock.pos + currentTextblock.node.nodeSize,
-      doc.content.size
+      doc.content.size,
     );
 
     return nextTextblock
@@ -363,15 +387,15 @@ function findMediaMarkRangeAcrossTextblocks(state: EditorState, key: string): Me
 }
 
 function getTextblockVisibleSelectionPos(textblock: TextblockPosition, side: 'start' | 'end') {
-  return side === 'start'
-    ? textblock.pos + 1
-    : textblock.pos + textblock.node.nodeSize - 1;
+  return side === 'start' ? textblock.pos + 1 : textblock.pos + textblock.node.nodeSize - 1;
 }
 
 function isWholeTextblockMediaRange(doc: ProsemirrorNode, range: MediaRange) {
   const $from = doc.resolve(range.from);
   const textblock = findTextblockPositionAtResolvedPos($from);
-  const textblockRange = textblock ? findMediaOnlyTextblockRange(textblock.node, textblock.pos) : null;
+  const textblockRange = textblock
+    ? findMediaOnlyTextblockRange(textblock.node, textblock.pos)
+    : null;
 
   return !!textblockRange && textblockRange.from === range.from && textblockRange.to === range.to;
 }
@@ -399,22 +423,29 @@ function getMediaEscapeSelectionPos(doc: ProsemirrorNode, range: MediaRange, key
   const nextTextblock = findFirstTextblock(
     doc,
     textblock.pos + textblock.node.nodeSize,
-    doc.content.size
+    doc.content.size,
   );
 
-  return nextTextblock
-    ? getTextblockVisibleSelectionPos(nextTextblock, 'start')
-    : range.to;
+  return nextTextblock ? getTextblockVisibleSelectionPos(nextTextblock, 'start') : range.to;
 }
 
-function matchesMediaBoundarySelectionPos(doc: ProsemirrorNode, range: MediaRange, selectionPos: number, key: string) {
+function matchesMediaBoundarySelectionPos(
+  doc: ProsemirrorNode,
+  range: MediaRange,
+  selectionPos: number,
+  key: string,
+) {
   if (key === 'ArrowRight') {
-    return selectionPos === range.from
-      || (isWholeTextblockMediaRange(doc, range) && selectionPos === range.from - 1);
+    return (
+      selectionPos === range.from ||
+      (isWholeTextblockMediaRange(doc, range) && selectionPos === range.from - 1)
+    );
   }
 
-  return selectionPos === range.to
-    || (isWholeTextblockMediaRange(doc, range) && selectionPos === range.to + 1);
+  return (
+    selectionPos === range.to ||
+    (isWholeTextblockMediaRange(doc, range) && selectionPos === range.to + 1)
+  );
 }
 
 function findSelectedMediaRange(view: EditorView): MediaRange | null {
@@ -432,7 +463,9 @@ function findSelectedMediaRange(view: EditorView): MediaRange | null {
   }
 
   if (selection.empty) {
-    return selection.from > rangeAtFrom.from && selection.from < rangeAtFrom.to ? rangeAtFrom : null;
+    return selection.from > rangeAtFrom.from && selection.from < rangeAtFrom.to
+      ? rangeAtFrom
+      : null;
   }
 
   return selection.from >= rangeAtFrom.from && selection.to <= rangeAtFrom.to ? rangeAtFrom : null;
@@ -441,9 +474,9 @@ function findSelectedMediaRange(view: EditorView): MediaRange | null {
 function findMediaMarkRangeNearPos(doc: ProsemirrorNode, pos: number): MediaMarkRange | null {
   const positions = [pos, pos - 1, pos + 1].filter(
     (candidatePos, index, array) =>
-      candidatePos >= 0
-      && candidatePos <= doc.content.size
-      && array.indexOf(candidatePos) === index
+      candidatePos >= 0 &&
+      candidatePos <= doc.content.size &&
+      array.indexOf(candidatePos) === index,
   );
 
   for (const candidatePos of positions) {
@@ -457,16 +490,19 @@ function findMediaMarkRangeNearPos(doc: ProsemirrorNode, pos: number): MediaMark
   return null;
 }
 
-function findMediaMarkRangeForElement(view: EditorView, mediaElement: HTMLElement): MediaMarkRange | null {
-  const positionTargets: Array<{ node: Node, offset: number }> = [];
+function findMediaMarkRangeForElement(
+  view: EditorView,
+  mediaElement: HTMLElement,
+): MediaMarkRange | null {
+  const positionTargets: Array<{ node: Node; offset: number }> = [];
 
   if (mediaElement.firstChild) {
-    const firstChild = mediaElement.firstChild;
+    const { firstChild } = mediaElement;
 
     if (firstChild.nodeType === Node.TEXT_NODE) {
       const textLength = firstChild.textContent?.length || 0;
       const offsets = [0, textLength].filter(
-        (offset, index, array) => array.indexOf(offset) === index
+        (offset, index, array) => array.indexOf(offset) === index,
       );
 
       offsets.forEach((offset) => {
@@ -523,13 +559,17 @@ function resolveMediaElementFromDomPosition(node: Node, offset: number) {
 }
 
 function findMediaElementForRange(view: EditorView, range: MediaRange): HTMLElement | null {
-  const probePositions = [range.from - 1, range.from, range.from + 1, range.to - 1, range.to, range.to + 1]
-    .filter(
-      (pos, index, array) =>
-        pos >= 0
-        && pos <= view.state.doc.content.size
-        && array.indexOf(pos) === index
-    );
+  const probePositions = [
+    range.from - 1,
+    range.from,
+    range.from + 1,
+    range.to - 1,
+    range.to,
+    range.to + 1,
+  ].filter(
+    (pos, index, array) =>
+      pos >= 0 && pos <= view.state.doc.content.size && array.indexOf(pos) === index,
+  );
 
   for (const probePos of probePositions) {
     const { node, offset } = view.domAtPos(probePos);
@@ -592,20 +632,16 @@ function collectMediaBoundaryNormalizationOperations(doc: ProsemirrorNode) {
       }
 
       const strippedText = stripMediaBoundaryPlaceholders(child.text || '');
-      const isLeadingPlaceholder = child.text === MEDIA_BOUNDARY_PLACEHOLDER
-        && !!leadingMediaRange
-        && i === 0;
-      const isTrailingPlaceholder = child.text === MEDIA_BOUNDARY_PLACEHOLDER
-        && !!trailingMediaRange
-        && i === node.childCount - 1;
+      const isLeadingPlaceholder =
+        child.text === MEDIA_BOUNDARY_PLACEHOLDER && !!leadingMediaRange && i === 0;
+      const isTrailingPlaceholder =
+        child.text === MEDIA_BOUNDARY_PLACEHOLDER &&
+        !!trailingMediaRange &&
+        i === node.childCount - 1;
       const isEdgePlaceholder = isLeadingPlaceholder || isTrailingPlaceholder;
 
       if (!isEdgePlaceholder) {
-        operations.push(
-          strippedText
-            ? { from, to, text: strippedText }
-            : { from, to, text: null }
-        );
+        operations.push(strippedText ? { from, to, text: strippedText } : { from, to, text: null });
       }
     }
 
@@ -626,7 +662,7 @@ function collectMediaBoundaryNormalizationOperations(doc: ProsemirrorNode) {
     }
   });
 
-  operations.sort((a, b) => (b.from - a.from) || (b.to - a.to));
+  operations.sort((a, b) => b.from - a.from || b.to - a.to);
 
   return operations;
 }
@@ -638,7 +674,7 @@ function normalizeMediaBoundaryPlaceholders(state: EditorState) {
     return null;
   }
 
-  const tr = state.tr;
+  const { tr } = state;
 
   operations.forEach((operation) => {
     if (operation.text === null) {
@@ -658,10 +694,9 @@ function maybeSelectMediaAtBoundary(view: EditorView, key: string) {
     return false;
   }
 
-  const pos = key === 'ArrowRight'
-    ? selection.from
-    : Math.max(selection.from - 1, 0);
-  const range = findAdjacentMediaMarkRange(doc, selection.from, key) || findMediaMarkRangeAtPos(doc, pos);
+  const pos = key === 'ArrowRight' ? selection.from : Math.max(selection.from - 1, 0);
+  const range =
+    findAdjacentMediaMarkRange(doc, selection.from, key) || findMediaMarkRangeAtPos(doc, pos);
 
   if (range && matchesMediaBoundarySelectionPos(doc, range, selection.from, key)) {
     updateExplicitMediaSelection(view, { from: range.from, to: range.to });
@@ -779,13 +814,13 @@ export function htmlInlineMediaSelection() {
       return normalizeMediaBoundaryPlaceholders(newState);
     },
     state: {
-      init() {
+      init(): HtmlInlineMediaSelectionState {
         return { range: null };
       },
-      apply(tr, value) {
+      apply(tr, value: HtmlInlineMediaSelectionState): HtmlInlineMediaSelectionState {
         const meta = tr.getMeta(htmlInlineMediaSelectionKey);
 
-        if (meta !== undefined) {
+        if (typeof meta !== 'undefined') {
           return { range: meta };
         }
 
@@ -793,7 +828,7 @@ export function htmlInlineMediaSelection() {
           return value;
         }
 
-        let range: MediaRange = value.range;
+        let { range } = value;
 
         if (tr.docChanged) {
           range = {
@@ -804,8 +839,9 @@ export function htmlInlineMediaSelection() {
 
         if (tr.selectionSet) {
           const { selection } = tr;
-          const isBoundarySelection = selection.empty
-            && (selection.from === range.from - 1 || selection.from === range.to + 1);
+          const isBoundarySelection =
+            selection.empty &&
+            (selection.from === range.from - 1 || selection.from === range.to + 1);
 
           return {
             range: isBoundarySelection ? range : null,
@@ -827,7 +863,7 @@ export function htmlInlineMediaSelection() {
           updateExplicitMediaSelection(view, null);
           scheduleSelectionUpdate(
             view,
-            getMediaEscapeSelectionPos(view.state.doc, explicitRange, event.key)
+            getMediaEscapeSelectionPos(view.state.doc, explicitRange, event.key),
           );
           event.preventDefault();
           return true;

@@ -1,8 +1,6 @@
 import { BlockMdNode, BlockNodeType, MdNode, MdNodeType, RefDefMdNode, Sourcepos } from './node';
 
-export type AutolinkParser = (
-  content: string
-) => {
+export type AutolinkParser = (content: string) => {
   url: string;
   text: string;
   range: [number, number];
@@ -10,7 +8,7 @@ export type AutolinkParser = (
 
 export type CustomParser = (
   node: MdNode,
-  context: { entering: boolean; options: ParserOptions }
+  context: { entering: boolean; options: ParserOptions },
 ) => void;
 export type CustomParserMap = Partial<Record<MdNodeType, CustomParser>>;
 
@@ -81,7 +79,7 @@ export class BlockParser {
   setRefMaps(
     refMap: RefMap,
     refLinkCandidateMap: RefLinkCandidateMap,
-    refDefCandidateMap: RefDefCandidateMap
+    refDefCandidateMap: RefDefCandidateMap,
   ): void;
 
   clearRefMaps(): void;

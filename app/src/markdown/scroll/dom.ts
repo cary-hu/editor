@@ -17,7 +17,7 @@ function isBlankLine(doc: ProsemirrorNode, index: number) {
 export function getEditorRangeHeightInfo(
   doc: ProsemirrorNode,
   mdNode: MdNode,
-  children: HTMLCollection
+  children: HTMLCollection,
 ) {
   const start = getMdStartLine(mdNode) - 1;
   const end = getMdEndLine(mdNode) - 1;
@@ -83,7 +83,7 @@ export function findAdjacentElementToScrollTop(scrollTop: number, root: HTMLElem
     const lastSibling = findLastSiblingElementToScrollTop(
       firstElementChild as El,
       scrollTop,
-      getTotalOffsetTop(el, root)
+      getTotalOffsetTop(el, root),
     );
 
     prev = el;
@@ -109,7 +109,7 @@ export function getAdditionalPos(
   scrollTop: number,
   offsetTop: number,
   height: number,
-  targetNodeHeight: number
+  targetNodeHeight: number,
 ) {
   const ratio = Math.min((scrollTop - offsetTop) / height, 1);
 

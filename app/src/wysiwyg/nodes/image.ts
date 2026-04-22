@@ -169,14 +169,7 @@ export class Image extends NodeSchema {
 
         // If there's a caption, wrap in figure element
         if (attrs.caption) {
-          return [
-            'figure',
-            [attrs.rawHTML || 'img', imgAttrs],
-            [
-              'figcaption',
-              attrs.caption,
-            ],
-          ];
+          return ['figure', [attrs.rawHTML || 'img', imgAttrs], ['figcaption', attrs.caption]];
         }
 
         return [attrs.rawHTML || 'img', imgAttrs];
@@ -185,22 +178,23 @@ export class Image extends NodeSchema {
   }
 
   private addImage(): EditorCommand {
-    return (payload) => ({ schema, tr }, dispatch) => {
-      const { imageUrl, altText } = payload!;
+    return (payload) =>
+      ({ schema, tr }, dispatch) => {
+        const { imageUrl, altText } = payload!;
 
-      if (!imageUrl) {
-        return false;
-      }
+        if (!imageUrl) {
+          return false;
+        }
 
-      const node = schema.nodes.image.createAndFill({
-        imageUrl,
-        ...(altText && { altText }),
-      });
+        const node = schema.nodes.image.createAndFill({
+          imageUrl,
+          ...(altText && { altText }),
+        });
 
-      dispatch!(tr.replaceSelectionWith(node!).scrollIntoView());
+        dispatch!(tr.replaceSelectionWith(node!).scrollIntoView());
 
-      return true;
-    };
+        return true;
+      };
   }
 
   commands() {

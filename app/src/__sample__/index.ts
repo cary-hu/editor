@@ -1,76 +1,75 @@
 import Editor from '@/index.js';
 
 const content = [
-    '![image](https://uicdn.toast.com/toastui/img/tui-editor-bi.png)',
-    '',
-    '# Awesome Editor!',
-    '',
-    '',
-    '| name | type | description |',
-    '| --- | --- | --- |',
-    '| el | `HTMLElement` | container element |',
-    '| el | `HTMLElement` | container element |',
-    '| el | `HTMLElement` | container element |',
-    '| el | `HTMLElement` | container element |',
-    '| el | `HTMLElement` | container element |',
-    '',
-    '## Features',
-    '',
-    '<video src="https://developer.mozilla.org/shared-assets/videos/flower.mp4"></video>',
-    '',
-    '* CommonMark + GFM Specifications',
-    '   * Live Preview',
-    '   * Scroll Sync',
-    '   * Auto Indent',
-    '   * Syntax Highlight',
-    '        1. Markdown',
-    '        2. Preview',
-    '```javascript',
-    'const editor = new Editor({',
-    '  el: document.querySelector("#editor"),',
-    '  previewStyle: "vertical",',
-    '  height: "100vh",',
-    '  initialEditType: "wysiwyg",',
-    '  useCommandShortcut: true,',
-    '  extendedAutolinks: true,',
-    '  frontMatter: true,',
-    '  initialValue: "Hello, Markdown!"',
-    '});',
-    '```',
-    '',
+  '![image](https://uicdn.toast.com/toastui/img/tui-editor-bi.png)',
+  '',
+  '# Awesome Editor!',
+  '',
+  '',
+  '| name | type | description |',
+  '| --- | --- | --- |',
+  '| el | `HTMLElement` | container element |',
+  '| el | `HTMLElement` | container element |',
+  '| el | `HTMLElement` | container element |',
+  '| el | `HTMLElement` | container element |',
+  '| el | `HTMLElement` | container element |',
+  '',
+  '## Features',
+  '',
+  '<video src="https://developer.mozilla.org/shared-assets/videos/flower.mp4"></video>',
+  '',
+  '* CommonMark + GFM Specifications',
+  '   * Live Preview',
+  '   * Scroll Sync',
+  '   * Auto Indent',
+  '   * Syntax Highlight',
+  '        1. Markdown',
+  '        2. Preview',
+  '```javascript',
+  'const editor = new Editor({',
+  '  el: document.querySelector("#editor"),',
+  '  previewStyle: "vertical",',
+  '  height: "100vh",',
+  '  initialEditType: "wysiwyg",',
+  '  useCommandShortcut: true,',
+  '  extendedAutolinks: true,',
+  '  frontMatter: true,',
+  '  initialValue: "Hello, Markdown!"',
+  '});',
+  '```',
+  '',
 
-    '## Support Wrappers',
-    '',
-    '> * Wrappers',
-    '>    1. [x] React',
-    '>    2. [x] Vue',
-    '>    3. [ ] Ember',
+  '## Support Wrappers',
+  '',
+  '> * Wrappers',
+  '>    1. [x] React',
+  '>    2. [x] Vue',
+  '>    3. [ ] Ember',
 ].join('\n');
 
 new Editor({
-    el: document.querySelector('#editor')!,
-    previewStyle: 'vertical',
-    height: '100vh',
-    initialEditType: 'wysiwyg',
-    useCommandShortcut: true,
-    extendedAutolinks: true,
-    frontMatter: true,
-    initialValue: content,
-    usageStatistics: false,
-    plugins: [
-        () => {
-            return {
-                toHTMLRenderers: {
-                    htmlInline: {
-                        video(node: any, { entering }: any) {
-                            return entering
-                                ? { type: 'openTag', tagName: 'video', attributes: node.attrs! }
-                                : { type: 'closeTag', tagName: 'video' };
-                        },
-                    },
-                },
-            }
-        }
-    ],
+  el: document.querySelector('#editor')!,
+  previewStyle: 'vertical',
+  height: '100vh',
+  initialEditType: 'wysiwyg',
+  useCommandShortcut: true,
+  extendedAutolinks: true,
+  frontMatter: true,
+  initialValue: content,
+  usageStatistics: false,
+  plugins: [
+    () => {
+      return {
+        toHTMLRenderers: {
+          htmlInline: {
+            video(node: any, { entering }: any) {
+              return entering
+                ? { type: 'openTag', tagName: 'video', attributes: node.attrs! }
+                : { type: 'closeTag', tagName: 'video' };
+            },
+          },
+        },
+      };
+    },
+  ],
 });
-

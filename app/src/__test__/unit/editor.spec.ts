@@ -183,7 +183,7 @@ describe('editor', () => {
         editor.setMarkdown('# heading');
 
         expect(mdEditor).toContainHTML(
-          `<div class="${CURSOR_LINE_CLS}"><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div>`
+          `<div class="${CURSOR_LINE_CLS}"><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div>`,
         );
         expect(getPreviewHTML()).toBe('<h1>heading</h1>');
       });
@@ -192,7 +192,7 @@ describe('editor', () => {
         editor.setMarkdown('# heading\r\nCRLF');
 
         expect(mdEditor).toContainHTML(
-          `<div><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div><div class="${CURSOR_LINE_CLS}">CRLF</div>`
+          `<div><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div><div class="${CURSOR_LINE_CLS}">CRLF</div>`,
         );
         expect(getPreviewHTML()).toBe('<h1>heading</h1><p>CRLF</p>');
       });
@@ -203,7 +203,7 @@ describe('editor', () => {
         editor.setHTML('<h1>heading</h1>');
 
         expect(mdEditor).toContainHTML(
-          `<div class="${CURSOR_LINE_CLS}"><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div>`
+          `<div class="${CURSOR_LINE_CLS}"><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div>`,
         );
         expect(getPreviewHTML()).toBe('<h1>heading</h1>');
       });
@@ -217,7 +217,7 @@ describe('editor', () => {
 
       it('should parse the br tag with the paragraph block to separate between blocks in wysiwyg', () => {
         editor.setHTML(
-          '<h1>test title</h1><p><strong>test bold</strong><br><em>test italic</em><br>normal text</p>'
+          '<h1>test title</h1><p><strong>test bold</strong><br><em>test italic</em><br>normal text</p>',
         );
         editor.changeMode('wysiwyg');
 
@@ -274,7 +274,7 @@ describe('editor', () => {
       editor.reset();
 
       expect(mdEditor).not.toContainHTML(
-        `<div><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div>`
+        `<div><span class="${HEADING_CLS}"><span class="${DELIM_CLS}">#</span> heading</span></div>`,
       );
       expect(getPreviewHTML()).toBe('');
     });
@@ -509,7 +509,7 @@ describe('editor', () => {
         editor.replaceSelection('text\r\nCRLF');
 
         expect(mdEditor).toContainHTML(
-          `<div>ltext</div><div class="${CURSOR_LINE_CLS}">CRLFe2</div>`
+          `<div>ltext</div><div class="${CURSOR_LINE_CLS}">CRLFe2</div>`,
         );
         expect(getPreviewHTML()).toBe('<p>ltext<br>CRLFe2</p>');
       });
@@ -687,7 +687,7 @@ describe('editor', () => {
 
         expect(plugin).toHaveBeenCalledWith(
           expect.objectContaining({ eventEmitter }),
-          expect.objectContaining(options)
+          expect.objectContaining(options),
         );
       });
 
@@ -1000,11 +1000,9 @@ describe('editor', () => {
       function mockDefaultImageBlobHook() {
         defaultImageBlobHookSpy.mockReset();
 
-        vi
-          .spyOn(imageHelper, 'addDefaultImageBlobHook')
-          .mockImplementation((emitter: Emitter) => {
-            emitter.listen('addImageBlobHook', defaultImageBlobHookSpy);
-          });
+        vi.spyOn(imageHelper, 'addDefaultImageBlobHook').mockImplementation((emitter: Emitter) => {
+          emitter.listen('addImageBlobHook', defaultImageBlobHookSpy);
+        });
       }
 
       it('should remove default `addImageBlobHook` event handler after registering hook', () => {

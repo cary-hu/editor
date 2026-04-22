@@ -23,6 +23,6 @@ const queryMap: Record<string, QueryFn> = {
 
 export function buildQuery(editor: Editor) {
   editor.eventEmitter.listen('query', (query: string, payload?: Record<string, any>) =>
-    queryMap[query](editor, payload)
+    queryMap[query](editor, payload),
   );
 }

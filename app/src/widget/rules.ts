@@ -96,7 +96,7 @@ export function createNodesWithWidget(text: string, schema: Schema, ruleIndex = 
       const info = `widget${ruleIndex}`;
 
       nodes.push(
-        schema.nodes.widget.create({ info }, schema.text(createWidgetContent(info, literal)))
+        schema.nodes.widget.create({ info }, schema.text(createWidgetContent(info, literal))),
       );
       text = text.substring(literal.length);
     }

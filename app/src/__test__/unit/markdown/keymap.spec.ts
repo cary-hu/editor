@@ -1,12 +1,11 @@
 import { oneLineTrim, source, stripIndent } from 'common-tags';
-import { redo, undo } from 'prosemirror-history';
+import { undo } from 'prosemirror-history';
 import {
   chainCommands,
   deleteSelection,
   joinBackward,
   selectNodeBackward,
 } from 'prosemirror-commands';
-import * as keymaps from 'prosemirror-keymap';
 import { Sourcepos, ToastMark } from '@toast-ui/toastmark';
 import MarkdownEditor from '@/markdown/mdEditor';
 import MarkdownPreview from '@/markdown/mdPreview';
@@ -257,7 +256,8 @@ describe('extend block quote keymap', () => {
 
   it('should undo extend the block quote properly', () => {
     const input = '> block\nparagraph';
-    const result = '<blockquote data-block-quote-type=\"default\"><p>block<br>paragraph</p></blockquote>';
+    const result =
+      '<blockquote data-block-quote-type="default"><p>block<br>paragraph</p></blockquote>';
 
     mde.setMarkdown(input);
     mde.setSelection([1, 6], [1, 6]);
@@ -962,7 +962,6 @@ describe('move lines keymap', () => {
   });
 });
 
-/* eslint-disable no-irregular-whitespace */
 describe('keep indentation in code block', () => {
   it('should keep indentation in next new line', () => {
     const input = stripIndent`
@@ -1053,7 +1052,6 @@ describe('keep indentation in code block', () => {
     expect(getPreviewHTML()).toBe(result);
   });
 });
-/* eslint-enable no-irregular-whitespace */
 
 // @TODO: should move key event test case to e2e test
 describe('default keymap', () => {

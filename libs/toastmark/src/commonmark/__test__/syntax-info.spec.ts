@@ -47,25 +47,25 @@ describe('BlockQuoteType', () => {
     const root = parser.parse('> This is a block quote');
     const blockQuote = root.firstChild as BlockQuoteNode;
     expect(blockQuote.bqType).toBe('default');
-  })
+  });
   it('warning block quote', () => {
     const root = parser.parse('>type=warning\n> This is a warning block quote');
     const blockQuote = root.firstChild as BlockQuoteNode;
     expect(blockQuote.bqType).toBe('warning');
-  })
+  });
   it('danger block quote', () => {
     const root = parser.parse('>type=danger\n> This is a danger block quote');
     const blockQuote = root.firstChild as BlockQuoteNode;
     expect(blockQuote.bqType).toBe('danger');
-  })
+  });
   it('info block quote', () => {
     const root = parser.parse('>type=info\n> This is an info block quote');
     const blockQuote = root.firstChild as BlockQuoteNode;
     expect(blockQuote.bqType).toBe('info');
-  })
+  });
   it('success block quote', () => {
     const root = parser.parse('>type=success\n> This is a success block quote');
     const blockQuote = root.firstChild as BlockQuoteNode;
     expect(blockQuote.bqType).toBe('success');
-  })
-})
+  });
+});

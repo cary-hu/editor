@@ -150,7 +150,7 @@ export class ScrollSync {
         'editor',
         scrollTop,
         targetScrollTop,
-        curScrollTop
+        curScrollTop,
       );
       this.latestEditorScrollTop = scrollTop;
     }
@@ -191,7 +191,7 @@ export class ScrollSync {
         'preview',
         scrollTop,
         targetScrollTop,
-        curScrollTop
+        curScrollTop,
       );
       this.latestPreviewScrollTop = scrollTop;
     }
@@ -205,7 +205,7 @@ export class ScrollSync {
     from: ScrollFrom,
     scrollTop: number,
     targetScrollTop: number,
-    curScrollTop: number
+    curScrollTop: number,
   ) {
     const latestScrollTop =
       from === 'editor' ? this.latestEditorScrollTop : this.latestPreviewScrollTop;

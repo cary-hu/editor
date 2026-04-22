@@ -102,7 +102,7 @@ class MarkdownPreview {
 
   private initContentSection() {
     this.previewContent = createElementWith(
-      `<div class="${cls('contents')}"></div>`
+      `<div class="${cls('contents')}"></div>`,
     ) as HTMLElement;
 
     if (!this.isViewer) {
@@ -135,7 +135,7 @@ class MarkdownPreview {
       this.eventEmitter.emit(
         'scroll',
         'preview',
-        findAdjacentElementToScrollTop(event.target.scrollTop, this.previewContent)
+        findAdjacentElementToScrollTop(event.target.scrollTop, this.previewContent),
       );
     });
     this.eventEmitter.listen('changePreviewTabPreview', () => this.toggleActive(true));
@@ -199,7 +199,7 @@ class MarkdownPreview {
     const contentEl = this.previewContent;
     const newHtml = this.eventEmitter.emitReduce(
       'beforePreviewRender',
-      this.sanitizer(nodes.map((node) => this.renderer.render(node)).join(''))
+      this.sanitizer(nodes.map((node) => this.renderer.render(node)).join('')),
     );
 
     if (!removedNodeRange) {

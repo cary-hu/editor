@@ -59,24 +59,22 @@ export class ContextMenu extends Component<Props, State> {
               }
             };
 
-            menuItem.push(
-              html`
-                <li
-                  onClick=${handleClick}
-                  class="menu-item${disabled ? ' disabled' : ''}"
-                  aria-role="menuitem"
-                >
-                  <i class="${cls("icon")} ${icon}"></i>
-                  <span class="${className}">${label}</span>
-                </li>
-              `
-            );
+            menuItem.push(html`
+              <li
+                onClick=${handleClick}
+                class="menu-item${disabled ? ' disabled' : ''}"
+                aria-role="menuitem"
+              >
+                <i class="${cls('icon')} ${icon}"></i>
+                <span class="${className}">${label}</span>
+              </li>
+            `);
           });
 
           acc.push(
             html`<ul class="menu-group">
               ${menuItem}
-            </ul>`
+            </ul>`,
           );
           return acc;
         }, [] as VNode[])

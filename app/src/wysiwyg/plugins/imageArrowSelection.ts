@@ -97,13 +97,13 @@ export function imageArrowSelection() {
   return new Plugin({
     key: imageArrowSelectionKey,
     state: {
-      init() {
+      init(): ImageArrowSelectionState {
         return { pos: null };
       },
-      apply(tr, value) {
+      apply(tr, value: ImageArrowSelectionState): ImageArrowSelectionState {
         const meta = tr.getMeta(imageArrowSelectionKey);
 
-        if (meta !== undefined) {
+        if (typeof meta !== 'undefined') {
           return { pos: meta };
         }
 
@@ -111,7 +111,7 @@ export function imageArrowSelection() {
           return value;
         }
 
-        let pos: number = value.pos;
+        let { pos } = value;
 
         if (tr.docChanged) {
           pos = tr.mapping.map(pos, 1);
@@ -144,7 +144,7 @@ export function imageArrowSelection() {
           const targetPos = event.key === 'ArrowRight' ? explicitImagePos + 1 : explicitImagePos;
           const tr = setExplicitImageSelection(
             view.state.tr.setSelection(TextSelection.create(view.state.doc, targetPos)),
-            null
+            null,
           );
 
           view.dispatch(tr.scrollIntoView());

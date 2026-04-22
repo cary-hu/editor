@@ -1,6 +1,5 @@
 import { Plugin } from 'prosemirror-state';
 import { Node } from 'prosemirror-model';
-import { EditorView } from 'prosemirror-view';
 import { Emitter } from '@t/event';
 import i18n from '@/i18n/i18n';
 import { cls } from '@/utils/dom';
@@ -21,8 +20,6 @@ interface ImageEditPanelState {
 }
 
 class ImageEditPanelView extends EditPanel {
-
-
   private state: ImageEditPanelState = {
     isVisible: false,
     imageElement: null,
@@ -31,10 +28,6 @@ class ImageEditPanelView extends EditPanel {
     imagePos: null,
     tempChanges: {},
   };
-
-  constructor(view: EditorView, eventEmitter: Emitter) {
-    super(view, eventEmitter);
-  }
 
   private init() {
     // Listen for clicks on the document
@@ -46,33 +39,35 @@ class ImageEditPanelView extends EditPanel {
 
   private handleDocumentClick = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    
+
     // Check if we're currently showing the image edit panel
     if (!this.state.isVisible) {
       return;
     }
-    
+
     // Check if the click is on the image editing dialog itself
     const isImageDialog = !!target.closest(`.${cls('image-edit-dialog')}`);
+
     if (isImageDialog) {
       return; // Don't close if clicking within the dialog
     }
-    
+
     // Check if the click is on the currently edited image
     const clickedImage = target.closest('img');
+
     if (clickedImage && clickedImage === this.state.imageElement) {
       return; // Don't close if clicking on the same image
     }
-    
+
     // Check if the click is on a different image
     if (clickedImage) {
       // Let the image click handler deal with switching to the new image
       return;
     }
-    
+
     // For any other click (including on table elements, text, etc.), close the panel
     this.hide();
-  }
+  };
 
   protected preparePanel(): void {
     this.handleImageClick = this.handleImageClick.bind(this);
@@ -106,6 +101,7 @@ class ImageEditPanelView extends EditPanel {
 
     // Find the image node in the ProseMirror document
     const pos = this.view.posAtDOM(imageElement, 0);
+
     if (pos === null) {
       return;
     }
@@ -115,22 +111,22 @@ class ImageEditPanelView extends EditPanel {
     if (node && node.type.name === 'image' && node.attrs) {
       this.showPanel(imageElement, node, pos);
     }
-  }
+  };
 
   private isImageOrPanelElement(element: HTMLElement): boolean {
     const isImageElement = !!element.closest('img');
     const isImageDialog = !!element.closest(`.${cls('image-edit-dialog')}`);
-    
+
     // If it's an image dialog, always return true
     if (isImageDialog) {
       return true;
     }
-    
+
     // If it's an image element, return true
     if (isImageElement) {
       return true;
     }
-    
+
     // Don't consider table elements as related to image editing
     // The image editing panel should close when clicking elsewhere,
     // even if the image is inside a table
@@ -140,11 +136,11 @@ class ImageEditPanelView extends EditPanel {
   private showPanel(imageElement: HTMLElement, imageNode: any, imagePos: number) {
     // Hide existing dialog if any
     this.hide();
-    
+
     // Always set this panel as active to close other edit panels (including table edit panel)
     // When user clicks on an image, they want to edit the image, so other panels should close
     this.setAsActivePanel();
-    
+
     this.state.imageElement = imageElement;
     this.state.imageNode = imageNode;
     this.state.imagePos = imagePos;
@@ -228,7 +224,7 @@ class ImageEditPanelView extends EditPanel {
     const editorRelativeTop = Math.max(0, editorRect.top - containerRect.top);
     const editorRelativeBottom = Math.min(
       containerRect.height,
-      editorRect.bottom - containerRect.top
+      editorRect.bottom - containerRect.top,
     );
     const visibleImageTop = Math.max(imageRelativeTop, editorRelativeTop);
     const visibleImageBottom = Math.min(imageRelativeTop + imageRect.height, editorRelativeBottom);
@@ -297,7 +293,8 @@ class ImageEditPanelView extends EditPanel {
       caption = '',
     } = this.state.imageNode.attrs;
 
-    const currentWidth = this.state.tempChanges.width ?? width ?? this.state.imageElement?.clientWidth ?? '';
+    const currentWidth =
+      this.state.tempChanges.width ?? width ?? this.state.imageElement?.clientWidth ?? '';
     const currentVerticalAlign = this.state.tempChanges.verticalAlign ?? verticalAlign;
     const currentAltText = this.state.tempChanges.altText ?? altText ?? '';
     const currentCaption = this.state.tempChanges.caption ?? caption ?? '';
@@ -305,16 +302,17 @@ class ImageEditPanelView extends EditPanel {
     dialog.innerHTML = `
       <div class="dialog-section">
         <label class="dialog-label">${i18n.get('Image size')}</label>
-        <div class="current-value">${i18n.get('Current value')}: ${currentWidth || i18n.get('Not set')
-      }</div>
+        <div class="current-value">${i18n.get('Current value')}: ${
+          currentWidth || i18n.get('Not set')
+        }</div>
         <div class="size-controls">
           <input type="number" class="size-input" id="width-input" value="${currentWidth}" placeholder="${i18n.get(
-        'Enter width'
-      )}" min="1">
+            'Enter width',
+          )}" min="1">
           <span class="size-unit">px</span>
           <button type="button" class="clear-btn" id="clear-width" title="${i18n.get(
-        'Clear width'
-      )}">${i18n.get('Clear')}</button>
+            'Clear width',
+          )}">${i18n.get('Clear')}</button>
         </div>
         <div class="preset-sizes">
           <button type="button" class="preset-btn" data-size="150">150px</button>
@@ -327,46 +325,52 @@ class ImageEditPanelView extends EditPanel {
       <div class="dialog-section">
         <label class="dialog-label">${i18n.get('Vertical align')}</label>
         <div class="current-value">${i18n.get('Current value')}: ${this.getVerticalAlignDisplayName(
-        currentVerticalAlign
-      )}</div>
+          currentVerticalAlign,
+        )}</div>
         <div class="vertical-align-controls">
-          <button type="button" class="align-btn ${currentVerticalAlign === 'top' ? 'active' : ''
-      }" data-align="top" title="${i18n.get('Top align')}">Top</button>
-          <button type="button" class="align-btn ${currentVerticalAlign === 'middle' ? 'active' : ''
-      }" data-align="middle" title="${i18n.get('Middle align')}">Middle</button>
-          <button type="button" class="align-btn ${currentVerticalAlign === 'bottom' ? 'active' : ''
-      }" data-align="bottom" title="${i18n.get('Bottom align')}">Bottom</button>
-          <button type="button" class="align-btn ${currentVerticalAlign === 'baseline' ? 'active' : ''
-      }" data-align="baseline" title="${i18n.get('Baseline align')}">Baseline</button>
+          <button type="button" class="align-btn ${
+            currentVerticalAlign === 'top' ? 'active' : ''
+          }" data-align="top" title="${i18n.get('Top align')}">Top</button>
+          <button type="button" class="align-btn ${
+            currentVerticalAlign === 'middle' ? 'active' : ''
+          }" data-align="middle" title="${i18n.get('Middle align')}">Middle</button>
+          <button type="button" class="align-btn ${
+            currentVerticalAlign === 'bottom' ? 'active' : ''
+          }" data-align="bottom" title="${i18n.get('Bottom align')}">Bottom</button>
+          <button type="button" class="align-btn ${
+            currentVerticalAlign === 'baseline' ? 'active' : ''
+          }" data-align="baseline" title="${i18n.get('Baseline align')}">Baseline</button>
           <button type="button" class="clear-btn" id="clear-align" title="${i18n.get(
-        'Clear align'
-      )}">${i18n.get('Clear')}</button>
+            'Clear align',
+          )}">${i18n.get('Clear')}</button>
         </div>
       </div>
       <div class="dialog-section">
         <label class="dialog-label">${i18n.get('Alt Text')}</label>
-        <div class="current-value">${i18n.get('Current value')}: ${currentAltText || i18n.get('Not set')
-      }</div>
+        <div class="current-value">${i18n.get('Current value')}: ${
+          currentAltText || i18n.get('Not set')
+        }</div>
         <input type="text" class="alt-input" id="alt-input" value="${currentAltText}" placeholder="${i18n.get(
-        'Describe this image'
-      )}...">
+          'Describe this image',
+        )}...">
       </div>
 
       <div class="dialog-section">
         <label class="dialog-label">${i18n.get('Caption')}</label>
-        <div class="current-value">${i18n.get('Current value')}: ${currentCaption || i18n.get('Not set')
-      }</div>
+        <div class="current-value">${i18n.get('Current value')}: ${
+          currentCaption || i18n.get('Not set')
+        }</div>
         <input type="text" class="caption-input" id="caption-input" value="${currentCaption}" placeholder="${i18n.get(
-        'Image caption text'
-      )}...">
+          'Image caption text',
+        )}...">
       </div>
 
       <div class="dialog-actions">
         <button type="button" class="save-btn" id="save-changes">${i18n.get('Save')}</button>
         <button type="button" class="reset-btn" id="reset-changes">${i18n.get('Reset')}</button>
         <button type="button" class="delete-btn" id="delete-image" title="${i18n.get(
-        'Delete image'
-      )}">${i18n.get('Delete image')}</button>
+          'Delete image',
+        )}">${i18n.get('Delete image')}</button>
       </div>
     `;
 
@@ -555,6 +559,7 @@ class ImageEditPanelView extends EditPanel {
 
       return `${baseUrl}?${newQueryString}`;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error updating image URL query params:', error);
       return originalUrl;
     }
@@ -621,7 +626,6 @@ class ImageEditPanelView extends EditPanel {
   }
 
   destroy() {
-
     document.removeEventListener('click', this.handleDocumentClick);
     this.view.dom.removeEventListener('click', this.handleImageClick, true);
 

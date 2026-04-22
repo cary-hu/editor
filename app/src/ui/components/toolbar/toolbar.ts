@@ -171,7 +171,7 @@ export class Toolbar extends Component<Props, State> {
     if (el) {
       const { offsetLeft, offsetTop } = getTotalOffset(
         el,
-        closest(el, `.${cls('toolbar')}`) as HTMLElement
+        closest(el, `.${cls('toolbar')}`) as HTMLElement,
       );
       const info = createPopupInfo(popupName, {
         el,
@@ -202,7 +202,7 @@ export class Toolbar extends Component<Props, State> {
     itemIndex: number,
     items: ToolbarGroupInfo[],
     group: ToolbarGroupInfo,
-    dropdownGroup: ToolbarGroupInfo
+    dropdownGroup: ToolbarGroupInfo,
   ) {
     const moveItem = (targetGroup: ToolbarGroupInfo) => {
       const item = targetGroup.pop();
@@ -338,7 +338,7 @@ export class Toolbar extends Component<Props, State> {
                 setItemWidth=${this.setItemWidth}
                 ...${props}
               />
-            `
+            `,
           )}
           <${DropdownToolbarButton}
             item=${createToolbarItemInfo('more')}

@@ -3,7 +3,7 @@ import { MdNode, MdNodeType } from './node';
 export type HTMLConvertor = (
   node: MdNode,
   context: Context,
-  convertors?: HTMLConvertorMap
+  convertors?: HTMLConvertorMap,
 ) => HTMLToken | HTMLToken[] | null;
 
 export type HTMLConvertorMap = Partial<Record<MdNodeType | string, HTMLConvertor>>;

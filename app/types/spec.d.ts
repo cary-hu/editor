@@ -34,7 +34,7 @@ export type EditorAllCommandMap<T = DefaultPayload> = Record<string, EditorComma
 export interface SpecManager {
   commands(
     view: EditorView,
-    addedCommands?: Record<string, EditorCommand>
+    addedCommands?: Record<string, EditorCommand>,
   ): EditorAllCommandMap<DefaultPayload>;
 
   keymaps(useCommandShortcut: boolean): Plugin<any, any>[];

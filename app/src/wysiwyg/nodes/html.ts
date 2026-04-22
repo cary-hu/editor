@@ -47,7 +47,7 @@ export function sanitizeDOM(
   node: ProsemirrorNode | ProsemirrorMark,
   typeName: string,
   sanitizer: Sanitizer,
-  wwToDOMAdaptor: ToDOMAdaptor
+  wwToDOMAdaptor: ToDOMAdaptor,
 ) {
   let dom = wwToDOMAdaptor.getToDOMNode(typeName)!(node) as HTMLElement;
   const html = sanitizer(dom.outerHTML);
@@ -97,7 +97,11 @@ const schemaFactory = {
     };
   },
   // For inline atom nodes like source/track - they are inline but don't wrap text
-  htmlInlineNode(typeName: string, sanitizeHTML: Sanitizer, wwToDOMAdaptor: ToDOMAdaptor): NodeSpec {
+  htmlInlineNode(
+    typeName: string,
+    sanitizeHTML: Sanitizer,
+    wwToDOMAdaptor: ToDOMAdaptor,
+  ): NodeSpec {
     return {
       inline: true,
       atom: true,
@@ -157,7 +161,7 @@ export function isInlineAtomTag(tagName: string): boolean {
 export function createHTMLSchemaMap(
   convertorMap: CustomHTMLRenderer,
   sanitizeHTML: Sanitizer,
-  wwToDOMAdaptor: ToDOMAdaptor
+  wwToDOMAdaptor: ToDOMAdaptor,
 ): HTMLSchemaMap {
   const htmlSchemaMap: HTMLSchemaMap = { nodes: {}, marks: {} };
 
@@ -173,7 +177,11 @@ export function createHTMLSchemaMap(
         } else if (isInlineAtomTag(type)) {
           // Inline atom tags (source, track, etc.) -> nodes (not marks)
           // These are inline and don't wrap text content
-          htmlSchemaMap.nodes[type] = schemaFactory.htmlInlineNode(type, sanitizeHTML, wwToDOMAdaptor);
+          htmlSchemaMap.nodes[type] = schemaFactory.htmlInlineNode(
+            type,
+            sanitizeHTML,
+            wwToDOMAdaptor,
+          );
         } else {
           // Regular inline HTML elements -> marks
           htmlSchemaMap.marks[type] = schemaFactory.htmlInline(type, sanitizeHTML, wwToDOMAdaptor);
