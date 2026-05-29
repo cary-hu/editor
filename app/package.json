@@ -18,12 +18,17 @@
   "module": "dist/esm/",
   "exports": {
     ".": {
+      "types": "./types/index.d.ts",
       "import": "./dist/esm/index.js",
       "require": "./dist/toastui-editor.js"
     },
     "./viewer": {
+      "types": "./types/viewer.d.ts",
       "import": "./dist/esm/indexViewer.js",
       "require": "./dist/toastui-editor-viewer.js"
+    },
+    "./types/*": {
+      "types": "./types/*.d.ts"
     },
     "./dist/i18n/*": {
       "import": "./dist/esm/i18n/*.js",

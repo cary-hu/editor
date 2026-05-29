@@ -1,7 +1,6 @@
 import { Schema } from 'prosemirror-model';
-import { Transaction, Plugin } from 'prosemirror-state';
+import { Command, Transaction, Plugin } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
-import { Command } from 'prosemirror-commands';
 import { ToastMark } from './toastmark';
 import { Emitter } from './event';
 
@@ -37,7 +36,7 @@ export interface SpecManager {
     addedCommands?: Record<string, EditorCommand>,
   ): EditorAllCommandMap<DefaultPayload>;
 
-  keymaps(useCommandShortcut: boolean): Plugin<any, any>[];
+  keymaps(useCommandShortcut: boolean): Plugin<any>[];
 
   setContext(context: SpecContext): void;
 }

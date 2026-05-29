@@ -765,6 +765,10 @@ export class Table extends NodeSchema {
           }
         }
       }
+      if (!view) {
+        return false;
+      }
+
       dispatch!(tr);
       setCellSelection(view, selection, map.tableStartOffset, selectionInfo);
 

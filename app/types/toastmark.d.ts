@@ -1,3 +1,9 @@
+import { Node, ResolvedPos } from 'prosemirror-model';
+import { Selection } from 'prosemirror-state';
+
+import { PluginCommandMap, PluginInfo } from './plugin';
+import { PluginContext } from './editor';
+
 // @TODO replace these definition for Definitely Type
 export type BlockNodeType =
   | 'document'
