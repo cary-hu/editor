@@ -132,6 +132,22 @@ const details: BlockHandler = {
   acceptsLines: false,
 };
 
+const tabbedCode: BlockHandler = {
+  continue(parser) {
+    if (!parser.indented && parser.currentLine.slice(parser.nextNonspace).match(/^:::\s*$/)) {
+      parser.advanceOffset(parser.currentLine.length - parser.offset, false);
+      return Process.Stop;
+    }
+
+    return Process.Go;
+  },
+  finalize() {},
+  canContain(t) {
+    return t === 'codeBlock';
+  },
+  acceptsLines: false,
+};
+
 const item: BlockHandler = {
   continue(parser, container: ListNode) {
     if (parser.blank) {
@@ -293,6 +309,7 @@ export const blockHandlers = {
   list,
   blockQuote,
   details,
+  tabbedCode,
   item,
   heading,
   thematicBreak,

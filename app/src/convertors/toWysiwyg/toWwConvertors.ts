@@ -88,8 +88,11 @@ const toWwConvertors: ToWwConvertorMap = {
   codeBlock(state, node, customAttrs) {
     const { codeBlock } = state.schema.nodes;
     const { info, literal } = node as CodeBlockMdNode;
+    const infoMatch = (info || '').match(/^(\S+)(?:\s+\[(.+)\])?$/);
+    const language = infoMatch ? infoMatch[1] : info;
+    const label = infoMatch?.[2] || null;
 
-    state.openNode(codeBlock, { language: info, ...customAttrs });
+    state.openNode(codeBlock, { language, label, ...customAttrs });
     state.addText(getTextWithoutTrailingNewline(literal || ''));
     state.closeNode();
   },
@@ -153,6 +156,14 @@ const toWwConvertors: ToWwConvertorMap = {
       state.openNode(state.schema.nodes.detailsBody, null);
     } else {
       state.closeNode();
+      state.closeNode();
+    }
+  },
+
+  tabbedCode(state, _, { entering }, customAttrs) {
+    if (entering) {
+      state.openNode(state.schema.nodes.tabbedCode, customAttrs);
+    } else {
       state.closeNode();
     }
   },
@@ -446,7 +457,7 @@ export function createWwConvertors(customConvertors: HTMLConvertorMap) {
   customConvertorTypes.forEach((type) => {
     const wwConvertor = toWwConvertors[type];
 
-    if (wwConvertor && !includes(['htmlBlock', 'htmlInline'], type)) {
+    if (wwConvertor && !includes(['htmlBlock', 'htmlInline', 'tabbedCode'], type)) {
       convertors[type] = (state, node, context) => {
         context.origin = () => orgConvertors[type]!(node, context, orgConvertors);
         const tokens = customConvertors[type]!(node, context) as OpenTagToken;

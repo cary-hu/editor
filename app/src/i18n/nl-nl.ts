@@ -24,6 +24,7 @@ Editor.setLanguage(['nl', 'nl-NL'], {
   Outdent: 'Niveau verlagen',
   'Insert link': 'Link invoegen',
   'Insert CodeBlock': 'Codeblok toevoegen',
+  'Insert CodeGroup': 'Codegroep toevoegen',
   'Insert table': 'Tabel invoegen',
   'Insert image': 'Afbeelding invoegen',
   Heading: 'Kop',

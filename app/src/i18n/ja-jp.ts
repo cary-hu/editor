@@ -30,6 +30,7 @@ Editor.setLanguage(['ja', 'ja-JP'], {
   Outdent: 'アウトデント',
   'Insert link': 'リンク挿入',
   'Insert CodeBlock': 'コードブロック挿入',
+  'Insert CodeGroup': 'コードグループ挿入',
   'Insert table': 'テーブル挿入',
   'Insert image': '画像挿入',
   Heading: '見出し',

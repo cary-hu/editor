@@ -3,6 +3,7 @@ import {
   BlockNodeType,
   BlockQuoteMdNode,
   DetailsMdNode,
+  TabbedCodeMdNode,
   CodeBlockMdNode,
   CodeMdNode,
   CustomBlockMdNode,
@@ -27,6 +28,7 @@ export function isContainer(node: Node) {
     case 'document':
     case 'blockQuote':
     case 'details':
+    case 'tabbedCode':
     case 'list':
     case 'item':
     case 'paragraph':
@@ -203,6 +205,8 @@ export class DetailsNode extends BlockNode implements DetailsMdNode {
   summary: string | null = null;
 }
 
+export class TabbedCodeNode extends BlockNode implements TabbedCodeMdNode {}
+
 export class ListNode extends BlockNode implements ListMdNode {
   listData: ListData | null = null;
 }
@@ -311,6 +315,8 @@ export function createNode(type: MdNodeType, sourcepos?: Sourcepos) {
       return new BlockQuoteNode(type, sourcepos);
     case 'details':
       return new DetailsNode(type, sourcepos);
+    case 'tabbedCode':
+      return new TabbedCodeNode(type, sourcepos);
     case 'document':
     case 'paragraph':
     case 'thematicBreak':

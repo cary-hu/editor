@@ -133,6 +133,7 @@ interface ToolbarStateMap {
   details: ToolbarItemState;
   code: ToolbarItemState;
   codeBlock: ToolbarItemState;
+  tabbedCode: ToolbarItemState;
   indent: ToolbarItemState;
   outdent: ToolbarItemState;
 }

@@ -30,6 +30,7 @@ Editor.setLanguage('zh-CN', {
   Outdent: '减少缩进',
   'Insert link': '插入链接',
   'Insert CodeBlock': '插入代码块',
+  'Insert CodeGroup': '插入代码组',
   'Insert table': '插入表格',
   'Insert image': '插入图片',
   Heading: '标题',

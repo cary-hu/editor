@@ -85,3 +85,19 @@ describe('BlockQuoteType', () => {
     expect(details.summary).toBe('Summary');
   });
 });
+
+describe('TabbedCodeNode', () => {
+  it('parses code-group container with labeled code blocks', () => {
+    const root = parser.parse(
+      '::: code-group\n\n```js [config.js]\nconst config = {}\n```\n\n```ts [config.ts]\nconst config = {}\n```\n\n:::',
+    );
+    const tabbedCode = root.firstChild!;
+    const firstCode = tabbedCode.firstChild as CodeBlockNode;
+    const secondCode = tabbedCode.lastChild as CodeBlockNode;
+
+    expect(tabbedCode.type).toBe('tabbedCode');
+    expect(firstCode.type).toBe('codeBlock');
+    expect(firstCode.info).toBe('js [config.js]');
+    expect(secondCode.info).toBe('ts [config.ts]');
+  });
+});

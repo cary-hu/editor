@@ -30,6 +30,7 @@ Editor.setLanguage(['ko', 'ko-KR'], {
   Outdent: '내어쓰기',
   'Insert link': '링크 삽입',
   'Insert CodeBlock': '코드블럭 삽입',
+  'Insert CodeGroup': '코드 그룹 삽입',
   'Insert table': '표 삽입',
   'Insert image': '이미지 삽입',
   Heading: '제목',

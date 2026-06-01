@@ -1022,4 +1022,21 @@ describe('wysiwyg commands', () => {
       `);
     });
   });
+
+  describe('tabbedCode command', () => {
+    it('should add empty tabbed code group', () => {
+      cmd.exec('tabbedCode');
+      const wrapper = document.createElement('div');
+
+      wrapper.innerHTML = wwe.getHTML();
+      const panels = wrapper.querySelector('.toastui-editor-code-group-panels');
+
+      expect(wwe.getHTML()).toContain('class="toastui-editor-code-group"');
+      expect(wwe.getHTML()).toContain('JavaScript');
+      expect(wwe.getHTML()).toContain('TypeScript');
+      expect(wwe.getHTML()).toContain('data-language="js"');
+      expect(wwe.getHTML()).toContain('data-language="ts"');
+      expect(panels?.getAttribute('data-active-index')).toBe('0');
+    });
+  });
 });

@@ -25,6 +25,7 @@ import { CodeBlockView } from './nodeview/codeBlockView';
 import { BlockQuoteView } from './nodeview/blockQuoteView';
 import { DetailsView } from './nodeview/detailsView';
 import { SummaryView } from './nodeview/summaryView';
+import { TabbedCodeView } from './nodeview/tabbedCodeView';
 
 import { changePastedHTML, changePastedSlice } from './clipboard/paste';
 import { pasteToTable } from './clipboard/pasteToTable';
@@ -186,6 +187,9 @@ export default class WysiwygEditor extends EditorBase {
         },
         details(node, view, getPos) {
           return new DetailsView(node, view, getPos as (() => number) | boolean, eventEmitter);
+        },
+        tabbedCode(node, view, getPos) {
+          return new TabbedCodeView(node, view, getPos as (() => number) | boolean);
         },
         summary(node, view, getPos) {
           return new SummaryView(node, view, getPos as (() => number) | boolean);

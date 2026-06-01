@@ -130,6 +130,16 @@ export const nodeTypeWriters: ToMdNodeTypeWriterMap = {
     state.closeBlock(node);
   },
 
+  tabbedCode(state, { node }, { delim }) {
+    const [openDelim, closeDelim] = delim as string[];
+
+    state.write(`${openDelim}\n\n`);
+    state.convertNode(node);
+    state.ensureNewLine();
+    state.write(closeDelim);
+    state.closeBlock(node);
+  },
+
   blockQuote(state, { node, parent }, { delim, firstDelim }) {
     if (parent?.type.name === node.type.name) {
       state.flushClose(1);

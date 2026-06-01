@@ -24,6 +24,7 @@ Editor.setLanguage(['nb', 'nb-NO'], {
   Outdent: 'Outdent',
   'Insert link': 'Sett inn lenke',
   'Insert CodeBlock': 'Sett inn CodeStreng',
+  'Insert CodeGroup': 'Sett inn kodegruppe',
   'Insert table': 'Sett inn diagram',
   'Insert image': 'Sett inn bilde',
   Heading: 'Overskrift',

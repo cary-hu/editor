@@ -24,6 +24,7 @@ Editor.setLanguage(['sv', 'sv-SE'], {
   Outdent: 'Minska indrag',
   'Insert link': 'Infoga länk',
   'Insert CodeBlock': 'Infoga kodblock',
+  'Insert CodeGroup': 'Infoga kodgrupp',
   'Insert table': 'Infoga tabell',
   'Insert image': 'Infoga bild',
   Heading: 'Överskrift',

@@ -17,6 +17,7 @@ export type WwNodeType =
   | 'tableBodyCell'
   | 'blockQuote'
   | 'details'
+  | 'tabbedCode'
   | 'summary'
   | 'detailsBody'
   | 'thematicBreak'

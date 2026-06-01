@@ -10,6 +10,7 @@ import { OrderedList } from './nodes/orderedList';
 import { ListItem } from './nodes/listItem';
 import { BlockQuote } from './nodes/blockQuote';
 import { Details } from './nodes/details';
+import { TabbedCode } from './nodes/tabbedCode';
 import { DetailsBody } from './nodes/detailsBody';
 import { Summary } from './nodes/summary';
 import { Table } from './nodes/table';
@@ -44,6 +45,7 @@ export function createSpecs(linkAttributes: LinkAttributes) {
     new ListItem(),
     new BlockQuote(),
     new Details(),
+    new TabbedCode(),
     new Summary(),
     new DetailsBody(),
     new Table(),

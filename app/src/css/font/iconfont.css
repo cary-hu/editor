@@ -162,3 +162,7 @@
 .toastui-editor-icon.details:before {
   content: "\e023";
 }
+
+.toastui-editor-icon.tabs:before {
+  content: "\e024";
+}

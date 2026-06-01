@@ -8,6 +8,7 @@ import {
   BlockNode,
   BlockQuoteNode,
   DetailsNode,
+  TabbedCodeNode,
 } from './node';
 import { OPENTAG, CLOSETAG } from './rawHtml';
 import {
@@ -35,6 +36,7 @@ export interface BlockStart {
 }
 
 const reCodeFence = /^`{3,}(?!.*`)|^~{3,}/;
+const reTabbedCodeOpen = /^:::\s+code-group\s*$/;
 const reHtmlBlockOpen = [
   /./, // dummy for 0
   /^<(?:script|pre|style)(?:\s|>|$)/i,
@@ -205,6 +207,22 @@ const details: BlockStart = (parser) => {
   return Matched.None;
 };
 
+const tabbedCode: BlockStart = (parser, container) => {
+  if (
+    container.type !== 'paragraph' &&
+    !parser.indented &&
+    parser.currentLine.slice(parser.nextNonspace).match(reTabbedCodeOpen)
+  ) {
+    parser.closeUnmatchedBlocks();
+    parser.addChild('tabbedCode', parser.nextNonspace) as TabbedCodeNode;
+    parser.advanceOffset(parser.currentLine.length - parser.offset, false);
+
+    return Matched.Container;
+  }
+
+  return Matched.None;
+};
+
 const atxHeading: BlockStart = (parser, container) => {
   let match;
   if (
@@ -367,6 +385,7 @@ const indentedCodeBlock: BlockStart = (parser) => {
 };
 
 export const blockStarts = [
+  tabbedCode,
   details,
   blockQuote,
   atxHeading,

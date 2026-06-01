@@ -67,50 +67,32 @@
 }
 
 .toastui-editor-md-code {
-  background-color: var(--toastui-editor-secondary-bg-color);
-  border-top: 1px solid var(--toastui-editor-border-color);
-  border-bottom: 1px solid var(--toastui-editor-border-color);
   padding: 2px 0;
   letter-spacing: -0.3px;
 }
 
 .toastui-editor-md-code.toastui-editor-md-start {
-  border-left: 1px solid var(--toastui-editor-border-color);
   padding-left: 2px;
-  border-top-left-radius: var(--toastui-editor-border-radius);
-  border-bottom-left-radius: var(--toastui-editor-border-radius);
 }
 
 .toastui-editor-md-code.toastui-editor-md-end {
-  border-right: 1px solid var(--toastui-editor-border-color);
   padding-right: 2px;
-  border-top-right-radius: var(--toastui-editor-border-radius);
-  border-bottom-right-radius: var(--toastui-editor-border-radius);
 }
 
 .toastui-editor-md-custom-block-line-background,
 .toastui-editor-md-code-block-line-background {
-  background-color: var(--toastui-editor-secondary-bg-color);
-  border-right: 1px solid var(--toastui-editor-border-color);
-  border-left: 1px solid var(--toastui-editor-border-color);
   padding: 0 1rem;
 }
 
 .toastui-editor-md-code-block-line-background.end,
 .toastui-editor-md-custom-block-line-background.end,
 .toastui-editor-md-custom-code-block-line-background.end {
-  border-bottom: 1px solid var(--toastui-editor-border-color);
-  border-bottom-left-radius: var(--toastui-editor-border-radius);
-  border-bottom-right-radius: var(--toastui-editor-border-radius);
   padding: .75rem 1rem;
   padding-top: 0;
 }
 
 .toastui-editor-md-code-block-line-background.start,
 .toastui-editor-md-custom-block-line-background.start {
-  border-top: 1px solid var(--toastui-editor-border-color);
-  border-top-left-radius: var(--toastui-editor-border-radius);
-  border-top-right-radius: var(--toastui-editor-border-radius);
   padding: .75rem 1rem;
   padding-bottom: 0;
 }
@@ -121,7 +103,6 @@
 }
 
 .toastui-editor-md-custom-block-line-background {
-  background-color: var(--toastui-editor-secondary-bg-color);
   padding: 0 1rem;
 }
 

@@ -24,6 +24,7 @@ Editor.setLanguage(['hr', 'hr-HR'], {
   Outdent: 'Smanji uvlaku',
   'Insert link': 'Umetni link',
   'Insert CodeBlock': 'Umetni blok kôda',
+  'Insert CodeGroup': 'Umetni grupu kôda',
   'Insert table': 'Umetni tablicu',
   'Insert image': 'Umetni sliku',
   Heading: 'Naslov',

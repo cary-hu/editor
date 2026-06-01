@@ -23,6 +23,7 @@ import { Text } from './nodes/text';
 import { Heading } from './marks/heading';
 import { BlockQuote } from './marks/blockQuote';
 import { CodeBlock } from './marks/codeBlock';
+import { TabbedCode } from './marks/tabbedCode';
 import { Table } from './marks/table';
 import { ThematicBreak } from './marks/thematicBreak';
 import { ListItem } from './marks/listItem';
@@ -155,6 +156,7 @@ export default class MdEditor extends EditorBase {
       new Heading(),
       new BlockQuote(),
       new CodeBlock(),
+      new TabbedCode(),
       new CustomBlock(),
       new Table(),
       new TableCell(),

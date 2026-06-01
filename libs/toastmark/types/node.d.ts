@@ -3,6 +3,7 @@ export type BlockNodeType =
   | 'list'
   | 'blockQuote'
   | 'details'
+  | 'tabbedCode'
   | 'item'
   | 'heading'
   | 'thematicBreak'
@@ -102,6 +103,8 @@ export interface DetailsMdNode extends BlockMdNode {
   detailsOpen: boolean;
   summary: string | null;
 }
+
+export interface TabbedCodeMdNode extends BlockMdNode {}
 
 export interface ListMdNode extends BlockMdNode {
   listData: ListData | null;

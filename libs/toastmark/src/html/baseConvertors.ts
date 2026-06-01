@@ -177,6 +177,16 @@ export const baseConvertors: HTMLConvertorMap = {
     ];
   },
 
+  tabbedCode(_, { entering }) {
+    return {
+      type: entering ? 'openTag' : 'closeTag',
+      tagName: 'div',
+      classNames: ['toastui-editor-code-group'],
+      outerNewLine: true,
+      innerNewLine: true,
+    };
+  },
+
   list(node, { entering }) {
     const { type, start } = (node as ListNode).listData!;
     const tagName = type === 'bullet' ? 'ul' : 'ol';
@@ -232,14 +242,24 @@ export const baseConvertors: HTMLConvertorMap = {
   codeBlock(node) {
     const infoStr = (node as CodeBlockNode).info;
     const infoWords = infoStr ? infoStr.split(/\s+/) : [];
+    const labelMatch = infoStr?.match(/\[(.+)\]\s*$/);
     const codeClassNames = [];
     if (infoWords.length > 0 && infoWords[0].length > 0) {
       codeClassNames.push(`language-${escapeXml(infoWords[0])}`);
     }
 
     return [
-      { type: 'openTag', tagName: 'pre', outerNewLine: true },
-      { type: 'openTag', tagName: 'code', classNames: codeClassNames },
+      {
+        type: 'openTag',
+        tagName: 'pre',
+        outerNewLine: true,
+        attributes: labelMatch ? { 'data-code-label': escapeXml(labelMatch[1]) } : undefined,
+      },
+      {
+        type: 'openTag',
+        tagName: 'code',
+        classNames: codeClassNames,
+      },
       { type: 'text', content: node.literal! },
       { type: 'closeTag', tagName: 'code' },
       { type: 'closeTag', tagName: 'pre', outerNewLine: true },

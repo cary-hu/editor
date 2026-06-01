@@ -23,6 +23,46 @@ import { reHTMLTag } from '@/utils/constants';
 type TokenAttrs = Record<string, any>;
 
 const reCloseTag = /^\s*<\s*\//;
+const DEFAULT_TAB_LABEL = 'Code';
+
+function getCodeBlockInfo(info?: string | null) {
+  const infoWords = info ? info.split(/\s+/) : [];
+  const labelMatch = info?.match(/\[(.+)\]\s*$/);
+  const language = infoWords.length > 0 ? infoWords[0] : '';
+  const label = labelMatch?.[1] || '';
+
+  return { language, label };
+}
+
+function createCodeBlockTokens(node: CodeBlockMdNode, active = false): HTMLToken[] {
+  const { fenceLength, info } = node;
+  const { language, label } = getCodeBlockInfo(info);
+  const preClasses = [];
+  const codeAttrs: TokenAttrs = {};
+  const preAttrs: TokenAttrs = {};
+
+  if (label) {
+    preAttrs['data-code-label'] = label;
+  }
+  if (active) {
+    preClasses.push('active');
+  }
+  if (fenceLength > 3) {
+    codeAttrs['data-backticks'] = fenceLength;
+  }
+  if (language) {
+    preClasses.push(`lang-${language}`);
+    codeAttrs['data-language'] = language;
+  }
+
+  return [
+    { type: 'openTag', tagName: 'pre', classNames: preClasses, attributes: preAttrs },
+    { type: 'openTag', tagName: 'code', attributes: codeAttrs },
+    { type: 'text', content: node.literal! },
+    { type: 'closeTag', tagName: 'code' },
+    { type: 'closeTag', tagName: 'pre' },
+  ];
+}
 
 const baseConvertors: HTMLConvertorMap = {
   paragraph(_, { entering, origin, options }: Context) {
@@ -86,28 +126,66 @@ const baseConvertors: HTMLConvertorMap = {
   },
 
   codeBlock(node: MdNode) {
-    const { fenceLength, info } = node as CodeBlockMdNode;
-    const infoWords = info ? info.split(/\s+/) : [];
-    const preClasses = [];
-    const codeAttrs: TokenAttrs = {};
+    return createCodeBlockTokens(node as CodeBlockMdNode);
+  },
 
-    if (fenceLength > 3) {
-      codeAttrs['data-backticks'] = fenceLength;
-    }
-    if (infoWords.length > 0 && infoWords[0].length > 0) {
-      const [lang] = infoWords;
-
-      preClasses.push(`lang-${lang}`);
-      codeAttrs['data-language'] = lang;
+  tabbedCode(node: MdNode, { entering, skipChildren }: Context) {
+    if (!entering) {
+      return null;
     }
 
-    return [
-      { type: 'openTag', tagName: 'pre', classNames: preClasses },
-      { type: 'openTag', tagName: 'code', attributes: codeAttrs },
-      { type: 'text', content: node.literal! },
-      { type: 'closeTag', tagName: 'code' },
-      { type: 'closeTag', tagName: 'pre' },
+    skipChildren();
+
+    const tokens: HTMLToken[] = [
+      { type: 'openTag', tagName: 'div', classNames: ['toastui-editor-code-group'] },
+      {
+        type: 'openTag',
+        tagName: 'div',
+        classNames: ['toastui-editor-code-group-tabs'],
+        attributes: { role: 'tablist' },
+      },
     ];
+    const codeBlocks: CodeBlockMdNode[] = [];
+    let child = node.firstChild;
+
+    while (child) {
+      if (child.type === 'codeBlock') {
+        codeBlocks.push(child as CodeBlockMdNode);
+      }
+      child = child.next;
+    }
+
+    codeBlocks.forEach((childNode, index) => {
+      const { language, label } = getCodeBlockInfo(childNode.info);
+
+      tokens.push(
+        {
+          type: 'openTag',
+          tagName: 'span',
+          classNames: ['toastui-editor-code-group-tab', ...(index === 0 ? ['active'] : [])],
+          attributes: {
+            role: 'tab',
+            'aria-selected': String(index === 0),
+          },
+        },
+        { type: 'text', content: label || language || `${DEFAULT_TAB_LABEL} ${index + 1}` },
+        { type: 'closeTag', tagName: 'span' },
+      );
+    });
+
+    tokens.push(
+      { type: 'closeTag', tagName: 'div' },
+      { type: 'openTag', tagName: 'div', classNames: ['toastui-editor-code-group-panels'] },
+    );
+    codeBlocks.forEach((childNode, index) => {
+      tokens.push(...createCodeBlockTokens(childNode, index === 0));
+    });
+    tokens.push(
+      { type: 'closeTag', tagName: 'div' },
+      { type: 'closeTag', tagName: 'div' },
+    );
+
+    return tokens;
   },
 
   customInline(node: MdNode, { origin, entering, skipChildren }: Context) {

@@ -24,6 +24,7 @@ Editor.setLanguage(['tr', 'tr-TR'], {
   Outdent: 'Girintiyi azalt',
   'Insert link': 'Bağlantı ekle',
   'Insert CodeBlock': 'Kod bloku ekle',
+  'Insert CodeGroup': 'Kod grubu ekle',
   'Insert table': 'Tablo ekle',
   'Insert image': 'İmaj ekle',
   Heading: 'Başlık',

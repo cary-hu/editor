@@ -22,6 +22,8 @@ export type {
   CodeMdNode,
   CustomInlineMdNode,
   BlockQuoteMdNode,
+  DetailsMdNode,
+  TabbedCodeMdNode,
   Pos as MdPos,
   Sourcepos,
 } from '@t/node';

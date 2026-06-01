@@ -165,7 +165,13 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
   // Disable specific toolbar items when inside a table
   if (insideTable) {
     // Disable heading, table, hrline, and codeblock
-    const disableKeys: ToolbarStateKeys[] = ['heading', 'table', 'thematicBreak', 'codeBlock'];
+    const disableKeys: ToolbarStateKeys[] = [
+      'heading',
+      'table',
+      'thematicBreak',
+      'codeBlock',
+      'tabbedCode',
+    ];
 
     disableKeys.forEach((key) => {
       if (toolbarState[key]) {
@@ -179,7 +185,13 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
   // Disable specific toolbar items when inside a list
   if (insideList) {
     // Disable heading, table, and codeblock
-    const disableKeys: ToolbarStateKeys[] = ['heading', 'table', 'codeBlock', 'thematicBreak'];
+    const disableKeys: ToolbarStateKeys[] = [
+      'heading',
+      'table',
+      'codeBlock',
+      'thematicBreak',
+      'tabbedCode',
+    ];
 
     disableKeys.forEach((key) => {
       if (toolbarState[key]) {

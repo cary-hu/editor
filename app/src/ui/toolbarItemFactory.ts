@@ -193,6 +193,15 @@ function createDefaultToolbarItemInfo(type: string) {
         state: 'codeBlock',
       };
       break;
+    case 'tabbedCode':
+      info = {
+        name: 'tabbedCode',
+        className: 'tabs',
+        command: 'tabbedCode',
+        tooltip: i18n.get('Insert CodeGroup'),
+        state: 'tabbedCode',
+      };
+      break;
     case 'indent':
       info = {
         name: 'indent',

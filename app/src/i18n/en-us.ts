@@ -32,6 +32,7 @@ Editor.setLanguage(['en', 'en-US'], {
   Outdent: 'Outdent',
   'Insert link': 'Insert link',
   'Insert CodeBlock': 'Insert codeBlock',
+  'Insert CodeGroup': 'Insert code group',
   'Insert table': 'Insert table',
   'Insert image': 'Insert image',
   Heading: 'Heading',

@@ -24,6 +24,7 @@ Editor.setLanguage(['es', 'es-ES'], {
   Outdent: 'Saliendo',
   'Insert link': 'Insertar enlace',
   'Insert CodeBlock': 'Insertar bloque de código',
+  'Insert CodeGroup': 'Insertar grupo de código',
   'Insert table': 'Insertar tabla',
   'Insert image': 'Insertar imagen',
   Heading: 'Encabezado',

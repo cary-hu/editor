@@ -24,6 +24,7 @@ Editor.setLanguage('ar', {
   Outdent: 'المسافة الخارجة',
   'Insert link': 'أدخل الرابط',
   'Insert CodeBlock': 'أدخل الكود',
+  'Insert CodeGroup': 'أدخل مجموعة الكود',
   'Insert table': 'أدخل جدول',
   'Insert image': 'أدخل صورة',
   Heading: 'عنوان',

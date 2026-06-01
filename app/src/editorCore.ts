@@ -145,7 +145,7 @@ class ToastUIEditorCore {
           ['hr', 'quote', 'details'],
           ['ul', 'ol', 'task', 'indent', 'outdent'],
           ['table', 'image', 'link'],
-          ['code', 'codeblock'],
+          ['code', 'codeblock', 'tabbedCode'],
           ['scrollSync'],
         ],
         hideModeSwitch: false,

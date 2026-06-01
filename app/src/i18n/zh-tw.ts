@@ -24,6 +24,7 @@ Editor.setLanguage('zh-TW', {
   Outdent: '減少縮排',
   'Insert link': '插入超連結',
   'Insert CodeBlock': '插入程式碼區塊',
+  'Insert CodeGroup': '插入程式碼群組',
   'Insert table': '插入表格',
   'Insert image': '插入圖片',
   Heading: '標題',

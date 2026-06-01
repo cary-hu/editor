@@ -24,6 +24,7 @@ Editor.setLanguage(['pl', 'pl-PL'], {
   Outdent: 'Usuń wcięcie',
   'Insert link': 'Umieść odnośnik',
   'Insert CodeBlock': 'Umieść blok kodu',
+  'Insert CodeGroup': 'Umieść grupę kodu',
   'Insert table': 'Umieść tabelę',
   'Insert image': 'Umieść obraz',
   Heading: 'Nagłówek',

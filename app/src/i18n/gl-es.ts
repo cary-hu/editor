@@ -25,6 +25,7 @@ Editor.setLanguage(['gl', 'gl-ES'], {
   Outdent: 'Anular sangría',
   'Insert link': 'Inserir enlace',
   'Insert CodeBlock': 'Inserir bloque de código',
+  'Insert CodeGroup': 'Inserir grupo de código',
   'Insert table': 'Inserir táboa',
   'Insert image': 'Inserir imaxe',
   Heading: 'Encabezado',

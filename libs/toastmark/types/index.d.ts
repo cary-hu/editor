@@ -20,6 +20,7 @@ export {
   CustomInlineMdNode,
   BlockQuoteMdNode,
   DetailsMdNode,
+  TabbedCodeMdNode,
   Pos as MdPos,
   Sourcepos,
 } from './node';

@@ -417,6 +417,23 @@ describe('codeBlock command', () => {
   });
 });
 
+describe('tabbedCode command', () => {
+  it('should add tabbed code group syntax', () => {
+    cmd.exec('tabbedCode');
+
+    expect(getTextContent(mde)).toBe(stripIndent`
+      ::: code-group
+      \`\`\`js [JavaScript]
+
+      \`\`\`
+      \`\`\`ts [TypeScript]
+
+      \`\`\`
+      :::
+    `);
+  });
+});
+
 describe('bulletList command', () => {
   it('should add bullet list syntax', () => {
     cmd.exec('bulletList');

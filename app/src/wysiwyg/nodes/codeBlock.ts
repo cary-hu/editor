@@ -19,6 +19,7 @@ export class CodeBlock extends NodeSchema {
       group: 'block',
       attrs: {
         language: { default: null },
+        label: { default: null },
         rawHTML: { default: null },
         ...getDefaultCustomAttrs(),
       },
@@ -35,6 +36,10 @@ export class CodeBlock extends NodeSchema {
 
             return {
               language: child?.getAttribute('data-language') || null,
+              label:
+                (dom as HTMLElement).getAttribute('data-code-label') ||
+                child?.getAttribute('data-code-label') ||
+                null,
               ...(rawHTML && { rawHTML }),
             };
           },
@@ -43,7 +48,17 @@ export class CodeBlock extends NodeSchema {
       toDOM({ attrs }: ProsemirrorNode): DOMOutputSpec {
         return [
           attrs.rawHTML || 'pre',
-          ['code', { 'data-language': attrs.language, ...getCustomAttrs(attrs) }, 0],
+          {
+            ...(attrs.label && { 'data-code-label': attrs.label }),
+          },
+          [
+            'code',
+            {
+              'data-language': attrs.language,
+              ...getCustomAttrs(attrs),
+            },
+            0,
+          ],
         ];
       },
     };

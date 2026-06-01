@@ -21,6 +21,10 @@ import { removeOffsetInfoByNode } from './scroll/offset';
 
 export const CLASS_HIGHLIGHT = cls('md-preview-highlight');
 
+const CODE_GROUP_CLASS_NAME = 'toastui-editor-code-group';
+const CODE_GROUP_TAB_CLASS_NAME = 'toastui-editor-code-group-tab';
+const ACTIVE_CLASS_NAME = 'active';
+
 function findTableCell(tableRow: MdNode, chOffset: number) {
   let cell = tableRow.firstChild;
 
@@ -93,6 +97,7 @@ class MarkdownPreview {
 
     this.initEvent(highlight);
     this.initContentSection();
+    this.bindTabbedCodeEvent();
 
     // To prevent overflowing contents in the viewer
     if (this.isViewer) {
@@ -108,6 +113,30 @@ class MarkdownPreview {
     if (!this.isViewer) {
       this.el!.appendChild(this.previewContent);
     }
+  }
+
+  private bindTabbedCodeEvent() {
+    on(this.previewContent, 'click', (ev) => {
+      const target = ev.target as HTMLElement;
+      const tab = target.closest(`.${CODE_GROUP_TAB_CLASS_NAME}`) as HTMLElement | null;
+
+      if (!tab) {
+        return;
+      }
+
+      const codeGroup = tab.closest(`.${CODE_GROUP_CLASS_NAME}`);
+      const tabs = Array.from(codeGroup!.querySelectorAll(`.${CODE_GROUP_TAB_CLASS_NAME}`));
+      const panels = Array.from(codeGroup!.querySelectorAll('.toastui-editor-code-group-panels > pre'));
+      const activeIndex = tabs.indexOf(tab);
+
+      tabs.forEach((tabEl, index) => {
+        tabEl.classList.toggle(ACTIVE_CLASS_NAME, index === activeIndex);
+        tabEl.setAttribute('aria-selected', String(index === activeIndex));
+      });
+      panels.forEach((panel, index) => {
+        panel.classList.toggle(ACTIVE_CLASS_NAME, index === activeIndex);
+      });
+    });
   }
 
   private toggleActive(active: boolean) {
@@ -234,6 +263,7 @@ class MarkdownPreview {
 
   destroy() {
     off(this.el!, 'scroll');
+    off(this.previewContent, 'click');
     this.el = null;
   }
 

@@ -24,6 +24,7 @@ Editor.setLanguage(['cs', 'cs-CZ'], {
   Outdent: 'Zmenšit odsazení',
   'Insert link': 'Vložit odkaz',
   'Insert CodeBlock': 'Vložit blok kódu',
+  'Insert CodeGroup': 'Vložit skupinu kódu',
   'Insert table': 'Vložit tabulku',
   'Insert image': 'Vložit obrázek',
   Heading: 'Nadpis',

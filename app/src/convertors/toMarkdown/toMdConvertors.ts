@@ -109,11 +109,19 @@ export const toMdConvertors: ToMdConvertorMap = {
 
   codeBlock({ node }) {
     const { attrs, textContent } = node as ProsemirrorNode;
+    const language = attrs.language || '';
+    const label = attrs.label ? ` [${attrs.label}]` : '';
 
     return {
-      delim: [`\`\`\`${attrs.language || ''}`, '```'],
+      delim: [`\`\`\`${language}${label}`, '```'],
       rawHTML: getPairRawHTML(attrs.rawHTML),
       text: textContent,
+    };
+  },
+
+  tabbedCode() {
+    return {
+      delim: ['::: code-group', ':::'],
     };
   },
 

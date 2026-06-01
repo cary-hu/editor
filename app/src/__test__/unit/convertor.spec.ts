@@ -149,6 +149,88 @@ describe('Convertor', () => {
       expect(details.lastChild!.textContent).toBe('Details');
     });
 
+    it('tabbed code group', () => {
+      const markdown = source`
+        ::: code-group
+
+        \`\`\`js [config.js]
+        const config = {}
+        \`\`\`
+
+        \`\`\`ts [config.ts]
+        const config = {}
+        \`\`\`
+
+        :::
+      `;
+      const mdNode = parser.parse(markdown);
+      const wwNode = convertor.toWysiwygModel(mdNode)!;
+      const tabbedCode = wwNode.firstChild!;
+      const firstCode = tabbedCode.firstChild!;
+      const secondCode = tabbedCode.lastChild!;
+
+      assertConverting(markdown, markdown);
+      expect(tabbedCode.type.name).toBe('tabbedCode');
+      expect(firstCode.type.name).toBe('codeBlock');
+      expect(firstCode.attrs.language).toBe('js');
+      expect(firstCode.attrs.label).toBe('config.js');
+      expect(secondCode.attrs.language).toBe('ts');
+      expect(secondCode.attrs.label).toBe('config.ts');
+    });
+
+    it('tabbed code groups after block content', () => {
+      const markdown = source`
+        ## Details Callouts
+
+        > [!warning]+ Migration checklist
+        > - Back up the existing document
+        > - Review changed table cells
+
+        ## Tabbed Code Group
+
+        ::: code-group
+
+        \`\`\`js [config.js]
+        export default {}
+        \`\`\`
+
+        \`\`\`ts [config.ts]
+        export default {}
+        \`\`\`
+
+        :::
+
+        ::: code-group
+
+        \`\`\`bash [npm]
+        npm install @toast-ui/editor
+        \`\`\`
+
+        \`\`\`bash [pnpm]
+        pnpm add @toast-ui/editor
+        \`\`\`
+
+        :::
+      `;
+      const mdNode = parser.parse(markdown);
+      const wwNode = convertor.toWysiwygModel(mdNode)!;
+      const tabbedCodes: any[] = [];
+
+      wwNode.descendants((node) => {
+        if (node.type.name === 'tabbedCode') {
+          tabbedCodes.push(node);
+        }
+      });
+
+      expect(tabbedCodes).toHaveLength(2);
+      expect(tabbedCodes[0].childCount).toBe(2);
+      expect(tabbedCodes[0].firstChild!.attrs.label).toBe('config.js');
+      expect(tabbedCodes[0].lastChild!.attrs.label).toBe('config.ts');
+      expect(tabbedCodes[1].childCount).toBe(2);
+      expect(tabbedCodes[1].firstChild!.attrs.label).toBe('npm');
+      expect(tabbedCodes[1].lastChild!.attrs.label).toBe('pnpm');
+    });
+
     it('thematicBreak', () => {
       const markdown = source`
         ---

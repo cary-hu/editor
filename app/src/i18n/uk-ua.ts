@@ -24,6 +24,7 @@ Editor.setLanguage(['uk', 'uk-UA'], {
   Outdent: 'застарілий',
   'Insert link': 'Вставити посилання',
   'Insert CodeBlock': 'Вставити код',
+  'Insert CodeGroup': 'Вставити групу коду',
   'Insert table': 'Вставити таблицю',
   'Insert image': 'Вставити зображення',
   Heading: 'Заголовок',

@@ -25,6 +25,7 @@ Editor.setLanguage(['ru', 'ru-RU'], {
   Outdent: 'Уменьшить отступ',
   'Insert link': 'Вставить ссылку',
   'Insert CodeBlock': 'Вставить блок кода',
+  'Insert CodeGroup': 'Вставить группу кода',
   'Insert table': 'Вставить таблицу',
   'Insert image': 'Вставить изображение',
   Heading: 'Заголовок',

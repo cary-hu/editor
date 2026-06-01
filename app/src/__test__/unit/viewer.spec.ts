@@ -72,6 +72,27 @@ describe('Viewer', () => {
     expect(getViewerHTML()).toBe(expected);
   });
 
+  it('should render tabbed code group properly', () => {
+    viewer.setMarkdown(
+      '::: code-group\n\n```js [config.js]\nconst config = {}\n```\n\n```ts [config.ts]\nconst config = {}\n```\n\n:::',
+    );
+
+    const expected = oneLineTrim`
+      <div class="toastui-editor-code-group">
+        <div class="toastui-editor-code-group-tabs" role="tablist">
+          <span class="toastui-editor-code-group-tab active" role="tab" aria-selected="true">config.js</span>
+          <span class="toastui-editor-code-group-tab" role="tab" aria-selected="false">config.ts</span>
+        </div>
+        <div class="toastui-editor-code-group-panels">
+          <pre class="active lang-js" data-code-label="config.js"><code data-language="js">const config = {}</code></pre>
+          <pre class="lang-ts" data-code-label="config.ts"><code data-language="ts">const config = {}</code></pre>
+        </div>
+      </div>
+    `;
+
+    expect(getViewerHTML()).toBe(expected);
+  });
+
   it('should render htmlBlock properly', () => {
     viewer.setMarkdown(
       '<iframe src="https://www.youtube.com/embed/XyenY12fzAk" height="315" width="420"></iframe>',

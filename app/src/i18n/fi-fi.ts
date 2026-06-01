@@ -24,6 +24,7 @@ Editor.setLanguage(['fi', 'fi-FI'], {
   Outdent: 'Pienennä sisennystä',
   'Insert link': 'Lisää linkki',
   'Insert CodeBlock': 'Lisää koodia',
+  'Insert CodeGroup': 'Lisää koodiryhmä',
   'Insert table': 'Lisää taulukko',
   'Insert image': 'Lisää kuva',
   Heading: 'Otsikko',
