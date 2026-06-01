@@ -1,21 +1,25 @@
 @font-face {
-  font-family: "Iconify Explorer Font";
-  src: url("./webfonts/iconfont.eot");
-  src: url("./webfonts/iconfont.eot") format("embedded-opentype"),
-    url("./webfonts/iconfont.ttf") format("truetype"),
-    url("./webfonts/iconfont.woff") format("woff"),
-    url("./webfonts/iconfont.woff2") format("woff2"),
-    url("./webfonts/iconfont.svg") format("svg");
-  font-weight: normal;
-  font-style: normal;
+    font-family: "Iconify Explorer Font";
+    src: url("./webfonts/Iconify-Explorer-Font.woff2") format("woff2"),
+        url("./webfonts/Iconify-Explorer-Font.ttf") format("truetype"),
+        url("./webfonts/Iconify-Explorer-Font.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
 }
 
 .toastui-editor-icon {
-  font-family: "Iconify Explorer Font" !important;
-  font-size: 1em;
-  font-style: normal;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    /* Use !important to prevent extensions from overriding this font. */
+    font-family: "Iconify Explorer Font" !important;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 
@@ -153,4 +157,8 @@
 
 .toastui-editor-icon.codeblock:before {
   content: "\e022";
+}
+
+.toastui-editor-icon.details:before {
+  content: "\e023";
 }

@@ -2,6 +2,7 @@ import {
   BlockMdNode,
   BlockNodeType,
   BlockQuoteMdNode,
+  DetailsMdNode,
   CodeBlockMdNode,
   CodeMdNode,
   CustomBlockMdNode,
@@ -25,6 +26,7 @@ export function isContainer(node: Node) {
   switch (node.type) {
     case 'document':
     case 'blockQuote':
+    case 'details':
     case 'list':
     case 'item':
     case 'paragraph':
@@ -192,7 +194,13 @@ export class BlockNode extends Node implements BlockMdNode {
 }
 
 export class BlockQuoteNode extends BlockNode implements BlockQuoteMdNode {
-  bqType: 'default' | 'danger' | 'info' | 'warning' | 'success' = 'default';
+  bqType: 'default' | 'danger' | 'info' | 'warning' | 'success' | 'note' = 'default';
+}
+
+export class DetailsNode extends BlockNode implements DetailsMdNode {
+  detailType: 'default' | 'danger' | 'info' | 'warning' | 'success' | 'note' = 'default';
+  detailsOpen = false;
+  summary: string | null = null;
 }
 
 export class ListNode extends BlockNode implements ListMdNode {
@@ -277,6 +285,7 @@ export function createNode(type: 'table', sourcepos?: Sourcepos): TableNode;
 export function createNode(type: 'tableCell', sourcepos?: Sourcepos): TableNode;
 export function createNode(type: 'refDef', sourcepos?: Sourcepos): RefDefNode;
 export function createNode(type: 'customBlock', sourcepos?: Sourcepos): CustomBlockNode;
+export function createNode(type: 'details', sourcepos?: Sourcepos): DetailsNode;
 export function createNode(type: BlockNodeType, sourcepos?: Sourcepos): BlockNode;
 export function createNode(type: MdNodeType, sourcepos?: Sourcepos): Node;
 export function createNode(type: MdNodeType, sourcepos?: Sourcepos) {
@@ -300,6 +309,8 @@ export function createNode(type: MdNodeType, sourcepos?: Sourcepos) {
       return new TableCellNode(type, sourcepos);
     case 'blockQuote':
       return new BlockQuoteNode(type, sourcepos);
+    case 'details':
+      return new DetailsNode(type, sourcepos);
     case 'document':
     case 'paragraph':
     case 'thematicBreak':

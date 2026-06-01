@@ -60,16 +60,21 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
     outdent: { active: false, disabled: true },
   } as ToolbarStateMap;
 
-  // Check if we're inside a blockquote and get the current type
+  // Check if we're inside a blockquote-like node and get the current type
   const blockQuoteNode = schema.nodes.blockQuote;
+  const detailsNode = schema.nodes.details;
   let insideBlockQuote = false;
+  let insideDetails = false;
   let currentBqType = '';
 
-  if (blockQuoteNode) {
+  if (blockQuoteNode || detailsNode) {
     for (let d = $from.depth; d >= 0; d -= 1) {
-      if ($from.node(d).type === blockQuoteNode) {
+      const node = $from.node(d);
+
+      if (node.type === blockQuoteNode || node.type === detailsNode) {
         insideBlockQuote = true;
-        currentBqType = $from.node(d).attrs.bqType || '';
+        insideDetails = node.type === detailsNode;
+        currentBqType = node.attrs.bqType || '';
         break;
       }
     }
@@ -144,9 +149,16 @@ function getToolbarState(selection: Selection, doc: Node, schema: Schema) {
   // Set blockquote state based on whether we're inside one and code context
   if (blockQuoteNode) {
     toolbarState.blockQuote = {
-      active: insideBlockQuote,
+      active: insideBlockQuote && !insideDetails,
       disabled: blockQuoteDisabled,
       bqType: currentBqType,
+    };
+  }
+
+  if (detailsNode) {
+    toolbarState.details = {
+      active: insideDetails,
+      disabled: blockQuoteDisabled || insideDetails,
     };
   }
 

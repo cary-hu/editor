@@ -61,6 +61,7 @@ describe('Default toolbar', () => {
       'Italic',
       'Line',
       'Blockquote',
+      'Details',
       'Unordered list',
       'Ordered list',
       'Task',

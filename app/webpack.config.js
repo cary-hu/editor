@@ -166,6 +166,8 @@ module.exports = (env) => {
           alias: {
             '@': path.resolve('src'),
             '@t': path.resolve('types'),
+            '@toast-ui/toastmark/types': path.resolve('../libs/toastmark/types'),
+            '@toast-ui/toastmark': path.resolve('../libs/toastmark/src'),
           },
         },
         plugins: [

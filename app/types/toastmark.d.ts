@@ -9,6 +9,7 @@ export type BlockNodeType =
   | 'document'
   | 'list'
   | 'blockQuote'
+  | 'details'
   | 'item'
   | 'heading'
   | 'thematicBreak'
@@ -189,6 +190,18 @@ export interface ListData {
   padding: number;
   task: boolean;
   checked: boolean;
+}
+
+export type BlockQuoteType = 'default' | 'danger' | 'info' | 'warning' | 'success' | 'note';
+
+export interface BlockQuoteMdNode extends BlockMdNode {
+  bqType: BlockQuoteType;
+}
+
+export interface DetailsMdNode extends BlockMdNode {
+  detailType: BlockQuoteType;
+  detailsOpen: boolean;
+  summary: string | null;
 }
 
 export interface ListMdNode extends BlockMdNode {

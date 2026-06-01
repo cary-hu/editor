@@ -17,6 +17,7 @@ Editor.setLanguage(['en', 'en-US'], {
   Code: 'Inline code',
   Line: 'Line',
   Blockquote: 'Blockquote',
+  Details: 'Details',
   'Blockquote type': 'Blockquote type',
   'Blockquote default': 'Default',
   'Blockquote danger': 'Danger',

@@ -31,7 +31,9 @@ export class BlockQuote extends NodeSchema {
           getAttrs(dom: HTMLElement) {
             const bqType = dom.getAttribute('data-block-quote-type') || 'default';
 
-            return { bqType };
+            return {
+              bqType,
+            };
           },
         },
         createDOMInfoParsedRawHTML('blockquote'),
@@ -57,6 +59,7 @@ export class BlockQuote extends NodeSchema {
 
       const { bqType = 'default' } = payload || {};
       const blockQuoteNode = state.schema.nodes.blockQuote;
+      const detailsNode = state.schema.nodes.details;
       const { $from } = state.selection;
       const { tr } = state;
 
@@ -88,6 +91,21 @@ export class BlockQuote extends NodeSchema {
 
       if (codeMarkType && codeMarkType.isInSet($from.marks())) {
         return false; // Disable blockquote when inline code mark is active
+      }
+
+      if (detailsNode) {
+        for (let d = $from.depth; d >= 0; d -= 1) {
+          const node = $from.node(d);
+
+          if (node.type === detailsNode) {
+            if (dispatch) {
+              tr.setNodeMarkup($from.start(d) - 1, null, { ...node.attrs, bqType });
+              dispatch(tr);
+            }
+
+            return true;
+          }
+        }
       }
 
       // Check if we're already inside a blockquote

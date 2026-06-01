@@ -116,6 +116,15 @@ function createDefaultToolbarItemInfo(type: string) {
         state: 'blockQuote',
       };
       break;
+    case 'details':
+      info = {
+        name: 'details',
+        className: 'details',
+        command: 'details',
+        tooltip: i18n.get('Details'),
+        state: 'details',
+      };
+      break;
     case 'ul':
       info = {
         name: 'ul',

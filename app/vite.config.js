@@ -7,6 +7,8 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src'),
       '@t': path.resolve(__dirname, 'types'),
+      '@toast-ui/toastmark/types': path.resolve(__dirname, '../libs/toastmark/types'),
+      '@toast-ui/toastmark': path.resolve(__dirname, '../libs/toastmark/src'),
     },
   },
   server: {

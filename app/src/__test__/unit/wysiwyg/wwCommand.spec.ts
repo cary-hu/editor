@@ -1,6 +1,7 @@
 import { oneLineTrim } from 'common-tags';
 
 import { DOMParser } from 'prosemirror-model';
+import { TextSelection } from 'prosemirror-state';
 
 import WysiwygEditor from '@/wysiwyg/wwEditor';
 import EventEmitter from '@/event/eventEmitter';
@@ -201,6 +202,119 @@ describe('wysiwyg commands', () => {
       `;
 
       expect(wwe.getHTML()).toBe(expected);
+    });
+
+    it('should change details blockquote type', () => {
+      setContent(oneLineTrim`
+        <details data-detail-summary-type="warning" data-block-quote-details="true" open="">
+          <summary class="toastui-editor-block-quote-summary">Summary</summary>
+          <blockquote class="toastui-editor-block-quote-body"><p>foo</p></blockquote>
+        </details>
+      `);
+
+      cmd.exec('blockQuote', { bqType: 'success' });
+
+      expect(wwe.getHTML()).toBe(oneLineTrim`
+        <details data-detail-summary-type="success" data-block-quote-details="true" open="" class="toastui-editor-ww-block-quote">
+          <summary class="toastui-editor-block-quote-summary"><span class="toastui-editor-block-quote-summary-marker" aria-hidden="true"></span><span class="toastui-editor-block-quote-summary-text">Summary</span></summary>
+          <div class="toastui-editor-block-quote-body"><p>foo</p></div>
+        </details>
+      `);
+    });
+  });
+
+  describe('details command', () => {
+    it('should create default details and select summary text', () => {
+      setTextToEditor('foo');
+
+      cmd.exec('details');
+
+      const summary = wwe.view.state.doc.firstChild!.firstChild!;
+      const summaryStartPos = 2;
+      const summaryEndPos = summaryStartPos + summary.textContent.length;
+      const detailsElement = wwe.view.dom.querySelector('details')!;
+
+      expect(wwe.view.state.doc.firstChild!.type.name).toBe('details');
+      expect(detailsElement.getAttribute('data-detail-summary-type')).toBe('default');
+      expect(detailsElement.hasAttribute('open')).toBe(true);
+      expect(detailsElement.querySelector('.toastui-editor-block-quote-summary-text')!.textContent).toBe(
+        'Summary',
+      );
+      expect(detailsElement.querySelector('.toastui-editor-block-quote-body')!.tagName).toBe('DIV');
+      expect(wwe.view.state.selection.from).toBe(summaryStartPos);
+      expect(wwe.view.state.selection.to).toBe(summaryEndPos);
+    });
+
+    it('should put selected single-line plain text into summary', () => {
+      setTextToEditor('foo');
+
+      wwe.view.dispatch(
+        wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, 1, 4)),
+      );
+      cmd.exec('details');
+
+      const detailsElement = wwe.view.dom.querySelector('details')!;
+
+      expect(detailsElement.querySelector('.toastui-editor-block-quote-summary-text')!.textContent).toBe(
+        'foo',
+      );
+      expect(detailsElement.querySelector('.toastui-editor-block-quote-body')!.textContent).toBe('');
+      expect(wwe.view.state.selection.from).toBe(2);
+      expect(wwe.view.state.selection.to).toBe(5);
+    });
+
+    it('should put selected non-plain content into body', () => {
+      setTextToEditor('foo\nbar');
+
+      wwe.view.dispatch(
+        wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, 1, 9)),
+      );
+      cmd.exec('details');
+
+      const detailsElement = wwe.view.dom.querySelector('details')!;
+
+      expect(detailsElement.querySelector('.toastui-editor-block-quote-summary-text')!.textContent).toBe(
+        'Summary',
+      );
+      expect(detailsElement.querySelector('.toastui-editor-block-quote-body')!.innerHTML).toBe(
+        '<p>foo</p><p>bar</p>',
+      );
+      expect(wwe.view.state.selection.from).toBe(2);
+      expect(wwe.view.state.selection.to).toBe(9);
+    });
+
+    it('should not create nested details when selection contains details', () => {
+      setContent(oneLineTrim`
+        <details data-detail-summary-type="warning" data-block-quote-details="true">
+          <summary class="toastui-editor-block-quote-summary">Summary</summary>
+          <div class="toastui-editor-block-quote-body"><p>foo</p></div>
+        </details>
+      `);
+
+      cmd.exec('selectAll');
+
+      cmd.exec('details');
+
+      expect(wwe.view.dom.querySelectorAll('details')).toHaveLength(1);
+      expect(wwe.view.state.doc.firstChild!.type.name).toBe('details');
+      expect(wwe.view.state.doc.firstChild!.firstChild!.textContent).toBe('Summary');
+    });
+
+    it('should not create details inside existing details', () => {
+      setContent(oneLineTrim`
+        <details data-detail-summary-type="warning" data-block-quote-details="true" open="">
+          <summary class="toastui-editor-block-quote-summary">Summary</summary>
+          <div class="toastui-editor-block-quote-body"><p>foo</p></div>
+        </details>
+      `);
+
+      wwe.view.dispatch(
+        wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, 12, 15)),
+      );
+
+      cmd.exec('details');
+
+      expect(wwe.view.dom.querySelectorAll('details')).toHaveLength(1);
     });
   });
 

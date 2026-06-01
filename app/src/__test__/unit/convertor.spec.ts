@@ -132,6 +132,23 @@ describe('Convertor', () => {
       assertConverting(markdown, expected);
     });
 
+    it('details blockQuote', () => {
+      const markdown = source`
+        > [!warning]+ Summary
+        > Details
+      `;
+      const mdNode = parser.parse(markdown);
+      const wwNode = convertor.toWysiwygModel(mdNode)!;
+      const details = wwNode.firstChild!;
+
+      assertConverting(markdown, markdown);
+      expect(details.type.name).toBe('details');
+      expect(details.firstChild!.type.name).toBe('summary');
+      expect(details.firstChild!.textContent).toBe('Summary');
+      expect(details.lastChild!.type.name).toBe('detailsBody');
+      expect(details.lastChild!.textContent).toBe('Details');
+    });
+
     it('thematicBreak', () => {
       const markdown = source`
         ---

@@ -16,6 +16,7 @@ const defaultToolbarStateKeys: ToolbarStateKeys[] = [
   'heading',
   'thematicBreak',
   'blockQuote',
+  'details',
   'code',
   'codeBlock',
   'indent',
@@ -74,6 +75,7 @@ function getToolbarState(targetNode: MdNode) {
   });
 
   toolbarState.blockQuote = { active: false, disabled: true };
+  toolbarState.details = { active: false, disabled: true };
 
   return toolbarState;
 }

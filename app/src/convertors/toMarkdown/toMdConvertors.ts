@@ -1,4 +1,4 @@
-import { ProsemirrorNode } from 'prosemirror-model';
+import { Node as ProsemirrorNode } from 'prosemirror-model';
 
 import isUndefined from 'tui-code-snippet/type/isUndefined';
 
@@ -127,6 +127,23 @@ export const toMdConvertors: ToMdConvertorMap = {
     };
   },
 
+  details({ node }) {
+    const details = node as ProsemirrorNode;
+    const { bqType, open } = details.attrs;
+    const marker = open ? '+' : '-';
+    const summary = details.firstChild?.textContent || '';
+
+    return {
+      delim: '> ',
+      firstDelim: `> [!${bqType || 'default'}]${marker} ${summary || ''}\n> `,
+      rawHTML: getPairRawHTML(details.attrs.rawHTML),
+    };
+  },
+
+  summary() {
+    return {};
+  },
+
   bulletList({ node }, { inTable }) {
     let { rawHTML } = node.attrs;
 
@@ -176,7 +193,6 @@ export const toMdConvertors: ToMdConvertorMap = {
 
   tableHead(nodeInfo) {
     const row = (nodeInfo.node as ProsemirrorNode).firstChild;
-
     let delim = '';
 
     if (row) {

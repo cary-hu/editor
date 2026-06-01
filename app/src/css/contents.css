@@ -125,7 +125,8 @@ table.ProseMirror-selectednode {
   color: var(--toastui-editor-color);
 }
 
-.toastui-editor-contents blockquote {
+.toastui-editor-contents blockquote,
+.toastui-editor-contents details[data-detail-summary-type] {
   margin: 1rem 0;
   border: 1px solid var(--toastui-editor-blockquote-left-border-color);
   border-left: 4px solid var(--toastui-editor-blockquote-left-border-color);
@@ -140,37 +141,43 @@ table.ProseMirror-selectednode {
   --toastui-editor-blockquote-color: var(--toastui-editor-light-text-emphasis);
 }
 
-.toastui-editor-contents blockquote[data-block-quote-type="default"] {
+.toastui-editor-contents blockquote[data-block-quote-type="default"],
+.toastui-editor-contents details[data-detail-summary-type="default"] {
   --toastui-editor-blockquote-left-border-color: var(--toastui-editor-light-border-subtle);
   --toastui-editor-blockquote-bg-color: var(--toastui-editor-light-bg-subtle);
   --toastui-editor-blockquote-color: var(--toastui-editor-light-text-emphasis);
 }
 
-.toastui-editor-contents blockquote[data-block-quote-type="info"] {
+.toastui-editor-contents blockquote[data-block-quote-type="info"],
+.toastui-editor-contents details[data-detail-summary-type="info"] {
   --toastui-editor-blockquote-left-border-color: var(--toastui-editor-info-border-subtle);
   --toastui-editor-blockquote-bg-color: var(--toastui-editor-info-bg-subtle);
   --toastui-editor-blockquote-color: var(--toastui-editor-info-text-emphasis);
 }
 
-.toastui-editor-contents blockquote[data-block-quote-type="warning"] {
+.toastui-editor-contents blockquote[data-block-quote-type="warning"],
+.toastui-editor-contents details[data-detail-summary-type="warning"] {
   --toastui-editor-blockquote-left-border-color: var(--toastui-editor-warning-border-subtle);
   --toastui-editor-blockquote-bg-color: var(--toastui-editor-warning-bg-subtle);
   --toastui-editor-blockquote-color: var(--toastui-editor-warning-text-emphasis);
 }
 
-.toastui-editor-contents blockquote[data-block-quote-type="danger"] {
+.toastui-editor-contents blockquote[data-block-quote-type="danger"],
+.toastui-editor-contents details[data-detail-summary-type="danger"] {
   --toastui-editor-blockquote-left-border-color: var(--toastui-editor-danger-border-subtle);
   --toastui-editor-blockquote-bg-color: var(--toastui-editor-danger-bg-subtle);
   --toastui-editor-blockquote-color: var(--toastui-editor-danger-text-emphasis);
 }
 
-.toastui-editor-contents blockquote[data-block-quote-type="success"] {
+.toastui-editor-contents blockquote[data-block-quote-type="success"],
+.toastui-editor-contents details[data-detail-summary-type="success"] {
   --toastui-editor-blockquote-left-border-color: var(--toastui-editor-success-border-subtle);
   --toastui-editor-blockquote-bg-color: var(--toastui-editor-success-bg-subtle);
   --toastui-editor-blockquote-color: var(--toastui-editor-success-text-emphasis);
 }
 
-.toastui-editor-contents blockquote[data-block-quote-type="note"] {
+.toastui-editor-contents blockquote[data-block-quote-type="note"],
+.toastui-editor-contents details[data-detail-summary-type="note"] {
   --toastui-editor-blockquote-left-border-color: var(--toastui-editor-primary-border-subtle);
   --toastui-editor-blockquote-bg-color: var(--toastui-editor-primary-bg-subtle);
   --toastui-editor-blockquote-color: var(--toastui-editor-primary-text-emphasis);
@@ -182,6 +189,61 @@ table.ProseMirror-selectednode {
 
 .toastui-editor-contents blockquote> :last-child {
   margin-bottom: 0;
+}
+
+.toastui-editor-contents details[data-detail-summary-type] {
+  border-left: 4px solid var(--toastui-editor-blockquote-left-border-color);
+  background-color: var(--toastui-editor-blockquote-bg-color);
+  color: var(--toastui-editor-blockquote-color);
+}
+
+.toastui-editor-contents details[data-detail-summary-type] .toastui-editor-block-quote-body {
+  margin: 0;
+  border-left: 0;
+  background-color: transparent;
+}
+
+.toastui-editor-contents summary.toastui-editor-block-quote-summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  margin: 0;
+  padding: .5rem .75rem;
+  font-weight: 600;
+  color: var(--toastui-editor-blockquote-color);
+  cursor: pointer;
+}
+
+.toastui-editor-contents summary.toastui-editor-block-quote-summary::marker,
+.toastui-editor-contents summary.toastui-editor-block-quote-summary::-webkit-details-marker {
+  display: none;
+  content: '';
+}
+
+.toastui-editor-contents .toastui-editor-block-quote-summary-marker {
+  flex: 0 0 auto;
+  width: 0;
+  height: 0;
+  border-top: .28rem solid transparent;
+  border-bottom: .28rem solid transparent;
+  border-left: .42rem solid currentColor;
+  cursor: pointer;
+}
+
+.toastui-editor-contents details[open] .toastui-editor-block-quote-summary-marker {
+  transform: rotate(90deg);
+}
+
+.toastui-editor-contents .toastui-editor-block-quote-summary-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  outline: none;
+  cursor: text;
+}
+
+.toastui-editor-contents .toastui-editor-block-quote-body {
+  padding: 0 .5rem .5rem;
 }
 
 .toastui-editor-contents pre,

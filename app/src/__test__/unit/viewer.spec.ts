@@ -59,6 +59,19 @@ describe('Viewer', () => {
     expect(getViewerHTML()).toBe(expected);
   });
 
+  it('should render details block quote properly', () => {
+    viewer.setMarkdown('> [!warning]+ Summary\n> Details');
+
+    const expected = oneLineTrim`
+      <details data-detail-summary-type="warning" data-block-quote-details="true" open="">
+        <summary class="toastui-editor-block-quote-summary">Summary</summary>
+        <blockquote class="toastui-editor-block-quote-body"><p>Details</p></blockquote>
+      </details>
+    `;
+
+    expect(getViewerHTML()).toBe(expected);
+  });
+
   it('should render htmlBlock properly', () => {
     viewer.setMarkdown(
       '<iframe src="https://www.youtube.com/embed/XyenY12fzAk" height="315" width="420"></iframe>',

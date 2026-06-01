@@ -177,6 +177,43 @@ describe('WysiwygEditor', () => {
     expect(spy).toHaveBeenCalled();
   });
 
+  it('should maintain details toolbar state independently from blockquote', () => {
+    setContent(oneLineTrim`
+      <details data-detail-summary-type="warning" data-block-quote-details="true" open="">
+        <summary class="toastui-editor-block-quote-summary">Summary</summary>
+        <div class="toastui-editor-block-quote-body"><p>foo</p></div>
+      </details>
+    `);
+
+    const spy = vi.fn();
+
+    em.listen('changeToolbarState', spy);
+
+    wwe.setSelection(3, 3);
+
+    const [{ toolbarState }] = spy.mock.calls.at(-1)!;
+
+    expect(toolbarState.details).toEqual({ active: true, disabled: true });
+    expect(toolbarState.blockQuote.active).toBe(false);
+  });
+
+  it('should not activate details toolbar state inside blockquote', () => {
+    setContent(oneLineTrim`
+      <blockquote data-block-quote-type="warning"><p>foo</p></blockquote>
+    `);
+
+    const spy = vi.fn();
+
+    em.listen('changeToolbarState', spy);
+
+    wwe.setSelection(3, 3);
+
+    const [{ toolbarState }] = spy.mock.calls.at(-1)!;
+
+    expect(toolbarState.blockQuote.active).toBe(true);
+    expect(toolbarState.details.active).toBe(false);
+  });
+
   it('should display html block element properly', () => {
     setContent(
       '<iframe width="420" height="315" src="https://www.youtube.com/embed/XyenY12fzAk"></iframe>',

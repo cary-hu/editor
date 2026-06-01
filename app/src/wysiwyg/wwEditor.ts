@@ -23,6 +23,8 @@ import { CustomBlockView } from './nodeview/customBlockView';
 import { ImageView } from './nodeview/imageView';
 import { CodeBlockView } from './nodeview/codeBlockView';
 import { BlockQuoteView } from './nodeview/blockQuoteView';
+import { DetailsView } from './nodeview/detailsView';
+import { SummaryView } from './nodeview/summaryView';
 
 import { changePastedHTML, changePastedSlice } from './clipboard/paste';
 import { pasteToTable } from './clipboard/pasteToTable';
@@ -181,6 +183,12 @@ export default class WysiwygEditor extends EditorBase {
         },
         blockQuote(node, view, getPos) {
           return new BlockQuoteView(node, view, getPos as (() => number) | boolean, eventEmitter);
+        },
+        details(node, view, getPos) {
+          return new DetailsView(node, view, getPos as (() => number) | boolean, eventEmitter);
+        },
+        summary(node, view, getPos) {
+          return new SummaryView(node, view, getPos as (() => number) | boolean);
         },
         widget: widgetNodeView,
         ...this.createPluginNodeViews(),

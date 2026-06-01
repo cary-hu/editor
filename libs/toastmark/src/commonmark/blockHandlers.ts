@@ -103,7 +103,7 @@ const blockQuote: BlockHandler = {
       const lineFromNonspace = ln.slice(parser.nextNonspace);
       const typeMatch = lineFromNonspace.match(/^>\s*!?type\s*=\s*(\w+)\s*$/);
       if (typeMatch) {
-        // This is a type definition line, consume the entire line
+        // This is a blockquote metadata line, consume the entire line
         parser.advanceOffset(ln.length - parser.offset, false);
         return Process.Go;
       }
@@ -122,6 +122,13 @@ const blockQuote: BlockHandler = {
   canContain(t) {
     return t !== 'item';
   },
+  acceptsLines: false,
+};
+
+const details: BlockHandler = {
+  continue: blockQuote.continue,
+  finalize() {},
+  canContain: blockQuote.canContain,
   acceptsLines: false,
 };
 
@@ -285,6 +292,7 @@ export const blockHandlers = {
   document,
   list,
   blockQuote,
+  details,
   item,
   heading,
   thematicBreak,

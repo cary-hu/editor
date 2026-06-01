@@ -1,5 +1,5 @@
 import { Parser } from '../blocks';
-import { HeadingNode, CodeBlockNode, BlockQuoteNode } from '../node';
+import { HeadingNode, CodeBlockNode, BlockQuoteNode, DetailsNode } from '../node';
 
 const parser = new Parser();
 
@@ -67,5 +67,21 @@ describe('BlockQuoteType', () => {
     const root = parser.parse('>type=success\n> This is a success block quote');
     const blockQuote = root.firstChild as BlockQuoteNode;
     expect(blockQuote.bqType).toBe('success');
+  });
+  it('open details block quote', () => {
+    const root = parser.parse('> [!warning]+ Summary\n> Details');
+    const details = root.firstChild as DetailsNode;
+    expect(details.type).toBe('details');
+    expect(details.detailType).toBe('warning');
+    expect(details.detailsOpen).toBe(true);
+    expect(details.summary).toBe('Summary');
+  });
+  it('closed details block quote', () => {
+    const root = parser.parse('> [!info]- Summary\n> Details');
+    const details = root.firstChild as DetailsNode;
+    expect(details.type).toBe('details');
+    expect(details.detailType).toBe('info');
+    expect(details.detailsOpen).toBe(false);
+    expect(details.summary).toBe('Summary');
   });
 });

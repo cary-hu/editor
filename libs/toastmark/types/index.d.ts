@@ -19,6 +19,7 @@ export {
   CodeMdNode,
   CustomInlineMdNode,
   BlockQuoteMdNode,
+  DetailsMdNode,
   Pos as MdPos,
   Sourcepos,
 } from './node';

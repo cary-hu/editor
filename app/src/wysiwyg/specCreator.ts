@@ -9,6 +9,9 @@ import { BulletList } from './nodes/bulletList';
 import { OrderedList } from './nodes/orderedList';
 import { ListItem } from './nodes/listItem';
 import { BlockQuote } from './nodes/blockQuote';
+import { Details } from './nodes/details';
+import { DetailsBody } from './nodes/detailsBody';
+import { Summary } from './nodes/summary';
 import { Table } from './nodes/table';
 import { TableHead } from './nodes/tableHead';
 import { TableBody } from './nodes/tableBody';
@@ -40,6 +43,9 @@ export function createSpecs(linkAttributes: LinkAttributes) {
     new OrderedList(),
     new ListItem(),
     new BlockQuote(),
+    new Details(),
+    new Summary(),
+    new DetailsBody(),
     new Table(),
     new TableHead(),
     new TableBody(),

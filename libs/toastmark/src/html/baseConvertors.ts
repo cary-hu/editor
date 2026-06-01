@@ -7,6 +7,7 @@ import {
   LinkNode,
   CustomBlockNode,
   BlockQuoteNode,
+  DetailsNode,
   ImageNode,
 } from '../commonmark/node';
 import { decodeImageCaption, escapeXml } from '../commonmark/common';
@@ -94,12 +95,16 @@ export const baseConvertors: HTMLConvertorMap = {
   },
 
   blockQuote(node, context) {
+    const blockQuoteNode = node as BlockQuoteNode;
+
     if (context.entering) {
+      const attributes: Record<string, string> = {
+        'data-block-quote-type': blockQuoteNode.bqType,
+      };
+
       return {
         type: 'openTag',
-        attributes: {
-          'data-block-quote-type': (node as BlockQuoteNode).bqType,
-        },
+        attributes,
         tagName: 'blockquote',
         outerNewLine: true,
         innerNewLine: true,
@@ -111,6 +116,65 @@ export const baseConvertors: HTMLConvertorMap = {
       outerNewLine: true,
       innerNewLine: true,
     };
+  },
+
+  details(node, context) {
+    const detailsNode = node as DetailsNode;
+
+    if (context.entering) {
+      const attributes: Record<string, string> = {
+        'data-detail-summary-type': detailsNode.detailType,
+        'data-block-quote-details': 'true',
+      };
+
+      if (detailsNode.detailsOpen) {
+        attributes.open = '';
+      }
+
+      return [
+        {
+          type: 'openTag',
+          attributes,
+          tagName: 'details',
+          outerNewLine: true,
+          innerNewLine: true,
+        },
+        {
+          type: 'openTag',
+          classNames: ['toastui-editor-block-quote-summary'],
+          tagName: 'summary',
+        },
+        {
+          type: 'text',
+          content: detailsNode.summary || '',
+        },
+        {
+          type: 'closeTag',
+          tagName: 'summary',
+          outerNewLine: true,
+        },
+        {
+          type: 'openTag',
+          classNames: ['toastui-editor-block-quote-body'],
+          tagName: 'blockquote',
+          innerNewLine: true,
+        },
+      ];
+    }
+
+    return [
+      {
+        type: 'closeTag',
+        tagName: 'blockquote',
+        innerNewLine: true,
+      },
+      {
+        type: 'closeTag',
+        tagName: 'details',
+        outerNewLine: true,
+        innerNewLine: true,
+      },
+    ];
   },
 
   list(node, { entering }) {

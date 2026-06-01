@@ -7,6 +7,7 @@ import {
   createNode,
   BlockNode,
   BlockQuoteNode,
+  DetailsNode,
 } from './node';
 import { OPENTAG, CLOSETAG } from './rawHtml';
 import {
@@ -178,6 +179,32 @@ const blockQuote: BlockStart = (parser, container: BlockNode) => {
   return Matched.None;
 };
 
+const details: BlockStart = (parser) => {
+  if (!parser.indented && peek(parser.currentLine, parser.nextNonspace) === C_GREATERTHAN) {
+    const lineFromNonspace = parser.currentLine.slice(parser.nextNonspace);
+    const detailsMatch = lineFromNonspace.match(/^>\s*\[!(\w+)\]([+-])\s+(.*)$/);
+
+    if (detailsMatch) {
+      parser.advanceNextNonspace();
+      parser.advanceOffset(1, false);
+      if (isSpaceOrTab(peek(parser.currentLine, parser.offset))) {
+        parser.advanceOffset(1, true);
+      }
+      parser.closeUnmatchedBlocks();
+
+      const detailsNode = parser.addChild('details', parser.nextNonspace) as DetailsNode;
+
+      detailsNode.detailType = detailsMatch[1] as BlockQuoteType;
+      detailsNode.detailsOpen = detailsMatch[2] === '+';
+      detailsNode.summary = detailsMatch[3].trim();
+      parser.advanceOffset(parser.currentLine.length - parser.offset, false);
+
+      return Matched.Container;
+    }
+  }
+  return Matched.None;
+};
+
 const atxHeading: BlockStart = (parser, container) => {
   let match;
   if (
@@ -340,6 +367,7 @@ const indentedCodeBlock: BlockStart = (parser) => {
 };
 
 export const blockStarts = [
+  details,
   blockQuote,
   atxHeading,
   fencedCodeBlock,

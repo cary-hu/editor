@@ -2,7 +2,7 @@ import { ParserOptions } from '@t/parser';
 import { ToastMark } from '../toastmark';
 import { Parser } from '../commonmark/blocks';
 import { getChildNodes } from '../nodeHelper';
-import { Node } from '../commonmark/node';
+import { DetailsNode, Node } from '../commonmark/node';
 
 function removeIdAttrFromAllNode(root: Node) {
   const walker = root.walker();
@@ -255,6 +255,19 @@ describe('editText()', () => {
       const result = doc.editMarkdown([3, 1], [3, 3], '|c|')[0];
 
       assertParseResult(doc, ['| a | b', '--| ---', '|c|']);
+      assertResultNodes(doc, result.nodes);
+    });
+
+    it('should parse details block quote when replacing the whole document', () => {
+      const doc = new ToastMark('# test\n* list1\n* list2');
+      const result = doc.editMarkdown([1, 1], [3, 8], '> [!warning]+ Summary\n> Details')[0];
+      const details = result.nodes[0] as DetailsNode;
+
+      assertParseResult(doc, ['> [!warning]+ Summary', '> Details']);
+      expect(details.type).toBe('details');
+      expect(details.detailType).toBe('warning');
+      expect(details.detailsOpen).toBe(true);
+      expect(details.summary).toBe('Summary');
       assertResultNodes(doc, result.nodes);
     });
   });

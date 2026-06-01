@@ -9,6 +9,8 @@ import {
   CustomInlineMdNode,
   TableMdNode,
   BlockMdNode,
+  BlockQuoteMdNode,
+  DetailsMdNode,
   HTMLConvertorMap,
   OpenTagToken,
   Renderer,
@@ -126,7 +128,7 @@ const toWwConvertors: ToWwConvertorMap = {
 
   blockQuote(state, node, { entering }, customAttrs) {
     if (entering) {
-      const blockQuoteNode = node as BlockMdNode & { bqType?: string };
+      const blockQuoteNode = node as BlockQuoteMdNode;
       const attrs = {
         ...customAttrs,
         bqType: blockQuoteNode.bqType || 'default',
@@ -134,6 +136,23 @@ const toWwConvertors: ToWwConvertorMap = {
 
       state.openNode(state.schema.nodes.blockQuote, attrs);
     } else {
+      state.closeNode();
+    }
+  },
+
+  details(state, node, { entering }, customAttrs) {
+    if (entering) {
+      const detailsNode = node as DetailsMdNode;
+
+      state.openNode(state.schema.nodes.details, {
+        ...customAttrs,
+        bqType: detailsNode.detailType || 'default',
+        open: detailsNode.detailsOpen || false,
+      });
+      state.addNode(state.schema.nodes.summary, null, [state.schema.text(detailsNode.summary || '')]);
+      state.openNode(state.schema.nodes.detailsBody, null);
+    } else {
+      state.closeNode();
       state.closeNode();
     }
   },

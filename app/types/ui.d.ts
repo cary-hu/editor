@@ -130,6 +130,7 @@ interface ToolbarStateMap {
   heading: ToolbarItemState;
   thematicBreak: ToolbarItemState;
   blockQuote: ToolbarItemState;
+  details: ToolbarItemState;
   code: ToolbarItemState;
   codeBlock: ToolbarItemState;
   indent: ToolbarItemState;

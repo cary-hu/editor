@@ -140,6 +140,18 @@ export const nodeTypeWriters: ToMdNodeTypeWriterMap = {
     );
   },
 
+  details(state, { node }, { delim, firstDelim }) {
+    state.wrapBlock(delim as string, firstDelim as string | null, node, () =>
+      state.convertNode(node.lastChild!),
+    );
+  },
+
+  summary() {},
+
+  detailsBody(state, { node }) {
+    state.convertNode(node);
+  },
+
   bulletList(state, { node }, { delim }) {
     // soft-tab(4)
     state.convertList(node, repeat(' ', 4), () => `${delim} `);
