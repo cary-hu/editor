@@ -164,6 +164,8 @@ class ImageEditPanelView extends EditPanel {
   protected updatePosition() {
     if (!this.state.dialog || !this.state.imageElement) return;
 
+    this.syncImageElement();
+
     const imageRect = this.state.imageElement.getBoundingClientRect();
     const editorRect = this.view.dom.getBoundingClientRect();
 
@@ -388,6 +390,36 @@ class ImageEditPanelView extends EditPanel {
     return alignNames[align] || i18n.get('Not set');
   }
 
+  private syncImageElement() {
+    if (!this.state.imageElement || this.state.imageElement.parentNode) {
+      return;
+    }
+
+    const currentImageElement = this.getImageElementAtCurrentPosition();
+
+    if (currentImageElement) {
+      this.state.imageElement = currentImageElement;
+    }
+  }
+
+  private getImageElementAtCurrentPosition(): HTMLElement | null {
+    if (this.state.imagePos === null) {
+      return null;
+    }
+
+    const nodeDOM = this.view.nodeDOM(this.state.imagePos);
+
+    if (!(nodeDOM instanceof HTMLElement)) {
+      return null;
+    }
+
+    if (nodeDOM.matches('img')) {
+      return nodeDOM;
+    }
+
+    return nodeDOM.querySelector('img');
+  }
+
   private bindDialogEvents(dialog: HTMLElement) {
     const widthInput = dialog.querySelector('#width-input') as HTMLInputElement;
     const clearWidthBtn = dialog.querySelector('#clear-width') as HTMLButtonElement;
@@ -459,6 +491,7 @@ class ImageEditPanelView extends EditPanel {
     [widthInput, altInput, captionInput].forEach((input) => {
       input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
+          e.preventDefault();
           this.saveChanges();
         }
       });
@@ -498,6 +531,7 @@ class ImageEditPanelView extends EditPanel {
       this.view.dispatch(tr);
 
       this.state.tempChanges = {};
+      this.syncImageElement();
 
       const updatedNode = this.view.state.doc.nodeAt(this.state.imagePos);
 
