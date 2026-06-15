@@ -2,8 +2,58 @@ import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import fs from 'fs';
+import path from 'path';
+import ts from 'typescript';
 import banner from 'rollup-plugin-banner';
 const { version, author, license } = JSON.parse(fs.readFileSync('./package.json', 'utf-8'));
+
+const toastmarkRoot = path.resolve('../libs/toastmark');
+const toastmarkSrc = path.join(toastmarkRoot, 'src');
+
+function localToastmarkSource() {
+  return {
+    name: 'localToastmarkSource',
+    resolveId(source) {
+      if (source === '@toast-ui/toastmark') {
+        return path.join(toastmarkSrc, 'index.ts');
+      }
+
+      return null;
+    },
+  };
+}
+
+function transpileToastmarkSource() {
+  return {
+    name: 'transpileToastmarkSource',
+    transform(code, id) {
+      const normalizedId = path.normalize(id);
+
+      if (!normalizedId.startsWith(toastmarkSrc) || !normalizedId.endsWith('.ts')) {
+        return null;
+      }
+
+      return {
+        code: ts.transpileModule(code, {
+          compilerOptions: {
+            allowJs: true,
+            esModuleInterop: true,
+            importHelpers: true,
+            module: ts.ModuleKind.ESNext,
+            target: ts.ScriptTarget.ES2015,
+          },
+        }).outputText,
+        map: null,
+      };
+    },
+  };
+}
+
+function nodeResolvePlugin() {
+  return nodeResolve({
+    extensions: ['.mjs', '.js', '.json', '.node', '.ts'],
+  });
+}
 
 function i18nEditorImportPath() {
   return {
@@ -36,7 +86,14 @@ export default [
       format: 'es',
       sourcemap: false,
     },
-    plugins: [typescript(), commonjs(), nodeResolve(), createBannerPlugin()],
+    plugins: [
+      localToastmarkSource(),
+      transpileToastmarkSource(),
+      typescript(),
+      commonjs(),
+      nodeResolvePlugin(),
+      createBannerPlugin(),
+    ],
     external: [/^prosemirror/],
   },
   // viewer
@@ -47,7 +104,14 @@ export default [
       format: 'es',
       sourcemap: false,
     },
-    plugins: [typescript(), commonjs(), nodeResolve(), createBannerPlugin('viewer')],
+    plugins: [
+      localToastmarkSource(),
+      transpileToastmarkSource(),
+      typescript(),
+      commonjs(),
+      nodeResolvePlugin(),
+      createBannerPlugin('viewer'),
+    ],
     external: [/^prosemirror/],
   },
   // i18n
@@ -60,9 +124,11 @@ export default [
     },
     external: ['@caryhu/tui.editor'],
     plugins: [
+      localToastmarkSource(),
+      transpileToastmarkSource(),
       typescript(),
       commonjs(),
-      nodeResolve(),
+      nodeResolvePlugin(),
       i18nEditorImportPath(),
       createBannerPlugin('i18n'),
     ],
