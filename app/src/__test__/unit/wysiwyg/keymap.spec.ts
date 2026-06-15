@@ -1,6 +1,7 @@
 import { oneLineTrim } from 'common-tags';
 
 import { DOMParser } from 'prosemirror-model';
+import { TextSelection } from 'prosemirror-state';
 import {
   chainCommands,
   deleteSelection,
@@ -10,6 +11,7 @@ import {
 
 import WysiwygEditor from '@/wysiwyg/wwEditor';
 import EventEmitter from '@/event/eventEmitter';
+import CommandManager from '@/commands/commandManager';
 import { WwToDOMAdaptor } from '@/wysiwyg/adaptor/wwToDOMAdaptor';
 import CellSelection from '@/wysiwyg/plugins/selection/cellSelection';
 import { cls } from '@/utils/dom';
@@ -18,7 +20,7 @@ const CELL_SELECTION_CLS = cls('cell-selected');
 const CODE_BLOCK_CLS = cls('ww-code-block');
 
 describe('keymap', () => {
-  let wwe: WysiwygEditor, em: EventEmitter;
+  let wwe: WysiwygEditor, em: EventEmitter, cmd: CommandManager;
   let html;
 
   function setContent(content: string) {
@@ -51,6 +53,28 @@ describe('keymap', () => {
     dispatch!(tr.setSelection(selection));
   }
 
+  function getFirstCodeBlockPos(parentName?: string) {
+    let codeBlockPos = -1;
+
+    wwe.view.state.doc.descendants((node, pos) => {
+      const { parent } = wwe.view.state.doc.resolve(pos);
+
+      if (
+        codeBlockPos < 0 &&
+        node.type.name === 'codeBlock' &&
+        (!parentName || parent.type.name === parentName)
+      ) {
+        codeBlockPos = pos;
+      }
+    });
+
+    if (codeBlockPos < 0) {
+      throw new Error('Expected to find a code block node');
+    }
+
+    return codeBlockPos;
+  }
+
   beforeEach(() => {
     const toDOMAdaptor = new WwToDOMAdaptor({}, {});
 
@@ -63,6 +87,7 @@ describe('keymap', () => {
         useTableEditPanel: true,
       },
     });
+    cmd = new CommandManager(em, {}, wwe.commands, () => 'wysiwyg');
   });
 
   afterEach(() => {
@@ -488,6 +513,21 @@ describe('keymap', () => {
         `;
 
         expect(wwe.getHTML()).toBe(expected);
+      });
+
+      it('should not add paragraph inside tabbed code group', () => {
+        setContent('<p><br></p>');
+        cmd.exec('tabbedCode');
+        wwe.view.dispatch(
+          wwe.view.state.tr.setSelection(
+            TextSelection.create(wwe.view.state.doc, getFirstCodeBlockPos('tabbedCode') + 1),
+          ),
+        );
+        const htmlBeforeKeymap = wwe.getHTML();
+
+        forceKeymapFn('codeBlock', 'moveCursor', ['up']);
+
+        expect(wwe.getHTML()).toBe(htmlBeforeKeymap);
       });
     });
 

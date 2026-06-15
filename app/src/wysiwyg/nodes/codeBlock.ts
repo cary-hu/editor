@@ -74,7 +74,11 @@ export class CodeBlock extends NodeSchema {
       const { $from } = state.selection;
       const { view } = this.context;
 
-      if (view!.endOfTextblock(direction) && $from.node().type.name === 'codeBlock') {
+      if (
+        view!.endOfTextblock(direction) &&
+        $from.node().type.name === 'codeBlock' &&
+        $from.node($from.depth - 1).type.name !== 'tabbedCode'
+      ) {
         const lines: string[] = $from.parent.textContent.split('\n');
 
         const offset = direction === 'up' ? $from.start() : $from.end();
