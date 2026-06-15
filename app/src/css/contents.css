@@ -391,7 +391,6 @@ table.ProseMirror-selectednode {
   flex: 0 0 auto;
   width: 120px;
   margin: 0;
-  margin-bottom: -1px;
   padding: .35rem .55rem;
   border: 1px solid var(--toastui-editor-selection-color, #4b96e6);
   border-radius: 3px 3px 0 0;
@@ -401,6 +400,8 @@ table.ProseMirror-selectednode {
   font-size: 13px;
   line-height: 18px;
   outline: none;
+  position: relative;
+  z-index: 1;
 }
 
 .toastui-editor-contents .toastui-editor-code-group-panels > pre,
