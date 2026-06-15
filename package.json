@@ -65,7 +65,10 @@
     "test:types:all": "lerna run --stream test:types",
     "serve": "node ./scripts/pkg-script.js --script serve",
     "build": "node ./scripts/pkg-script.js --script build",
-    "build:all": "lerna run --stream build"
+    "build:all": "lerna run --stream build",
+    "version:editor": "node ./scripts/release-editor.js --no-publish --skip-types --skip-build",
+    "release:editor": "node ./scripts/release-editor.js",
+    "release:editor:dry": "node ./scripts/release-editor.js --dry-run"
   },
   "workspaces": [
     "app",

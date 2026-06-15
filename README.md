@@ -163,6 +163,28 @@ $ type=editor npm run serve:ie
 $ type=editor npm test
 ```
 
+#### Release editor package
+
+Use the root release script when publishing `@caryhu/tui.editor`. It updates the editor version metadata in the workspace and publishes from the `app` package directory.
+
+``` sh
+$ npm run version:editor -- 3.3.1
+$ npm run release:editor:dry -- 3.3.1
+$ npm run release:editor -- 3.3.1
+```
+
+- `npm run version:editor -- <version|major|minor|patch>` updates version metadata only and skips type checks, build, and publish.
+- `npm run release:editor:dry -- <version|major|minor|patch>` updates version metadata and runs a package dry run with `npm pack --dry-run`.
+- `npm run release:editor -- <version|major|minor|patch>` updates version metadata, runs `type=editor npm run test:types`, runs the editor build, and then publishes `@caryhu/tui.editor`.
+
+You can also pass npm publish options such as a dist-tag.
+
+``` sh
+$ npm run release:editor -- 3.3.1 --tag next
+```
+
+If the target version already exists on npm, the release script stops before build and publish.
+
 ### Pull Request
 
 Before uploading your PR, run test one last time to check if there are any errors. If it has no errors, commit and then push it!
