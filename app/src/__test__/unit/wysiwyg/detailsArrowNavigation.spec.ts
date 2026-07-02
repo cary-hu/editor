@@ -35,6 +35,14 @@ describe('details arrow navigation', () => {
     return nodePos;
   }
 
+  function forceKeymapFn(type: string, methodName: string, args: any[] = []) {
+    const { specs, view } = wwe;
+    // @ts-ignore
+    const [keymapFn] = specs.specs.filter((spec) => spec.name === type);
+
+    // @ts-ignore
+    keymapFn[methodName](...args)(view.state, view.dispatch, view);
+  }
   beforeEach(() => {
     const toDOMAdaptor = new WwToDOMAdaptor({}, {});
 
@@ -51,6 +59,7 @@ describe('details arrow navigation', () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     wwe.destroy();
 
     if (el.parentNode === document.body) {
@@ -79,12 +88,63 @@ describe('details arrow navigation', () => {
     wwe.view.dispatch(
       wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, summaryEndPos)),
     );
-    summaryElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    summaryElement.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+    );
 
     expect(wwe.view.state.doc.nodeAt(detailsPos)!.attrs.open).toBe(false);
     expect(wwe.view.state.selection.from).toBe(detailsEndPos + 1);
   });
 
+  it('adds a paragraph after collapsed details at the document end with ArrowDown from editor', () => {
+    setContent(`
+      <details data-detail-summary-type="warning" data-block-quote-details="true">
+        <summary class="toastui-editor-block-quote-summary">Summary</summary>
+        <div class="toastui-editor-block-quote-body"><p>foo</p></div>
+      </details>
+    `);
+    vi.spyOn(wwe.view, 'endOfTextblock').mockReturnValue(true);
+
+    const detailsPos = getNodePos('details');
+    const summaryPos = getNodePos('summary');
+    const summaryNode = wwe.view.state.doc.nodeAt(summaryPos)!;
+    const summaryEndPos = summaryPos + summaryNode.nodeSize - 1;
+    const detailsEndPos = detailsPos + wwe.view.state.doc.nodeAt(detailsPos)!.nodeSize;
+
+    wwe.view.dispatch(
+      wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, summaryEndPos)),
+    );
+    wwe.view.dom.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }),
+    );
+
+    expect(wwe.view.state.doc.lastChild!.type.name).toBe('paragraph');
+    expect(wwe.view.state.selection.from).toBe(detailsEndPos + 1);
+  });
+
+  it('adds a paragraph after opened details at the document end with ArrowDown from body', () => {
+    setContent(`
+      <details open data-detail-summary-type="warning" data-block-quote-details="true">
+        <summary class="toastui-editor-block-quote-summary">Summary</summary>
+        <div class="toastui-editor-block-quote-body"><p>foo</p></div>
+      </details>
+    `);
+    vi.spyOn(wwe.view, 'endOfTextblock').mockReturnValue(true);
+
+    const detailsPos = getNodePos('details');
+    const paragraphPos = getNodePos('paragraph');
+    const paragraphNode = wwe.view.state.doc.nodeAt(paragraphPos)!;
+    const paragraphEndPos = paragraphPos + paragraphNode.nodeSize - 1;
+    const detailsEndPos = detailsPos + wwe.view.state.doc.nodeAt(detailsPos)!.nodeSize;
+
+    wwe.view.dispatch(
+      wwe.view.state.tr.setSelection(TextSelection.create(wwe.view.state.doc, paragraphEndPos)),
+    );
+    forceKeymapFn('details', 'moveCursorAfterDetails');
+
+    expect(wwe.view.state.doc.lastChild!.type.name).toBe('paragraph');
+    expect(wwe.view.state.selection.from).toBe(detailsEndPos + 1);
+  });
   it('creates default details with Alt-d', () => {
     setContent('<p>foo</p>');
 

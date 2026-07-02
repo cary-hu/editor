@@ -167,8 +167,11 @@ export class SummaryView implements NodeView {
   private handleKeydown = (ev: KeyboardEvent) => {
     const detailsInfo = this.getDetailsInfo();
     const shouldFocusBody = ev.key === 'Tab' || ev.key === 'Enter';
+    const isCollapsedDetails = detailsInfo && !detailsInfo.details.attrs.open;
     const shouldMoveAfterCollapsedDetails =
-      ev.key === 'ArrowRight' && this.isSelectionAtEnd() && detailsInfo && !detailsInfo.details.attrs.open;
+      isCollapsedDetails &&
+      ((ev.key === 'ArrowRight' && this.isSelectionAtEnd()) ||
+        (ev.key === 'ArrowDown' && this.view.endOfTextblock('down')));
     const shouldFocusOpenedBody =
       ev.key === 'ArrowRight' && this.isSelectionAtEnd() && detailsInfo?.details.attrs.open;
 

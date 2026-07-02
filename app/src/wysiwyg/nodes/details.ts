@@ -1,7 +1,8 @@
-import { DOMOutputSpec, Fragment, ProsemirrorNode } from 'prosemirror-model';
+import { DOMOutputSpec, Fragment, ProsemirrorNode, ResolvedPos } from 'prosemirror-model';
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { Command } from 'prosemirror-commands';
 
+import { addParagraph, createTextSelection } from '@/helper/manipulation';
 import NodeSchema from '@/spec/node';
 import {
   createDOMInfoParsedRawHTML,
@@ -65,6 +66,32 @@ function containsDetails(state: EditorState, from: number, to: number) {
   });
 
   return hasDetails;
+}
+
+function findDetails($pos: ResolvedPos) {
+  for (let depth = $pos.depth; depth > 0; depth -= 1) {
+    const node = $pos.node(depth);
+
+    if (node.type.name === 'details') {
+      return { node, pos: $pos.before(depth), depth };
+    }
+  }
+
+  return null;
+}
+
+function isLastTextblockInDetails($pos: ResolvedPos, detailsDepth: number) {
+  if (!$pos.parent.isTextblock) {
+    return false;
+  }
+
+  for (let parentDepth = $pos.depth - 1; parentDepth >= detailsDepth; parentDepth -= 1) {
+    if ($pos.indexAfter(parentDepth) < $pos.node(parentDepth).childCount) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 export class Details extends NodeSchema {
@@ -172,12 +199,45 @@ export class Details extends NodeSchema {
     };
   }
 
+  moveCursorAfterDetails(): Command {
+    return (state, dispatch, view) => {
+      const { doc, schema, selection, tr } = state;
+      const detailsInfo = findDetails(selection.$from);
+      const editorView = view || this.context.view;
+
+      if (
+        !editorView ||
+        !selection.empty ||
+        !detailsInfo ||
+        !editorView.endOfTextblock('down') ||
+        (detailsInfo.node.attrs.open &&
+          !isLastTextblockInDetails(selection.$from, detailsInfo.depth))
+      ) {
+        return false;
+      }
+
+      const detailsEndPos = detailsInfo.pos + detailsInfo.node.nodeSize;
+      const $detailsEnd = doc.resolve(detailsEndPos);
+
+      if (dispatch) {
+        if ($detailsEnd.nodeAfter) {
+          dispatch(tr.setSelection(createTextSelection(tr, detailsEndPos + 1)).scrollIntoView());
+        } else {
+          dispatch(addParagraph(tr, $detailsEnd, schema).scrollIntoView());
+        }
+      }
+
+      return true;
+    };
+  }
+
   keymaps() {
     const detailsCommand: Command = (state, dispatch) => this.commands()()(state, dispatch);
 
     return {
       'Alt-d': detailsCommand,
       'Alt-D': detailsCommand,
+      ArrowDown: this.moveCursorAfterDetails(),
     };
   }
 }
