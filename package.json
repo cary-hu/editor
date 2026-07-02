@@ -74,5 +74,6 @@
     "app",
     "libs/*",
     "plugins/*"
-  ]
+  ],
+  "version": ""
 }
